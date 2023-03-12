@@ -1,5 +1,6 @@
+ofxAudioFile
 ofxGui
 ofxMidi
-ofxAudioFile
-ofxSoundObjects
 ofxXmlSettings
+ofxPiMapper
+ofxSoundObjects

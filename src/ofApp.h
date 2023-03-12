@@ -8,14 +8,22 @@
 #include "ofxSoundMixer.h"
 #include "ofxSoundPlayerObject.h"
 
+#include "ofxGui.h"
+
 #include "metronome.h"
+
+#include "ofxPiMapper.h"
+
+#include "videoClipSource.h"
 
 class ofApp : public ofBaseApp, public ofxMidiListener {
 
 public:
 	void setup();
+	void setupGui();
 	void update();
 	void draw();
+	void drawGui(ofEventArgs& args);
 	void exit();
 
 	void keyPressed(int key);
@@ -46,5 +54,19 @@ private:
 
 	Metronome metronome;
 
-		
+
+	ofParameterGroup parameters;
+	ofParameter<float> radius;
+	ofParameter<ofColor> color;
+	ofxPanel gui;
+	std::vector<ofxPanel> m_guiPanels;
+
+	// pour régler le bug de gui (paramètres non éditables), on redessine la gui une nouvelle fois
+	bool m_redrawGui = false;
+	bool m_guiRedrawn = false;
+	
+	ofxPiMapper m_piMapper;
+
+	VideoClipSource m_videoClipSource;
+	
 };

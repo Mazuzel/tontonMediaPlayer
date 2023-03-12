@@ -53,17 +53,62 @@ void ofApp::setup(){
 	//midiOut << StartMidi() << 0xFA << FinishMidi();  // start
 	//midiOut << StartMidi() << 0xF8 << FinishMidi();  // tick
 	//midiOut << StartMidi() << 0xFC << FinishMidi();  // stop
+
+
+	// Enable or disable audio for video sources globally
+	ofx::piMapper::VideoSource::enableAudio = false;
+	m_piMapper.registerFboSource(m_videoClipSource);
+
+	m_piMapper.setup();
+}
+
+//--------------------------------------------------------------
+void ofApp::setupGui() {
+	ofLogNotice() << "Setup GUI" << endl;
+
+	ofSetBackgroundColor(0);
+	//ofShowCursor();
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
 	// update the sound playing system:
 	ofSoundUpdate();
+
+	m_piMapper.update();
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+	m_piMapper.draw();
+}
 
+//--------------------------------------------------------------
+void ofApp::drawGui(ofEventArgs& args) {
+	ofShowCursor();
+	//std::vector<ofParameterGroup*> pp = m_liveEffectSource.getParameters(); // TODO passer ça dans une fonction updateGui a créer
+	//if (pp.size() != m_guiPanels.size() || (m_redrawGui && !m_guiRedrawn))
+	//{
+	//	if (m_redrawGui)
+	//	{
+	//		m_guiRedrawn = true;
+	//	}
+
+	//	m_guiPanels.clear();
+	//	for (int i = 0; i < pp.size(); i++)
+	//	{
+	//		ofxPanel panel;
+	//		m_guiPanels.push_back(panel);
+	//		m_guiPanels[i].setup(*pp[i]);
+	//	}
+	//	m_redrawGui = false;
+	//}
+
+	//for (int i = 0; i < pp.size(); i++) {
+	//	//m_guiPanels[i].setup(*pp[i]);
+	//	m_guiPanels[i].setPosition(220 * i, 0);
+	//	m_guiPanels[i].draw();
+	//}
 }
 
 //--------------------------------------------------------------
@@ -84,6 +129,7 @@ void ofApp::exit() {
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
+	m_piMapper.keyPressed(key);
 
 	if (key == 'Q') {
 		OF_EXIT_APP(0);
@@ -110,6 +156,8 @@ void ofApp::keyPressed(int key){
 		}
 		//players.clear();
 		mixer.setMasterVolume(0);
+
+		m_videoClipSource.closeVideo();
 
 		//midiOut << StartMidi() << 0xFC << FinishMidi();  // stop
 		//midiOut.sendProgramChange(10, 95);  // back to sync F16 program
@@ -148,6 +196,8 @@ void ofApp::keyPressed(int key){
 			e1.program = 33;
 			e1.tick = 32;
 			songEvents.push_back(e1);
+
+			m_videoClipSource.loadVideo("songs/fuministe/clip/fuministe_live_clip_lq_mute.mp4");
 		}
 		else {
 			dir.listDir("songs/pakela/audio");
@@ -168,6 +218,8 @@ void ofApp::keyPressed(int key){
 			songEvents.push_back(e2);
 
 			mixerMasterVolume = 0.5;
+
+			m_videoClipSource.loadVideo("songs/pakela/clip/pakela_live_mute_lq.mp4");
 		}
 
 		players.resize(dir.size());
@@ -186,9 +238,7 @@ void ofApp::keyPressed(int key){
 		// force midi device to go to the first pattern
 		ofSleepMillis(2);
 		midiOut << StartMidi() << 0xFA << FinishMidi();  // start
-		//ofSleepMillis(1);
 		midiOut << StartMidi() << 0xF8 << FinishMidi();  // tick
-		//ofSleepMillis(1);
 		midiOut << StartMidi() << 0xFC << FinishMidi();  // stop
 		ofSleepMillis(2);
 
@@ -206,6 +256,8 @@ void ofApp::keyPressed(int key){
 			players[i]->play();
 		}
 
+		m_videoClipSource.playVideo();
+
 		mixer.setMasterVolume(mixerMasterVolume);
 
 		midiOut << StartMidi() << 0xFA << FinishMidi(); // start playback
@@ -219,7 +271,7 @@ void ofApp::newMidiMessage(ofxMidiMessage& message) {
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
-
+	m_piMapper.keyReleased(key);
 }
 
 //--------------------------------------------------------------
@@ -229,17 +281,17 @@ void ofApp::mouseMoved(int x, int y ){
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-
+	m_piMapper.mouseDragged(x, y, button);
 }
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-
+	m_piMapper.mousePressed(x, y, button);
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-
+	m_piMapper.mouseReleased(x, y, button);
 }
 
 //--------------------------------------------------------------
