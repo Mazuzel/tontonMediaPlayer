@@ -183,6 +183,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\ofApp.cpp" />
     <ClCompile Include="src\metronome.cpp" />
+    <ClCompile Include="src\videoClipSource.cpp" />
     <ClCompile Include="..\..\..\addons\ofxAudioFile\src\ofxAudioFile.cpp" />
     <ClCompile Include="..\..\..\addons\ofxGui\src\ofxBaseGui.cpp" />
     <ClCompile Include="..\..\..\addons\ofxGui\src\ofxButton.cpp" />
@@ -301,11 +302,11 @@
     <ClCompile Include="..\..\..\addons\ofxSoundObjects\src\Renderers\ofxSoundObjectMatrixMixerRenderer.cpp" />
     <ClCompile Include="..\..\..\addons\ofxSoundObjects\src\SoundObjects\VUMeter.cpp" />
     <ClCompile Include="..\..\..\addons\ofxSoundObjects\src\SoundObjects\waveformDraw.cpp" />
-    <ClCompile Include="src\videoClipSource.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ofApp.h" />
     <ClInclude Include="src\metronome.h" />
+    <ClInclude Include="src\videoClipSource.h" />
     <ClInclude Include="..\..\..\addons\ofxAudioFile\src\ofxAudioFile.h" />
     <ClInclude Include="..\..\..\addons\ofxAudioFile\libs\dr_flac.h" />
     <ClInclude Include="..\..\..\addons\ofxAudioFile\libs\dr_mp3.h" />
@@ -446,7 +447,6 @@
     <ClInclude Include="..\..\..\addons\ofxSoundObjects\src\SoundObjects\SineWaveGenerator.h" />
     <ClInclude Include="..\..\..\addons\ofxSoundObjects\src\SoundObjects\VUMeter.h" />
     <ClInclude Include="..\..\..\addons\ofxSoundObjects\src\SoundObjects\waveformDraw.h" />
-    <ClInclude Include="src\videoClipSource.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(OF_ROOT)\libs\openFrameworksCompiled\project\vs\openframeworksLib.vcxproj">

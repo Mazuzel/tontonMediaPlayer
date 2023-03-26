@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<structure>
+	<songparts>
+		<songpart>
+			<desc>"Intro"</desc>
+			<bpm>150</bpm>
+			<program>52</program>
+			<tick>0</tick>
+		</songpart>
+		<songpart>
+			<desc>"Couplet1"</desc>
+			<bpm>150</bpm>
+			<program>53</program>
+			<tick>32</tick>
+		</songpart>
+		<songpart>
+			<desc>"Refrain1"</desc>
+			<bpm>150</bpm>
+			<program>54</program>
+			<tick>112</tick>
+		</songpart>
+	</songparts>
+</structure>

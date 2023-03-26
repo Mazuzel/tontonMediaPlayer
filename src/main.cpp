@@ -6,12 +6,15 @@
 int main() {
 
 	ofGLFWWindowSettings settings;
+
+	// main window (projection)
 	settings.setSize(800, 600);
 	settings.setPosition(glm::vec2(300, 30));
 	settings.resizable = true;
 	shared_ptr<ofAppBaseWindow> mainWindow = ofCreateWindow(settings);
 
-	settings.setSize(800, 500);
+	// settings window (gui)
+	settings.setSize(800, 600);
 	settings.setPosition(glm::vec2(0, 30));
 	settings.resizable = false;
 	// uncomment next line to share main's OpenGL resources with gui

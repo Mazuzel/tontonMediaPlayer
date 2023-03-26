@@ -41,7 +41,46 @@ public:
 	// ofxMidiListener callback
 	void newMidiMessage(ofxMidiMessage& eventArgs);
 
+	void drawSetupPage();
+	void drawSequencerPage();
+
+	// gui
+	ofxPanel m_gui;
+	//ofxToggle m_buttonSetMidiOutDevice;
+	//ofxIntField m_fieldSelectedMidiOutDevice;
+
+
+	ofParameterGroup parameters;  // A collection of parameters with events to notify if a parameter changed
+	
+	ofxButton m_buttonConnect;
+	ofxInputField<int> m_midiOutDeviceInputField;
+
+	std::vector<ofxToggle> m_audioDeviceSelectors;
+
+	// acces au menu de setup audio/midi
+	ofxButton m_buttonSettings;
+	void setupButtonPressed(const void* sender);
+
+	// setup : choix audio/midi in/out
+	ofParameter<int> m_selectedMidiOutDevice;
+	ofParameter<int> m_selectedAudioOutputDevice;
+	ofxPanel m_settingsGui;
+
+	// setup : validation
+	ofxButton m_buttonValidateSettings;
+	void validateSettingsButtonPressed(const void* sender);
+
+	// exit button
+	ofxButton m_buttonExit;
+	void exitButtonPressed(const void* sender);
+
+	void midiOutTogglePressed(const void* sender, bool& pressed);
+	void audioOutTogglePressed(const void* sender, bool& pressed);
+
 private:
+	int openMidiOut();
+	int openAudioOut();
+
 	ofxMidiOut midiOut;
 	ofxMidiIn midiIn;
 
@@ -55,18 +94,23 @@ private:
 	Metronome metronome;
 
 
-	ofParameterGroup parameters;
-	ofParameter<float> radius;
-	ofParameter<ofColor> color;
-	ofxPanel gui;
-	std::vector<ofxPanel> m_guiPanels;
-
-	// pour régler le bug de gui (paramètres non éditables), on redessine la gui une nouvelle fois
-	bool m_redrawGui = false;
-	bool m_guiRedrawn = false;
+	
 	
 	ofxPiMapper m_piMapper;
 
 	VideoClipSource m_videoClipSource;
+
+	std::vector<std::string> m_setlist;
+
+	std::vector<std::string> m_midiOutDevices;
+	std::vector<ofSoundDevice> m_audioDevices;
+
+	bool m_isMidiOutOpened = false;
+	bool m_isAudioOutOpened = false;
+
+
+	// state
+	bool m_isPlaying = false;
+	bool m_isSetupPageOpened = false;
 	
 };

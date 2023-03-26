@@ -7,11 +7,22 @@ void ofApp::setup(){
 	// midi out (program changes)
 	// print the available output ports to the console
 	//midiOut.listOutPorts();
+	m_midiOutDevices = midiOut.getOutPortList();
+	m_selectedMidiOutDevice.set("midi out", 0, 0, max(0, (int)m_midiOutDevices.size()-1));
 
-	// connect
-	midiOut.openPort(1); // by number
-	//midiOut.openPort("Elektron Model:Cycles"); // by name
-	//midiOut.openVirtualPort("ofxMidiOut"); // open a virtual port
+	ofLog() << "audio device list";
+	soundStream.printDeviceList();
+	ofLog() << "audio device list done";
+	m_audioDevices = soundStream.getDeviceList(ofSoundDevice::MS_WASAPI);
+	m_selectedAudioOutputDevice.set("audio out", 0, 0, max(0, (int)m_audioDevices.size() - 1));
+
+	m_settingsGui.setup();
+	m_settingsGui.add(m_selectedMidiOutDevice);
+	m_settingsGui.add(m_selectedAudioOutputDevice);
+	m_settingsGui.setPosition(600, 100);
+
+
+	//m_selectedMidiOutDevice.set("midi out", 0, m_midiOutDevices.size(), 1);
 
 
 
@@ -25,9 +36,66 @@ void ofApp::setup(){
 	//midiIn.addListener(this);
 
 	// ----------------------------------------
-	// sound stream
-	soundStream.printDeviceList();
+	//openMidiOut();
+	//openAudioOut();
 
+	// Enable or disable audio for video sources globally
+	ofx::piMapper::VideoSource::enableAudio = false;
+	m_piMapper.registerFboSource(m_videoClipSource);
+
+	m_piMapper.setup();
+
+	ofDirectory dir;
+	dir.listDir("songs");
+	for (int i = 0; i < dir.size(); i++) {
+		m_setlist.push_back(dir.getName(i));
+	}
+	//m_setlist = { "pakela", "fuministe" };
+}
+
+void ofApp::setupButtonPressed(const void* sender) {
+	if (!m_isSetupPageOpened && !m_isPlaying)
+	{
+		m_isSetupPageOpened = true;
+	}
+	else if (m_isSetupPageOpened)
+	{
+		m_isSetupPageOpened = false;
+	}
+}
+
+void ofApp::validateSettingsButtonPressed(const void* sender)
+{
+	// ouvrir les ports audio et midi
+
+	m_isSetupPageOpened = false;
+}
+
+void ofApp::exitButtonPressed(const void* sender) {
+	OF_EXIT_APP(0);
+}
+
+void ofApp::midiOutTogglePressed(const void* sender, bool& pressed) {
+	if (pressed)
+	{
+		openMidiOut();
+	}
+	m_isMidiOutOpened = pressed;
+}
+
+void ofApp::audioOutTogglePressed(const void* sender, bool& pressed) {
+
+}
+
+int ofApp::openMidiOut() {
+	m_isMidiOutOpened = true; // midiOut.openPort(1); // by number
+	// set metronome controls
+	metronome.setMidiOut(midiOut);
+	return 0;
+}
+
+int ofApp::openAudioOut()
+{
 	ofSoundStreamSettings settings;
 	settings.setOutListener(this);
 	settings.sampleRate = 44100;
@@ -36,30 +104,17 @@ void ofApp::setup(){
 	settings.bufferSize = 256;
 	settings.numBuffers = 1;
 
-	std::vector<ofSoundDevice> devices = soundStream.getMatchingDevices("Elektron Model:Cycles", UINT_MAX, 2, ofSoundDevice::Api::MS_WASAPI);
+	/*std::vector<ofSoundDevice> devices = soundStream.getMatchingDevices("Elektron Model:Cycles", UINT_MAX, 2, ofSoundDevice::Api::MS_WASAPI);
 	settings.setApi(ofSoundDevice::Api::MS_WASAPI);
-	settings.setOutDevice(devices[0]);
+	settings.setOutDevice(devices[0]);*/
 
-	soundStream.setup(settings);
-	soundStream.setOutput(output);
-
-	// set metronome controls
-	metronome.setMidiOut(midiOut);
-
-	//midiOut.sendProgramChange(10, 95);  // back to sync F16 program
-	//midiOut << StartMidi() << 0xFA << FinishMidi();  // start
-	//midiOut << StartMidi() << 0xF8 << FinishMidi();  // tick
-	//midiOut << StartMidi() << 0xFC << FinishMidi();  // stop
-	//midiOut << StartMidi() << 0xFA << FinishMidi();  // start
-	//midiOut << StartMidi() << 0xF8 << FinishMidi();  // tick
-	//midiOut << StartMidi() << 0xFC << FinishMidi();  // stop
-
-
-	// Enable or disable audio for video sources globally
-	ofx::piMapper::VideoSource::enableAudio = false;
-	m_piMapper.registerFboSource(m_videoClipSource);
-
-	m_piMapper.setup();
+	m_isAudioOutOpened = soundStream.setup(settings);
+	if (m_isAudioOutOpened)
+	{
+		soundStream.setOutput(output);
+	}
+	
+	return 0;
 }
 
 //--------------------------------------------------------------
@@ -68,6 +123,56 @@ void ofApp::setupGui() {
 
 	ofSetBackgroundColor(0);
 	//ofShowCursor();
+
+ 
+	// sound stream
+	//m_audioDevices = soundStream.getDeviceList();
+	//soundStream.printDeviceList();
+	//for (auto device : m_audioDevices)
+	//{
+	//	ofxToggle deviceToggle;
+	//	deviceToggle.setup(device.name, false);
+	//	deviceToggle.addListener(this, &ofApp::audioOutTogglePressed);
+	//	m_audioDeviceSelectors.push_back(deviceToggle);
+	//	ofLog() << device.name;
+	//}
+
+	//m_gui.setup();
+	//if (m_midiOutDevices.size() > 0)
+	//{
+	//	m_gui.add(m_fieldSelectedMidiOutDevice.setup("midi out", 1, 0, 3 + m_midiOutDevices.size()));
+	//	m_gui.add(m_buttonSetMidiOutDevice.setup("open", false));
+	//	m_buttonSetMidiOutDevice.addListener(this, &ofApp::midiOutTogglePressed);
+	//}
+
+	//for (auto audioDeviceToggle : m_audioDeviceSelectors)
+	//{
+	//	m_gui.add(audioDeviceToggle.setup(audioDeviceToggle.getName(), false));
+	//}
+
+	/*parameters.setName("params");
+	parameters.add(m_selectedMidiOutDevice.set("midi out", 1, 0, 10));
+	m_gui.setup(parameters);*/
+
+	/*m_buttonConnect.setup("connect");
+	m_buttonConnect.setFillColor(ofColor(255, 10, 20));
+	m_buttonConnect.setPosition(200, 10);
+
+	m_midiOutDeviceInputField.setup("midi out", 2);
+	m_midiOutDeviceInputField.setPosition(200, 50);*/
+
+	m_buttonSettings.setup("setup")->setPosition(10, 5);
+	m_buttonSettings.addListener(this, &ofApp::setupButtonPressed);
+
+	m_buttonExit.setup("exit");
+	m_buttonExit.setPosition(740, 5);
+	m_buttonValidateSettings.setTextColor(ofColor(200, 10, 10));
+	m_buttonExit.addListener(this, &ofApp::exitButtonPressed);
+
+	m_buttonValidateSettings.setup("validate");
+	m_buttonValidateSettings.setPosition(300, 10);
+	m_buttonValidateSettings.setTextColor(ofColor(10, 200, 10));
+	m_buttonValidateSettings.addListener(this, &ofApp::validateSettingsButtonPressed);
 }
 
 //--------------------------------------------------------------
@@ -86,29 +191,65 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::drawGui(ofEventArgs& args) {
 	ofShowCursor();
-	//std::vector<ofParameterGroup*> pp = m_liveEffectSource.getParameters(); // TODO passer ça dans une fonction updateGui a créer
-	//if (pp.size() != m_guiPanels.size() || (m_redrawGui && !m_guiRedrawn))
-	//{
-	//	if (m_redrawGui)
-	//	{
-	//		m_guiRedrawn = true;
-	//	}
 
-	//	m_guiPanels.clear();
-	//	for (int i = 0; i < pp.size(); i++)
-	//	{
-	//		ofxPanel panel;
-	//		m_guiPanels.push_back(panel);
-	//		m_guiPanels[i].setup(*pp[i]);
-	//	}
-	//	m_redrawGui = false;
-	//}
+	//m_gui.draw();
 
-	//for (int i = 0; i < pp.size(); i++) {
-	//	//m_guiPanels[i].setup(*pp[i]);
-	//	m_guiPanels[i].setPosition(220 * i, 0);
-	//	m_guiPanels[i].draw();
-	//}
+
+	//m_midiOutDeviceInputField.draw();
+	//m_buttonConnect.draw();
+
+	m_buttonSettings.draw();
+	m_buttonExit.draw();
+
+
+	if (m_isSetupPageOpened)
+	{
+		drawSetupPage();
+	}
+	else
+	{
+		drawSequencerPage();
+	}
+}
+
+void ofApp::drawSetupPage()
+{
+	ofDrawBitmapString(("MIDI out devices"), 20, 60);
+	for (int i = 0; i < m_midiOutDevices.size(); i++)
+	{
+		if (i == m_selectedMidiOutDevice.get())
+		{
+			ofSetColor(255, 100, 100);
+		}
+		ofDrawBitmapString(to_string(i) + ": " + m_midiOutDevices[i], 20, 80 + 15 * i);
+		if (i == m_selectedMidiOutDevice.get())
+		{
+			ofSetColor(255);
+		}
+	}
+
+	ofDrawBitmapString(("audio out devices"), 20, 300);
+	for (int i = 0; i < m_audioDevices.size(); i++)
+	{
+		if (i == m_selectedAudioOutputDevice.get())
+		{
+			ofSetColor(255, 100, 100);
+		}
+		ofDrawBitmapString(to_string(i) + ": " + m_audioDevices[i].name, 20, 320 + 15 * i);
+		if (i == m_selectedAudioOutputDevice.get())
+		{
+			ofSetColor(255);
+		}
+	}
+
+	m_settingsGui.draw();
+
+	m_buttonValidateSettings.draw();
+}
+
+void ofApp::drawSequencerPage()
+{
+	ofDrawBitmapString(("-------------Sequencer---------------"), 20, 50);
 }
 
 //--------------------------------------------------------------
@@ -181,45 +322,40 @@ void ofApp::keyPressed(int key){
 		dir.allowExt("wav");
 
 		std::vector<songEvent> songEvents;
-		float mixerMasterVolume = 1.0;
+		float mixerMasterVolume = 0.5;
 
+		string songName = "pakela";
 
 		if (key == 'f') {
-			dir.listDir("songs/fuministe/audio");
-			songEvent e0;
-			e0.bpm = 150;
-			e0.program = 32;
-			e0.tick = 0;
-			songEvents.push_back(e0);
-			songEvent e1;
-			e1.bpm = 150;
-			e1.program = 33;
-			e1.tick = 32;
-			songEvents.push_back(e1);
+			songName = "fuministe";
+			mixerMasterVolume = 0.9;
+		}
 
-			m_videoClipSource.loadVideo("songs/fuministe/clip/fuministe_live_clip_lq_mute.mp4");
+
+		dir.listDir("songs/" + songName + "/audio");
+
+		m_videoClipSource.loadVideo("songs/" + songName + "/clip/clip.mp4");
+
+		ofxXmlSettings settings;
+		string filePath = "songs/" + songName + "/structure.xml";
+		if (settings.loadFile(filePath)) {
+			settings.pushTag("structure");
+			settings.pushTag("songparts");
+			int numberOfParts = settings.getNumTags("songpart");
+			for (int i = 0; i < numberOfParts; i++) {
+				settings.pushTag("songpart", i);
+				songEvent e;
+				e.bpm = settings.getValue("bpm", 0.0);
+				e.program = settings.getValue("program", 0);
+				e.tick = settings.getValue("tick", 0);
+				cout << e.bpm << " " << e.program << " " << e.tick << endl;
+				songEvents.push_back(e);
+				settings.popTag();
+			}
 		}
 		else {
-			dir.listDir("songs/pakela/audio");
-			songEvent e0;
-			e0.bpm = 150;
-			e0.program = 52;
-			e0.tick = 0;
-			songEvents.push_back(e0);
-			songEvent e1;
-			e1.bpm = 150;
-			e1.program = 53;
-			e1.tick = 32;
-			songEvents.push_back(e1);
-			songEvent e2;
-			e2.bpm = 150;
-			e2.program = 54;
-			e2.tick = 32 + 64 + 16;
-			songEvents.push_back(e2);
-
-			mixerMasterVolume = 0.5;
-
-			m_videoClipSource.loadVideo("songs/pakela/clip/pakela_live_mute_lq.mp4");
+			ofLogError() << "Impossible de charger " + filePath;
+			return;
 		}
 
 		players.resize(dir.size());
