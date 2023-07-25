@@ -19,5 +19,11 @@
 			<program>54</program>
 			<tick>112</tick>
 		</songpart>
+		<songpart>
+			<desc>"End"</desc>
+			<bpm>150</bpm>
+			<program>94</program>
+			<tick>196</tick>
+		</songpart>
 	</songparts>
 </structure>

@@ -44,6 +44,8 @@ public:
 	void drawSetupPage();
 	void drawSequencerPage();
 
+	void displayList(unsigned int x, unsigned int y, string title, vector<string> elements, unsigned int selectedElement);
+
 	// gui
 	ofxPanel m_gui;
 	//ofxToggle m_buttonSetMidiOutDevice;
@@ -70,12 +72,21 @@ public:
 	ofxButton m_buttonValidateSettings;
 	void validateSettingsButtonPressed(const void* sender);
 
+	unsigned int m_currentSongIndex = 0;
+
+	void loadSong();
+	void stopPlayback();
+	void startPlayback();
+
 	// exit button
 	ofxButton m_buttonExit;
 	void exitButtonPressed(const void* sender);
 
 	void midiOutTogglePressed(const void* sender, bool& pressed);
 	void audioOutTogglePressed(const void* sender, bool& pressed);
+
+	bool m_projectionWindowFocus = false;
+	std::vector<songEvent> m_songEvents;
 
 private:
 	int openMidiOut();

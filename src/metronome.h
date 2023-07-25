@@ -5,7 +5,7 @@
 #include "ofxMidi.h"
 
 struct songEvent {
-	long tick;
+	long tick; // duration of the part, in terms of tick count
 	int program;
 	float bpm;
 };
@@ -27,6 +27,8 @@ public:
 
 	void setEnabled(bool enabled);
 
+	bool isSongEnded();
+
 private:
 
 	void tick();
@@ -40,4 +42,5 @@ private:
 	std::vector<songEvent> m_songEvents;
 	long m_totalTickCount;
 	int m_currentSongPartIndex;
+
 };

@@ -45,12 +45,31 @@ void ofApp::setup(){
 
 	m_piMapper.setup();
 
+	// chargement setlist
 	ofDirectory dir;
 	dir.listDir("songs");
-	for (int i = 0; i < dir.size(); i++) {
-		m_setlist.push_back(dir.getName(i));
+
+	ofxXmlSettings settings;
+	string filePath = "setlist.xml";
+	if (settings.loadFile(filePath)) {
+		settings.pushTag("setlist");
+		int numberOfSongs = settings.getNumTags("song");
+		for (int i = 0; i < numberOfSongs; i++) {
+			settings.pushTag("song", i);
+			std::string songName = settings.getValue("name", "");
+			// TODO vérifications
+			m_setlist.push_back(songName);
+			settings.popTag();
+		}
 	}
-	//m_setlist = { "pakela", "fuministe" };
+	else {
+		ofLogError() << "setlist.xml not found, creating a default setlist";
+		for (int i = 0; i < dir.size(); i++) {
+			m_setlist.push_back(dir.getName(i));
+		}
+	}
+
+	loadSong(); // chargement du premier morceau
 }
 
 void ofApp::setupButtonPressed(const void* sender) {
@@ -70,6 +89,12 @@ void ofApp::validateSettingsButtonPressed(const void* sender)
 
 	m_isSetupPageOpened = false;
 }
+
+
+// TODO gérer cas où play en cours : auto play next ?
+
+
+
 
 void ofApp::exitButtonPressed(const void* sender) {
 	OF_EXIT_APP(0);
@@ -122,44 +147,7 @@ void ofApp::setupGui() {
 	ofLogNotice() << "Setup GUI" << endl;
 
 	ofSetBackgroundColor(0);
-	//ofShowCursor();
 
- 
-	// sound stream
-	//m_audioDevices = soundStream.getDeviceList();
-	//soundStream.printDeviceList();
-	//for (auto device : m_audioDevices)
-	//{
-	//	ofxToggle deviceToggle;
-	//	deviceToggle.setup(device.name, false);
-	//	deviceToggle.addListener(this, &ofApp::audioOutTogglePressed);
-	//	m_audioDeviceSelectors.push_back(deviceToggle);
-	//	ofLog() << device.name;
-	//}
-
-	//m_gui.setup();
-	//if (m_midiOutDevices.size() > 0)
-	//{
-	//	m_gui.add(m_fieldSelectedMidiOutDevice.setup("midi out", 1, 0, 3 + m_midiOutDevices.size()));
-	//	m_gui.add(m_buttonSetMidiOutDevice.setup("open", false));
-	//	m_buttonSetMidiOutDevice.addListener(this, &ofApp::midiOutTogglePressed);
-	//}
-
-	//for (auto audioDeviceToggle : m_audioDeviceSelectors)
-	//{
-	//	m_gui.add(audioDeviceToggle.setup(audioDeviceToggle.getName(), false));
-	//}
-
-	/*parameters.setName("params");
-	parameters.add(m_selectedMidiOutDevice.set("midi out", 1, 0, 10));
-	m_gui.setup(parameters);*/
-
-	/*m_buttonConnect.setup("connect");
-	m_buttonConnect.setFillColor(ofColor(255, 10, 20));
-	m_buttonConnect.setPosition(200, 10);
-
-	m_midiOutDeviceInputField.setup("midi out", 2);
-	m_midiOutDeviceInputField.setPosition(200, 50);*/
 
 	m_buttonSettings.setup("setup")->setPosition(10, 5);
 	m_buttonSettings.addListener(this, &ofApp::setupButtonPressed);
@@ -177,6 +165,11 @@ void ofApp::setupGui() {
 
 //--------------------------------------------------------------
 void ofApp::update(){
+	if (metronome.isSongEnded())
+	{
+		stopPlayback();
+	}
+
 	// update the sound playing system:
 	ofSoundUpdate();
 
@@ -191,12 +184,6 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::drawGui(ofEventArgs& args) {
 	ofShowCursor();
-
-	//m_gui.draw();
-
-
-	//m_midiOutDeviceInputField.draw();
-	//m_buttonConnect.draw();
 
 	m_buttonSettings.draw();
 	m_buttonExit.draw();
@@ -214,19 +201,7 @@ void ofApp::drawGui(ofEventArgs& args) {
 
 void ofApp::drawSetupPage()
 {
-	ofDrawBitmapString(("MIDI out devices"), 20, 60);
-	for (int i = 0; i < m_midiOutDevices.size(); i++)
-	{
-		if (i == m_selectedMidiOutDevice.get())
-		{
-			ofSetColor(255, 100, 100);
-		}
-		ofDrawBitmapString(to_string(i) + ": " + m_midiOutDevices[i], 20, 80 + 15 * i);
-		if (i == m_selectedMidiOutDevice.get())
-		{
-			ofSetColor(255);
-		}
-	}
+	displayList(20, 60, "MIDI out", m_midiOutDevices, m_selectedMidiOutDevice.get());
 
 	ofDrawBitmapString(("audio out devices"), 20, 300);
 	for (int i = 0; i < m_audioDevices.size(); i++)
@@ -249,7 +224,37 @@ void ofApp::drawSetupPage()
 
 void ofApp::drawSequencerPage()
 {
-	ofDrawBitmapString(("-------------Sequencer---------------"), 20, 50);
+	ofDrawBitmapString("Mixer", 20, 50);
+
+	displayList(500, 50, "Setlist", m_setlist, m_currentSongIndex);
+
+	ofDrawBitmapString("Song", 20, 450);
+	ofSetColor(50);
+	ofDrawRectangle(15, 475, 770, 50);
+	for (int i = 0; i < m_songEvents.size()-1; i++)
+	{
+		int x = 20 + (int)m_songEvents[i].tick;
+		int w = (int)m_songEvents[i+1].tick - (int)m_songEvents[i].tick;
+		int pc = (m_songEvents[i].program % 16) * 64;
+		ofSetColor((64 + pc) % 256, (32 + pc) % 256, (255 - pc) % 256);
+		ofDrawRectangle(x, 480, w, 40);
+		ofSetColor(255);
+	}
+}
+
+void ofApp::displayList(unsigned int x, unsigned int y, string title, vector<string> elements, unsigned int selectedElement)
+{
+	ofDrawBitmapString(title, x, y);
+	for (int i = 0; i < elements.size(); i++)
+	{
+		if (i == selectedElement){
+			ofSetColor(255, 100, 100);
+		}
+		ofDrawBitmapString(elements[i], x, y + 20 + 15 * i);
+		if (i == selectedElement){
+			ofSetColor(255);
+		}
+	}
 }
 
 //--------------------------------------------------------------
@@ -267,136 +272,148 @@ void ofApp::exit() {
 	midiIn.removeListener(this);
 }
 
+void ofApp::stopPlayback()
+{
+	metronome.setEnabled(false);
+	midiOut << StartMidi() << 0xFC << FinishMidi();  // stop
+
+	for (int i = 0; i < players.size(); i++) {
+		players[i]->stop();
+		/*players[i]->unload();
+		players[i]->disconnect();*/
+	}
+	//players.clear();
+	mixer.setMasterVolume(0);
+
+	m_videoClipSource.closeVideo();
+}
+
+void ofApp::loadSong()
+{
+	for (int i = 0; i < players.size(); i++) {
+		players[i]->stop();
+		players[i]->unload();
+		players[i]->disconnect();
+	}
+	players.clear();
+
+	midiOut << StartMidi() << 0xFC << FinishMidi(); // stop playback
+
+	// load audio
+	ofDirectory dir;
+	dir.allowExt("wav");
+
+	float mixerMasterVolume = 0.5;  // TODO config
+
+	string songName = m_setlist[m_currentSongIndex];
+
+	dir.listDir("songs/" + songName + "/audio");
+
+	m_videoClipSource.loadVideo("songs/" + songName + "/clip/clip.mp4");
+
+	m_songEvents.clear();
+
+	ofxXmlSettings settings;
+	string filePath = "songs/" + songName + "/structure.xml";
+	if (settings.loadFile(filePath)) {
+		settings.pushTag("structure");
+		settings.pushTag("songparts");
+		int numberOfParts = settings.getNumTags("songpart");
+		for (int i = 0; i < numberOfParts; i++) {
+			settings.pushTag("songpart", i);
+			songEvent e;
+			e.bpm = settings.getValue("bpm", 0.0);
+			e.program = settings.getValue("program", 0);
+			e.tick = settings.getValue("tick", 0);
+			cout << e.bpm << " " << e.program << " " << e.tick << endl;
+			m_songEvents.push_back(e);
+			settings.popTag();
+		}
+	}
+	else {
+		ofLogError() << "Impossible de charger " + filePath;
+		return;
+	}
+
+	players.resize(dir.size());
+
+	for (int i = 0; i < dir.size(); i++) {
+		cout << dir.getPath(i) << endl;
+		players[i] = make_unique<ofxSoundPlayerObject>();
+		players[i]->setLoop(true);
+		players[i]->load(ofToDataPath(dir.getPath(i)));
+	}
+
+	// start playing
+	metronome.setNewSong(m_songEvents);
+	metronome.sendNextProgramChange();  // envoi du premier pch
+
+}
+
+void ofApp::startPlayback()
+{
+	// force midi device to go to the first pattern
+	ofSleepMillis(2);
+	midiOut << StartMidi() << 0xFA << FinishMidi();  // start
+	midiOut << StartMidi() << 0xF8 << FinishMidi();  // tick
+	midiOut << StartMidi() << 0xFC << FinishMidi();  // stop
+	ofSleepMillis(2);
+
+	metronome.setEnabled(true);
+
+	for (int i = 0; i < players.size(); i++) {
+		players[i]->connectTo(mixer);
+	}
+
+	// chain components
+	mixer.connectTo(metronome).connectTo(output);
+
+	for (int i = 0; i < players.size(); i++) {
+		players[i]->setVolume(1);
+		players[i]->play();
+	}
+
+	m_videoClipSource.playVideo();
+
+	mixer.setMasterVolume(1.0); // TODO config
+
+	midiOut << StartMidi() << 0xFA << FinishMidi(); // start playback
+}
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-	m_piMapper.keyPressed(key);
-
-	if (key == 'Q') {
-		OF_EXIT_APP(0);
-	}
-
-	if (key == 's') // stop
+	if (m_projectionWindowFocus)  // TODO fonction activation/desactivation
 	{
-		//std::vector<songEvent> songEvents;
-		//songEvent e0;
-		//e0.bpm = 120;
-		//e0.program = 95;
-		//e0.tick = 0;
-		//songEvents.push_back(e0);
-		//metronome.setNewSong(songEvents);
-		//metronome.sendNextProgramChange();  // envoi du premier pch
-
-		metronome.setEnabled(false);
-		midiOut << StartMidi() << 0xFC << FinishMidi();  // stop
-
-		for (int i = 0; i < players.size(); i++) {
-			players[i]->stop();
-			/*players[i]->unload();
-			players[i]->disconnect();*/
-		}
-		//players.clear();
-		mixer.setMasterVolume(0);
-
-		m_videoClipSource.closeVideo();
-
-		//midiOut << StartMidi() << 0xFC << FinishMidi();  // stop
-		//midiOut.sendProgramChange(10, 95);  // back to sync F16 program
-		//midiOut << StartMidi() << 0xFA << FinishMidi();  // start
-		//midiOut << StartMidi() << 0xF8 << FinishMidi();  // tick
-		//midiOut << StartMidi() << 0xFC << FinishMidi();  // stop
+		m_piMapper.keyPressed(key);
 	}
-
-	if (key == 'f' || key == 'p') {
-		for (int i = 0; i < players.size(); i++) {
-			players[i]->stop();
-			players[i]->unload();
-			players[i]->disconnect();
+	
+	switch (key) {
+	case 'Q':
+		OF_EXIT_APP(0);
+		break;
+	case 's':
+		stopPlayback();
+		break;
+	case OF_KEY_RIGHT:
+		startPlayback();
+		break;
+	case OF_KEY_LEFT:
+		stopPlayback();
+		break;
+	case OF_KEY_UP:
+		if (m_currentSongIndex > 0)
+		{
+			m_currentSongIndex -= 1;
+			loadSong();
 		}
-		players.clear();
-
-		midiOut << StartMidi() << 0xFC << FinishMidi(); // stop playback
-
-		// load audio
-		ofDirectory dir;
-		dir.allowExt("wav");
-
-		std::vector<songEvent> songEvents;
-		float mixerMasterVolume = 0.5;
-
-		string songName = "pakela";
-
-		if (key == 'f') {
-			songName = "fuministe";
-			mixerMasterVolume = 0.9;
+		break;
+	case OF_KEY_DOWN:
+		if (m_currentSongIndex < m_setlist.size() - 1)
+		{
+			m_currentSongIndex += 1;
+			loadSong();
 		}
-
-
-		dir.listDir("songs/" + songName + "/audio");
-
-		m_videoClipSource.loadVideo("songs/" + songName + "/clip/clip.mp4");
-
-		ofxXmlSettings settings;
-		string filePath = "songs/" + songName + "/structure.xml";
-		if (settings.loadFile(filePath)) {
-			settings.pushTag("structure");
-			settings.pushTag("songparts");
-			int numberOfParts = settings.getNumTags("songpart");
-			for (int i = 0; i < numberOfParts; i++) {
-				settings.pushTag("songpart", i);
-				songEvent e;
-				e.bpm = settings.getValue("bpm", 0.0);
-				e.program = settings.getValue("program", 0);
-				e.tick = settings.getValue("tick", 0);
-				cout << e.bpm << " " << e.program << " " << e.tick << endl;
-				songEvents.push_back(e);
-				settings.popTag();
-			}
-		}
-		else {
-			ofLogError() << "Impossible de charger " + filePath;
-			return;
-		}
-
-		players.resize(dir.size());
-
-		for (int i = 0; i < dir.size(); i++) {
-			cout << dir.getPath(i) << endl;
-			players[i] = make_unique<ofxSoundPlayerObject>();
-			players[i]->setLoop(true);
-			players[i]->load(ofToDataPath(dir.getPath(i)));
-		}
-
-		// start playing
-		metronome.setNewSong(songEvents);
-		metronome.sendNextProgramChange();  // envoi du premier pch
-
-		// force midi device to go to the first pattern
-		ofSleepMillis(2);
-		midiOut << StartMidi() << 0xFA << FinishMidi();  // start
-		midiOut << StartMidi() << 0xF8 << FinishMidi();  // tick
-		midiOut << StartMidi() << 0xFC << FinishMidi();  // stop
-		ofSleepMillis(2);
-
-		metronome.setEnabled(true);
-
-		for (int i = 0; i < players.size(); i++) {
-			players[i]->connectTo(mixer);
-		}
-
-		// chain components
-		mixer.connectTo(metronome).connectTo(output);
-
-		for (int i = 0; i < players.size(); i++) {
-			players[i]->setVolume(1);
-			players[i]->play();
-		}
-
-		m_videoClipSource.playVideo();
-
-		mixer.setMasterVolume(mixerMasterVolume);
-
-		midiOut << StartMidi() << 0xFA << FinishMidi(); // start playback
+		break;
 	}
 }
 

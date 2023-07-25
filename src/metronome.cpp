@@ -45,6 +45,15 @@ void Metronome::sendNextProgramChange() {
 	m_samplesPerTick = (44100 * 60.0f) / m_songEvents[m_currentSongPartIndex].bpm / m_ticksPerBeat;
 }
 
+bool Metronome::isSongEnded()
+{
+	if (!m_enabled)
+	{
+		return false;
+	}
+	return m_currentSongPartIndex == (m_songEvents.size() - 1);
+}
+
 void Metronome::process(ofSoundBuffer& input, ofSoundBuffer& output) {
 
 	output = input;

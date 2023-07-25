@@ -25,5 +25,11 @@
 			<program>33</program>
 			<tick>160</tick>
 		</songpart>
+		<songpart>
+			<desc>"End"</desc>
+			<bpm>150</bpm>
+			<program>94</program>
+			<tick>224</tick>
+		</songpart>
 	</songparts>
 </structure>
