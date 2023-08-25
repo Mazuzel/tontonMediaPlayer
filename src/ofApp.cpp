@@ -3,27 +3,26 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 
-	// ----------------------------------------
-	// midi out (program changes)
-	// print the available output ports to the console
-	//midiOut.listOutPorts();
+	// print devices list
 	m_midiOutDevices = midiOut.getOutPortList();
-	m_selectedMidiOutDevice.set("midi out", 0, 0, max(0, (int)m_midiOutDevices.size()-1));
-
-	ofLog() << "audio device list";
-	soundStream.printDeviceList();
-	ofLog() << "audio device list done";
 	m_audioDevices = soundStream.getDeviceList(ofSoundDevice::MS_WASAPI);
-	m_selectedAudioOutputDevice.set("audio out", 0, 0, max(0, (int)m_audioDevices.size() - 1));
 
-	m_settingsGui.setup();
-	m_settingsGui.add(m_selectedMidiOutDevice);
-	m_settingsGui.add(m_selectedAudioOutputDevice);
-	m_settingsGui.setPosition(600, 100);
+	// print devices selected by config
+	loadHwConfig();
+	ofLog() << "Midi out devices:";
+	for (int idx = 0; idx < m_midiOutDevices.size(); idx++)
+	{
+		if (idx == m_midiOutputIdx)
+		{
+			ofLog() << "*" << m_midiOutDevices[idx] << "(selected)";
+		}
+		else
+		{
+			ofLog() << m_midiOutDevices[idx];
+		}
+	}
 
-
-	//m_selectedMidiOutDevice.set("midi out", 0, m_midiOutDevices.size(), 1);
-
+	// wait for the user to press enter to confirm
 
 
 	// ----------------------------------------
@@ -36,8 +35,8 @@ void ofApp::setup(){
 	//midiIn.addListener(this);
 
 	// ----------------------------------------
-	//openMidiOut();
-	//openAudioOut();
+	openMidiOut();
+	openAudioOut();
 
 	// Enable or disable audio for video sources globally
 	ofx::piMapper::VideoSource::enableAudio = false;
@@ -72,48 +71,27 @@ void ofApp::setup(){
 	loadSong(); // chargement du premier morceau
 }
 
-void ofApp::setupButtonPressed(const void* sender) {
-	if (!m_isSetupPageOpened && !m_isPlaying)
-	{
-		m_isSetupPageOpened = true;
+void ofApp::loadHwConfig() {
+	ofxXmlSettings settings;
+	string filePath = "settings.xml";
+	if (settings.loadFile(filePath)) {
+		settings.pushTag("settings");
+		m_midiOutputIdx = settings.getValue("midi_out", 0);
+		m_audioOutputIdx = settings.getValue("audio_out", 0);
 	}
-	else if (m_isSetupPageOpened)
-	{
-		m_isSetupPageOpened = false;
+	else {
+		ofLogError() << "settings.xml not found, using default hw config";
 	}
 }
-
-void ofApp::validateSettingsButtonPressed(const void* sender)
-{
-	// ouvrir les ports audio et midi
-
-	m_isSetupPageOpened = false;
-}
-
-
-// TODO gérer cas où play en cours : auto play next ?
-
-
 
 
 void ofApp::exitButtonPressed(const void* sender) {
 	OF_EXIT_APP(0);
 }
 
-void ofApp::midiOutTogglePressed(const void* sender, bool& pressed) {
-	if (pressed)
-	{
-		openMidiOut();
-	}
-	m_isMidiOutOpened = pressed;
-}
-
-void ofApp::audioOutTogglePressed(const void* sender, bool& pressed) {
-
-}
-
 int ofApp::openMidiOut() {
-	m_isMidiOutOpened = true; // midiOut.openPort(1); // by number
+	m_isMidiOutOpened = true;
+	midiOut.openPort(m_midiOutputIdx); // by number
 	// set metronome controls
 	metronome.setMidiOut(midiOut);
 	return 0;
@@ -129,9 +107,9 @@ int ofApp::openAudioOut()
 	settings.bufferSize = 256;
 	settings.numBuffers = 1;
 
-	/*std::vector<ofSoundDevice> devices = soundStream.getMatchingDevices("Elektron Model:Cycles", UINT_MAX, 2, ofSoundDevice::Api::MS_WASAPI);
+	std::vector<ofSoundDevice> devices = soundStream.getMatchingDevices("Elektron Model:Cycles", UINT_MAX, 2, ofSoundDevice::Api::MS_WASAPI);
 	settings.setApi(ofSoundDevice::Api::MS_WASAPI);
-	settings.setOutDevice(devices[0]);*/
+	settings.setOutDevice(devices[0]);
 
 	m_isAudioOutOpened = soundStream.setup(settings);
 	if (m_isAudioOutOpened)
@@ -140,27 +118,6 @@ int ofApp::openAudioOut()
 	}
 	
 	return 0;
-}
-
-//--------------------------------------------------------------
-void ofApp::setupGui() {
-	ofLogNotice() << "Setup GUI" << endl;
-
-	ofSetBackgroundColor(0);
-
-
-	m_buttonSettings.setup("setup")->setPosition(10, 5);
-	m_buttonSettings.addListener(this, &ofApp::setupButtonPressed);
-
-	m_buttonExit.setup("exit");
-	m_buttonExit.setPosition(740, 5);
-	m_buttonValidateSettings.setTextColor(ofColor(200, 10, 10));
-	m_buttonExit.addListener(this, &ofApp::exitButtonPressed);
-
-	m_buttonValidateSettings.setup("validate");
-	m_buttonValidateSettings.setPosition(300, 10);
-	m_buttonValidateSettings.setTextColor(ofColor(10, 200, 10));
-	m_buttonValidateSettings.addListener(this, &ofApp::validateSettingsButtonPressed);
 }
 
 //--------------------------------------------------------------
@@ -185,41 +142,9 @@ void ofApp::draw(){
 void ofApp::drawGui(ofEventArgs& args) {
 	ofShowCursor();
 
-	m_buttonSettings.draw();
 	m_buttonExit.draw();
 
-
-	if (m_isSetupPageOpened)
-	{
-		drawSetupPage();
-	}
-	else
-	{
-		drawSequencerPage();
-	}
-}
-
-void ofApp::drawSetupPage()
-{
-	displayList(20, 60, "MIDI out", m_midiOutDevices, m_selectedMidiOutDevice.get());
-
-	ofDrawBitmapString(("audio out devices"), 20, 300);
-	for (int i = 0; i < m_audioDevices.size(); i++)
-	{
-		if (i == m_selectedAudioOutputDevice.get())
-		{
-			ofSetColor(255, 100, 100);
-		}
-		ofDrawBitmapString(to_string(i) + ": " + m_audioDevices[i].name, 20, 320 + 15 * i);
-		if (i == m_selectedAudioOutputDevice.get())
-		{
-			ofSetColor(255);
-		}
-	}
-
-	m_settingsGui.draw();
-
-	m_buttonValidateSettings.draw();
+	drawSequencerPage();
 }
 
 void ofApp::drawSequencerPage()
@@ -391,14 +316,12 @@ void ofApp::keyPressed(int key){
 	case 'Q':
 		OF_EXIT_APP(0);
 		break;
-	case 's':
-		stopPlayback();
-		break;
 	case OF_KEY_RIGHT:
 		startPlayback();
 		break;
 	case OF_KEY_LEFT:
 		stopPlayback();
+		loadSong();
 		break;
 	case OF_KEY_UP:
 		if (m_currentSongIndex > 0)

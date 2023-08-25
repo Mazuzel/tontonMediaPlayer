@@ -1,4 +1,6 @@
 <?xml version="1.0"?>
-<group>
-	<midi_out>0</midi_out>
-</group>
+<settings>
+	<midi_out>1</midi_out>
+	<audio_out>2</audio_out>
+	<startup_config_check>0</startup_config_check>
+</settings>

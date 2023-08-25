@@ -27,7 +27,6 @@ int main() {
 	guiWindow->setVerticalSync(false);
 
 	shared_ptr<ofApp> mainApp(new ofApp);
-	mainApp->setupGui();
 	ofAddListener(guiWindow->events().draw, mainApp.get(), &ofApp::drawGui);
 
 	ofRunApp(mainWindow, mainApp);
