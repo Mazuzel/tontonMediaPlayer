@@ -11,11 +11,12 @@ void VideoClipSource::setup() {
 
 	// Allocate our FBO source, decide how big it should be
 	allocate(800, 600);
-
+	m_isPlaying = false;
 }
 
 void VideoClipSource::closeVideo() {
 	m_videoPlayer.close();
+	m_isPlaying = false;
 }
 
 void VideoClipSource::update() {
@@ -29,8 +30,13 @@ void VideoClipSource::loadVideo(std::string videoPath) {
 	allocate(m_videoWidth, m_videoHeight);
 }
 
-void VideoClipSource::playVideo() {
+void VideoClipSource::playVideo(float initTime) {
+	float duration = m_videoPlayer.getDuration();
+	float pct = initTime / duration;
+	ofLogError() << "duration:" << duration << ", pct:" << pct;
 	m_videoPlayer.play();
+	m_videoPlayer.setPosition(pct);
+	m_isPlaying = true;
 }
 
 // No need to take care of fbo.begin() and fbo.end() here.
@@ -41,5 +47,8 @@ void VideoClipSource::draw() {
 	ofBackground(0);
 	ofSetColor(255);
 
-	m_videoPlayer.draw(0, 0);
+	if (m_isPlaying)
+	{
+		m_videoPlayer.draw(0, 0);
+	}
 }

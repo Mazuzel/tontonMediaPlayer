@@ -71,6 +71,8 @@ private:
 	int openMidiOut();
 	int openAudioOut();
 	void loadHwConfig();
+	void jumpToNextPart();
+	unsigned int m_startingSongPart = 1;
 
 	ofxMidiOut midiOut;
 	ofxMidiIn midiIn;

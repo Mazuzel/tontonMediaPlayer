@@ -29,6 +29,10 @@ public:
 
 	bool isSongEnded();
 
+	const unsigned int getTickCount() const;
+	const unsigned int getCurrentSongPartIdx() const;
+	void setCurrentSongPartIdx(unsigned int newSongPartIdx);
+
 private:
 
 	void tick();

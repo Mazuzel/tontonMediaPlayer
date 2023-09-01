@@ -2,6 +2,10 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+	ofSetLogLevel(OF_LOG_VERBOSE);
+	ofSetLogLevel("ofxPiMapper", OF_LOG_ERROR);
+
+	ofBackground(0);
 
 	// print devices list
 	m_midiOutDevices = midiOut.getOutPortList();
@@ -27,12 +31,13 @@ void ofApp::setup(){
 
 	// ----------------------------------------
 	// midi in (clock)
-	//midiIn.openPort(0);
-	//midiIn.ignoreTypes(false, // sysex  <-- don't ignore timecode messages!
-	//	false, // timing <-- don't ignore clock messages!
-	//	true); // sensing
+	midiIn.listInPorts();
+	midiIn.openPort(0);
+	midiIn.ignoreTypes(true, // sysex  <-- ignore timecode messages!
+		true, // timing <-- ignore clock messages!
+		true); // sensing
 	// add ofApp as a listener
-	//midiIn.addListener(this);
+	midiIn.addListener(this);
 
 	// ----------------------------------------
 	openMidiOut();
@@ -156,15 +161,20 @@ void ofApp::drawSequencerPage()
 	ofDrawBitmapString("Song", 20, 450);
 	ofSetColor(50);
 	ofDrawRectangle(15, 475, 770, 50);
+	int songTicks = m_songEvents[m_songEvents.size() - 1].tick;
 	for (int i = 0; i < m_songEvents.size()-1; i++)
 	{
-		int x = 20 + (int)m_songEvents[i].tick;
-		int w = (int)m_songEvents[i+1].tick - (int)m_songEvents[i].tick;
+		int x = 20 + 760 * (int)m_songEvents[i].tick / songTicks;
+		int w = 760 * ((int)m_songEvents[i+1].tick - (int)m_songEvents[i].tick) / songTicks;
+
+
 		int pc = (m_songEvents[i].program % 16) * 64;
 		ofSetColor((64 + pc) % 256, (32 + pc) % 256, (255 - pc) % 256);
 		ofDrawRectangle(x, 480, w, 40);
 		ofSetColor(255);
 	}
+
+	ofDrawRectangle(20 + 760 * metronome.getTickCount() / songTicks - 2, 480, 4, 40);
 }
 
 void ofApp::displayList(unsigned int x, unsigned int y, string title, vector<string> elements, unsigned int selectedElement)
@@ -298,11 +308,38 @@ void ofApp::startPlayback()
 		players[i]->play();
 	}
 
-	m_videoClipSource.playVideo();
+	unsigned int currentSongPartIdx = metronome.getCurrentSongPartIdx();
+	int msTime = 0.0;
+	for (int i = 1; i <= currentSongPartIdx; i++)
+	{
+		int ticks = m_songEvents[i].tick - m_songEvents[i - 1].tick;
+		msTime += ticks * 1000 / m_songEvents[currentSongPartIdx].bpm * 60;
+	}
+	for (int i = 0; i < players.size(); i++) {
+		players[i]->setPositionMS(msTime, 0);
+	}
+	metronome.sendNextProgramChange();
+
+	m_videoClipSource.playVideo(msTime / 1000.0);
 
 	mixer.setMasterVolume(1.0); // TODO config
 
 	midiOut << StartMidi() << 0xFA << FinishMidi(); // start playback
+}
+
+void ofApp::jumpToNextPart()
+{
+	// supposed to be run before playback
+	unsigned int currentSongPartIdx = metronome.getCurrentSongPartIdx();
+	if (currentSongPartIdx < m_songEvents.size() - 1)
+	{
+		metronome.setCurrentSongPartIdx(currentSongPartIdx + 1);
+	}
+	/*int msTime = m_songEvents[1].tick * 1000 / 60;
+	for (int i = 0; i < players.size(); i++) {
+		players[i]->setPositionMS(msTime, 0);
+	}
+	metronome.sendNextProgramChange();*/
 }
 
 //--------------------------------------------------------------
@@ -324,13 +361,18 @@ void ofApp::keyPressed(int key){
 		loadSong();
 		break;
 	case OF_KEY_UP:
+		stopPlayback();
 		if (m_currentSongIndex > 0)
 		{
 			m_currentSongIndex -= 1;
 			loadSong();
 		}
 		break;
+	case 'N':  // next song part
+		jumpToNextPart();
+		break;
 	case OF_KEY_DOWN:
+		stopPlayback();
 		if (m_currentSongIndex < m_setlist.size() - 1)
 		{
 			m_currentSongIndex += 1;

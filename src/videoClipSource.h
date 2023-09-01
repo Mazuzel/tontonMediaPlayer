@@ -11,12 +11,13 @@ public:
 
 	void closeVideo();
 	void loadVideo(std::string videoPath);
-	void playVideo();
+	void playVideo(float initTime);
 
 private:
 	int m_videoWidth;
 	int m_videoHeight;
 	ofVideoPlayer m_videoPlayer;
 	ofTexture m_videoTexture;
+	bool m_isPlaying;
 };
 
