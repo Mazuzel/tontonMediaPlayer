@@ -100,9 +100,10 @@
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;..\..\..\addons\ofxAudioFile\libs;..\..\..\addons\ofxAudioFile\src;..\..\..\addons\ofxGui\src;..\..\..\addons\ofxMidi\libs;..\..\..\addons\ofxMidi\libs\pgmidi;..\..\..\addons\ofxMidi\libs\rtmidi;..\..\..\addons\ofxMidi\src;..\..\..\addons\ofxMidi\src\desktop;..\..\..\addons\ofxMidi\src\ios;..\..\..\addons\ofxXmlSettings\libs;..\..\..\addons\ofxXmlSettings\src;..\..\..\addons\ofxPiMapper\src;..\..\..\addons\ofxPiMapper\src\Application;..\..\..\addons\ofxPiMapper\src\Application\Modes;..\..\..\addons\ofxPiMapper\src\Commands;..\..\..\addons\ofxPiMapper\src\Gui;..\..\..\addons\ofxPiMapper\src\Gui\Widgets;..\..\..\addons\ofxPiMapper\src\Info;..\..\..\addons\ofxPiMapper\src\MediaServer;..\..\..\addons\ofxPiMapper\src\Sources;..\..\..\addons\ofxPiMapper\src\Surfaces;..\..\..\addons\ofxPiMapper\src\Types;..\..\..\addons\ofxPiMapper\src\UserInterface;..\..\..\addons\ofxPiMapper\src\Utils;..\..\..\addons\ofxSoundObjects\src;..\..\..\addons\ofxSoundObjects\src\SoundObjects;..\..\..\addons\ofxSoundObjects\src\Renderers</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;src\Types;src\Utils;..\..\..\addons\ofxAudioFile\libs;..\..\..\addons\ofxAudioFile\src;..\..\..\addons\ofxGui\src;..\..\..\addons\ofxMidi\libs;..\..\..\addons\ofxMidi\libs\pgmidi;..\..\..\addons\ofxMidi\libs\rtmidi;..\..\..\addons\ofxMidi\src;..\..\..\addons\ofxMidi\src\desktop;..\..\..\addons\ofxMidi\src\ios;..\..\..\addons\ofxSoundObjects\src;..\..\..\addons\ofxSoundObjects\src\SoundObjects;..\..\..\addons\ofxSoundObjects\src\Renderers;..\..\..\addons\ofxXmlSettings\libs;..\..\..\addons\ofxXmlSettings\src</AdditionalIncludeDirectories>
       <CompileAs>CompileAsCpp</CompileAs>
       <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
+      <PreprocessorDefinitions>USING_OFX_SOUND_OBJECTS</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -120,10 +121,11 @@
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;..\..\..\addons\ofxAudioFile\libs;..\..\..\addons\ofxAudioFile\src;..\..\..\addons\ofxGui\src;..\..\..\addons\ofxMidi\libs;..\..\..\addons\ofxMidi\libs\pgmidi;..\..\..\addons\ofxMidi\libs\rtmidi;..\..\..\addons\ofxMidi\src;..\..\..\addons\ofxMidi\src\desktop;..\..\..\addons\ofxMidi\src\ios;..\..\..\addons\ofxXmlSettings\libs;..\..\..\addons\ofxXmlSettings\src;..\..\..\addons\ofxPiMapper\src;..\..\..\addons\ofxPiMapper\src\Application;..\..\..\addons\ofxPiMapper\src\Application\Modes;..\..\..\addons\ofxPiMapper\src\Commands;..\..\..\addons\ofxPiMapper\src\Gui;..\..\..\addons\ofxPiMapper\src\Gui\Widgets;..\..\..\addons\ofxPiMapper\src\Info;..\..\..\addons\ofxPiMapper\src\MediaServer;..\..\..\addons\ofxPiMapper\src\Sources;..\..\..\addons\ofxPiMapper\src\Surfaces;..\..\..\addons\ofxPiMapper\src\Types;..\..\..\addons\ofxPiMapper\src\UserInterface;..\..\..\addons\ofxPiMapper\src\Utils;..\..\..\addons\ofxSoundObjects\src;..\..\..\addons\ofxSoundObjects\src\SoundObjects;..\..\..\addons\ofxSoundObjects\src\Renderers</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;src\Types;src\Utils;..\..\..\addons\ofxAudioFile\libs;..\..\..\addons\ofxAudioFile\src;..\..\..\addons\ofxGui\src;..\..\..\addons\ofxMidi\libs;..\..\..\addons\ofxMidi\libs\pgmidi;..\..\..\addons\ofxMidi\libs\rtmidi;..\..\..\addons\ofxMidi\src;..\..\..\addons\ofxMidi\src\desktop;..\..\..\addons\ofxMidi\src\ios;..\..\..\addons\ofxSoundObjects\src;..\..\..\addons\ofxSoundObjects\src\SoundObjects;..\..\..\addons\ofxSoundObjects\src\Renderers;..\..\..\addons\ofxXmlSettings\libs;..\..\..\addons\ofxXmlSettings\src</AdditionalIncludeDirectories>
       <CompileAs>CompileAsCpp</CompileAs>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
+      <PreprocessorDefinitions>USING_OFX_SOUND_OBJECTS</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -140,10 +142,11 @@
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;..\..\..\addons\ofxAudioFile\libs;..\..\..\addons\ofxAudioFile\src;..\..\..\addons\ofxGui\src;..\..\..\addons\ofxMidi\libs;..\..\..\addons\ofxMidi\libs\pgmidi;..\..\..\addons\ofxMidi\libs\rtmidi;..\..\..\addons\ofxMidi\src;..\..\..\addons\ofxMidi\src\desktop;..\..\..\addons\ofxMidi\src\ios;..\..\..\addons\ofxXmlSettings\libs;..\..\..\addons\ofxXmlSettings\src;..\..\..\addons\ofxPiMapper\src;..\..\..\addons\ofxPiMapper\src\Application;..\..\..\addons\ofxPiMapper\src\Application\Modes;..\..\..\addons\ofxPiMapper\src\Commands;..\..\..\addons\ofxPiMapper\src\Gui;..\..\..\addons\ofxPiMapper\src\Gui\Widgets;..\..\..\addons\ofxPiMapper\src\Info;..\..\..\addons\ofxPiMapper\src\MediaServer;..\..\..\addons\ofxPiMapper\src\Sources;..\..\..\addons\ofxPiMapper\src\Surfaces;..\..\..\addons\ofxPiMapper\src\Types;..\..\..\addons\ofxPiMapper\src\UserInterface;..\..\..\addons\ofxPiMapper\src\Utils;..\..\..\addons\ofxSoundObjects\src;..\..\..\addons\ofxSoundObjects\src\SoundObjects;..\..\..\addons\ofxSoundObjects\src\Renderers</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;src\Types;src\Utils;..\..\..\addons\ofxAudioFile\libs;..\..\..\addons\ofxAudioFile\src;..\..\..\addons\ofxGui\src;..\..\..\addons\ofxMidi\libs;..\..\..\addons\ofxMidi\libs\pgmidi;..\..\..\addons\ofxMidi\libs\rtmidi;..\..\..\addons\ofxMidi\src;..\..\..\addons\ofxMidi\src\desktop;..\..\..\addons\ofxMidi\src\ios;..\..\..\addons\ofxSoundObjects\src;..\..\..\addons\ofxSoundObjects\src\SoundObjects;..\..\..\addons\ofxSoundObjects\src\Renderers;..\..\..\addons\ofxXmlSettings\libs;..\..\..\addons\ofxXmlSettings\src</AdditionalIncludeDirectories>
       <CompileAs>CompileAsCpp</CompileAs>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
+      <PreprocessorDefinitions>USING_OFX_SOUND_OBJECTS</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
@@ -163,9 +166,10 @@
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;..\..\..\addons\ofxAudioFile\libs;..\..\..\addons\ofxAudioFile\src;..\..\..\addons\ofxGui\src;..\..\..\addons\ofxMidi\libs;..\..\..\addons\ofxMidi\libs\pgmidi;..\..\..\addons\ofxMidi\libs\rtmidi;..\..\..\addons\ofxMidi\src;..\..\..\addons\ofxMidi\src\desktop;..\..\..\addons\ofxMidi\src\ios;..\..\..\addons\ofxXmlSettings\libs;..\..\..\addons\ofxXmlSettings\src;..\..\..\addons\ofxPiMapper\src;..\..\..\addons\ofxPiMapper\src\Application;..\..\..\addons\ofxPiMapper\src\Application\Modes;..\..\..\addons\ofxPiMapper\src\Commands;..\..\..\addons\ofxPiMapper\src\Gui;..\..\..\addons\ofxPiMapper\src\Gui\Widgets;..\..\..\addons\ofxPiMapper\src\Info;..\..\..\addons\ofxPiMapper\src\MediaServer;..\..\..\addons\ofxPiMapper\src\Sources;..\..\..\addons\ofxPiMapper\src\Surfaces;..\..\..\addons\ofxPiMapper\src\Types;..\..\..\addons\ofxPiMapper\src\UserInterface;..\..\..\addons\ofxPiMapper\src\Utils;..\..\..\addons\ofxSoundObjects\src;..\..\..\addons\ofxSoundObjects\src\SoundObjects;..\..\..\addons\ofxSoundObjects\src\Renderers</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;src\Types;src\Utils;..\..\..\addons\ofxAudioFile\libs;..\..\..\addons\ofxAudioFile\src;..\..\..\addons\ofxGui\src;..\..\..\addons\ofxMidi\libs;..\..\..\addons\ofxMidi\libs\pgmidi;..\..\..\addons\ofxMidi\libs\rtmidi;..\..\..\addons\ofxMidi\src;..\..\..\addons\ofxMidi\src\desktop;..\..\..\addons\ofxMidi\src\ios;..\..\..\addons\ofxSoundObjects\src;..\..\..\addons\ofxSoundObjects\src\SoundObjects;..\..\..\addons\ofxSoundObjects\src\Renderers;..\..\..\addons\ofxXmlSettings\libs;..\..\..\addons\ofxXmlSettings\src</AdditionalIncludeDirectories>
       <CompileAs>CompileAsCpp</CompileAs>
       <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
+      <PreprocessorDefinitions>USING_OFX_SOUND_OBJECTS</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
@@ -183,6 +187,10 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\ofApp.cpp" />
     <ClCompile Include="src\metronome.cpp" />
+    <ClCompile Include="src\QuadSurface.cpp" />
+    <ClCompile Include="src\Types\Vec2.cpp" />
+    <ClCompile Include="src\Types\Vec3.cpp" />
+    <ClCompile Include="src\Utils\HomographyHelper.cpp" />
     <ClCompile Include="src\videoClipSource.cpp" />
     <ClCompile Include="..\..\..\addons\ofxAudioFile\src\ofxAudioFile.cpp" />
     <ClCompile Include="..\..\..\addons\ofxGui\src\ofxBaseGui.cpp" />
@@ -205,88 +213,6 @@
     <ClCompile Include="..\..\..\addons\ofxMidi\src\ofxMidiOut.cpp" />
     <ClCompile Include="..\..\..\addons\ofxMidi\src\ofxMidiTimecode.cpp" />
     <ClCompile Include="..\..\..\addons\ofxMidi\libs\rtmidi\RtMidi.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxXmlSettings\src\ofxXmlSettings.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxXmlSettings\libs\tinyxml.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxXmlSettings\libs\tinyxmlerror.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxXmlSettings\libs\tinyxmlparser.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Application\Application.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Application\Modes\ApplicationBaseMode.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Application\Modes\PresentationMode.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Application\Modes\ProjectionMappingMode.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Application\Modes\SourceSelectionMode.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Application\Modes\TextureMappingMode.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Application\SettingsLoader.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\AddGridColCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\AddGridRowCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\AddSurfaceCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\ClearSurfacesCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\CmdManager.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\DeselectSurfaceCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\DeselectTexCoordCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\DuplicateSurfaceCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\FullscreenSurfaceCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\MvAllTexCoordsCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\MvLayerDnCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\MvLayerUpCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\MvSelectionCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\MvSurfaceVertCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\MvTexCoordCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\RmGridColCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\RmGridRowCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\RmSurfaceCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\SaveTexCoordPosCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\ScaleSurfaceFromToCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\SelNextSurfaceCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\SelNextTexCoordCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\SelNextVertexCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\SelPrevSurfaceCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\SelPrevTexCoordCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\SelPrevVertexCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\SelSurfaceCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\SelTexCoordCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\SelVertexCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\SetApplicationModeCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\SetNextSourceCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\SetPresetCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\SetSourceCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\SetTexMapDrawModeCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\SetVideoSourceCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\StartDragSurfaceCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\ToggleAnimatedSourceCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\TogglePerspectiveCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Commands\TranslateCanvasCmd.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Gui\Gui.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Gui\Widgets\LayerPanelWidget.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Gui\Widgets\ProjectionEditorWidget.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Gui\Widgets\ScaleWidget.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Gui\Widgets\SourcesEditorWidget.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Gui\Widgets\SurfaceHighlightWidget.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Gui\Widgets\TextureEditorWidget.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Gui\Widgets\TextureHighlightWidget.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Info\Info.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\MediaServer\DirectoryWatcher.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\MediaServer\MediaServer.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\ofxPiMapper.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Sources\BaseSource.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Sources\FboSource.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Sources\ImageSource.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Sources\OMXPlayerCache.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Sources\VideoSource.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Surfaces\BaseSurface.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Surfaces\CircleSurface.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Surfaces\GridWarpSurface.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Surfaces\HexagonSurface.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Surfaces\QuadSurface.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Surfaces\SurfaceFactory.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Surfaces\SurfaceManager.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Surfaces\SurfaceStack.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Surfaces\TriangleSurface.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Types\Vec2.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Types\Vec3.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\UserInterface\BaseJoint.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\UserInterface\CircleJoint.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\UserInterface\RadioList.cpp" />
-    <ClCompile Include="..\..\..\addons\ofxPiMapper\src\Utils\HomographyHelper.cpp" />
     <ClCompile Include="..\..\..\addons\ofxSoundObjects\src\ofxMultiSoundPlayer.cpp" />
     <ClCompile Include="..\..\..\addons\ofxSoundObjects\src\ofxSingleSoundPlayer.cpp" />
     <ClCompile Include="..\..\..\addons\ofxSoundObjects\src\ofxSoundFile.cpp" />
@@ -302,10 +228,18 @@
     <ClCompile Include="..\..\..\addons\ofxSoundObjects\src\Renderers\ofxSoundObjectMatrixMixerRenderer.cpp" />
     <ClCompile Include="..\..\..\addons\ofxSoundObjects\src\SoundObjects\VUMeter.cpp" />
     <ClCompile Include="..\..\..\addons\ofxSoundObjects\src\SoundObjects\waveformDraw.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxXmlSettings\src\ofxXmlSettings.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxXmlSettings\libs\tinyxml.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxXmlSettings\libs\tinyxmlerror.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxXmlSettings\libs\tinyxmlparser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ofApp.h" />
     <ClInclude Include="src\metronome.h" />
+    <ClInclude Include="src\QuadSurface.h" />
+    <ClInclude Include="src\Types\Vec2.h" />
+    <ClInclude Include="src\Types\Vec3.h" />
+    <ClInclude Include="src\Utils\HomographyHelper.h" />
     <ClInclude Include="src\videoClipSource.h" />
     <ClInclude Include="..\..\..\addons\ofxAudioFile\src\ofxAudioFile.h" />
     <ClInclude Include="..\..\..\addons\ofxAudioFile\libs\dr_flac.h" />
@@ -336,94 +270,6 @@
     <ClInclude Include="..\..\..\addons\ofxMidi\src\ofxMidiTimecode.h" />
     <ClInclude Include="..\..\..\addons\ofxMidi\src\ofxMidiTypes.h" />
     <ClInclude Include="..\..\..\addons\ofxMidi\libs\rtmidi\RtMidi.h" />
-    <ClInclude Include="..\..\..\addons\ofxXmlSettings\src\ofxXmlSettings.h" />
-    <ClInclude Include="..\..\..\addons\ofxXmlSettings\libs\tinyxml.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Application\Application.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Application\Modes\ApplicationBaseMode.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Application\Modes\PresentationMode.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Application\Modes\ProjectionMappingMode.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Application\Modes\SourceSelectionMode.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Application\Modes\TextureMappingMode.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Application\SettingsLoader.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\AddGridColCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\AddGridRowCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\AddSurfaceCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\BaseCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\ClearSurfacesCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\CmdManager.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\DeselectSurfaceCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\DeselectTexCoordCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\DuplicateSurfaceCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\FullscreenSurfaceCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\MvAllTexCoordsCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\MvLayerDnCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\MvLayerUpCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\MvSelectionCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\MvSurfaceVertCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\MvTexCoordCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\RmGridColCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\RmGridRowCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\RmSurfaceCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\SaveTexCoordPosCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\ScaleSurfaceFromToCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\SelNextSurfaceCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\SelNextTexCoordCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\SelNextVertexCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\SelPrevSurfaceCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\SelPrevTexCoordCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\SelPrevVertexCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\SelSurfaceCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\SelTexCoordCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\SelVertexCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\SetApplicationModeCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\SetNextSourceCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\SetPresetCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\SetSourceCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\SetTexMapDrawModeCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\SetVideoSourceCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\StartDragSurfaceCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\ToggleAnimatedSourceCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\TogglePerspectiveCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Commands\TranslateCanvasCmd.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Gui\Gui.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Gui\Widgets\GuiBaseWidget.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Gui\Widgets\LayerPanelWidget.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Gui\Widgets\ProjectionEditorWidget.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Gui\Widgets\ScaleWidget.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Gui\Widgets\SourcesEditorWidget.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Gui\Widgets\SurfaceHighlightWidget.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Gui\Widgets\TextureEditorWidget.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Gui\Widgets\TextureHighlightWidget.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Info\Info.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\MediaServer\DirectoryWatcher.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\MediaServer\MediaServer.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Mode.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\ofxPiMapper.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Sources\BaseSource.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Sources\FboSource.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Sources\ImageSource.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Sources\OMXPlayerCache.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Sources\SourceType.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Sources\SourceTypeHelper.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Sources\VideoSource.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Surfaces\BaseSurface.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Surfaces\CircleSurface.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Surfaces\GridWarpSurface.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Surfaces\HexagonSurface.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Surfaces\QuadSurface.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Surfaces\SurfaceFactory.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Surfaces\SurfaceManager.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Surfaces\SurfaceStack.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Surfaces\SurfaceType.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Surfaces\TriangleSurface.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Types\Vec2.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Types\Vec3.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\UserInterface\BaseJoint.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\UserInterface\CircleJoint.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\UserInterface\EditorType.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\UserInterface\GuiMode.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\UserInterface\RadioList.h" />
-    <ClInclude Include="..\..\..\addons\ofxPiMapper\src\Utils\HomographyHelper.h" />
     <ClInclude Include="..\..\..\addons\ofxSoundObjects\src\ofxMultiSoundPlayer.h" />
     <ClInclude Include="..\..\..\addons\ofxSoundObjects\src\ofxSingleSoundPlayer.h" />
     <ClInclude Include="..\..\..\addons\ofxSoundObjects\src\ofxSoundFile.h" />
@@ -447,6 +293,8 @@
     <ClInclude Include="..\..\..\addons\ofxSoundObjects\src\SoundObjects\SineWaveGenerator.h" />
     <ClInclude Include="..\..\..\addons\ofxSoundObjects\src\SoundObjects\VUMeter.h" />
     <ClInclude Include="..\..\..\addons\ofxSoundObjects\src\SoundObjects\waveformDraw.h" />
+    <ClInclude Include="..\..\..\addons\ofxXmlSettings\src\ofxXmlSettings.h" />
+    <ClInclude Include="..\..\..\addons\ofxXmlSettings\libs\tinyxml.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(OF_ROOT)\libs\openFrameworksCompiled\project\vs\openframeworksLib.vcxproj">

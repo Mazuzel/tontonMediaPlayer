@@ -7,28 +7,28 @@ int main() {
 
 	ofGLFWWindowSettings settings;
 
-	// main window (projection)
+	// main window (daw)
 	settings.setSize(800, 600);
 	settings.setPosition(glm::vec2(300, 30));
-	settings.resizable = true;
+	settings.resizable = false;
 	settings.windowMode = OF_WINDOW; // OF_FULLSCREEN
 	settings.monitor = 1;
-	shared_ptr<ofAppBaseWindow> mainWindow = ofCreateWindow(settings);
+	shared_ptr<ofAppBaseWindow> dawWindow = ofCreateWindow(settings);
 
-	// settings window (gui)
+	// secondary window (mapping)
 	settings.setSize(800, 600);
 	settings.setPosition(glm::vec2(0, 30));
-	settings.resizable = false;
+	settings.resizable = true;
 	settings.windowMode = OF_WINDOW;
 	settings.monitor = 0;
 	// uncomment next line to share main's OpenGL resources with gui
-	settings.shareContextWith = mainWindow;
-	shared_ptr<ofAppBaseWindow> guiWindow = ofCreateWindow(settings);
-	guiWindow->setVerticalSync(false);
+	settings.shareContextWith = dawWindow;
+	shared_ptr<ofAppBaseWindow> mappingWindow = ofCreateWindow(settings);
+	mappingWindow->setVerticalSync(false);
 
 	shared_ptr<ofApp> mainApp(new ofApp);
-	ofAddListener(guiWindow->events().draw, mainApp.get(), &ofApp::drawGui);
+	ofAddListener(mappingWindow->events().draw, mainApp.get(), &ofApp::drawMapping);
 
-	ofRunApp(mainWindow, mainApp);
+	ofRunApp(dawWindow, mainApp);
 	ofRunMainLoop();
 }

@@ -3,7 +3,6 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 	ofSetLogLevel(OF_LOG_VERBOSE);
-	ofSetLogLevel("ofxPiMapper", OF_LOG_ERROR);
 
 	ofBackground(0);
 
@@ -44,10 +43,9 @@ void ofApp::setup(){
 	openAudioOut();
 
 	// Enable or disable audio for video sources globally
-	ofx::piMapper::VideoSource::enableAudio = false;
-	m_piMapper.registerFboSource(m_videoClipSource);
 
-	m_piMapper.setup();
+	m_fboSource.allocate(1920, 1080, GL_RGBA);
+	m_fboMapping.allocate(1920, 1080, GL_RGBA);
 
 	// chargement setlist
 	ofDirectory dir;
@@ -74,6 +72,11 @@ void ofApp::setup(){
 	}
 
 	loadSong(); // chargement du premier morceau
+
+	m_corner.x = 30;
+	m_corner.y = 30;
+
+	m_quadSurfaces.push_back(QuadSurface());
 }
 
 void ofApp::loadHwConfig() {
@@ -135,21 +138,71 @@ void ofApp::update(){
 	// update the sound playing system:
 	ofSoundUpdate();
 
-	m_piMapper.update();
+	m_videoClipSource.update();
+
+	m_fboSource.begin();
+	ofClear(0, 0, 0, 255);
+	ofSetColor(255);
+	m_videoClipSource.draw(m_fboSource.getWidth(), m_fboSource.getHeight());
+	m_fboSource.end();
+
+	m_fboMapping.begin();
+	ofClear(0, 0, 0, 255);
+	ofSetColor(255);
+	for (int i = 0; i < m_quadSurfaces.size(); i++)
+	{
+		m_quadSurfaces[i].draw(m_fboSource.getTexture());
+	}
+
+	if (m_setupMappingMode)
+	{
+		drawMappingSetup();
+	}
+	m_fboMapping.end();
 }
 
 //--------------------------------------------------------------
-void ofApp::draw(){
-	m_piMapper.draw();
+void ofApp::drawMapping(ofEventArgs& args){
+	m_fboMapping.draw(0, 0, ofGetWidth(), ofGetHeight());
+}
+
+void ofApp::drawMappingSetup()
+{
+	for (int i = 0; i < m_quadSurfaces.size(); i++)
+	{
+		vector<Vec3> vertices = m_quadSurfaces[i].getVertices();
+		for (int j = 0; j < 4; j++)
+		{
+			ofSetColor(255, 50, 150);
+			if (i == m_quadMovedIdx && j == m_quadMovedVertexIdx)
+			{
+				ofSetColor(10, 250, 50);
+			}
+			ofDrawRectangle(
+				vertices[j].x - QUAD_CORNER_HWIDTH,
+				vertices[j].y - QUAD_CORNER_HWIDTH,
+				2 * QUAD_CORNER_HWIDTH,
+				2 * QUAD_CORNER_HWIDTH);
+		}
+	}
+
+	ofSetColor(255);
 }
 
 //--------------------------------------------------------------
-void ofApp::drawGui(ofEventArgs& args) {
+void ofApp::draw() {
 	ofShowCursor();
 
 	m_buttonExit.draw();
 
-	drawSequencerPage();
+	if (m_setupMappingMode)
+	{
+		m_fboMapping.draw(0, 0, ofGetWidth(), ofGetHeight());
+	}
+	else
+	{
+		drawSequencerPage();
+	}
 }
 
 void ofApp::drawSequencerPage()
@@ -303,11 +356,6 @@ void ofApp::startPlayback()
 	// chain components
 	mixer.connectTo(metronome).connectTo(output);
 
-	for (int i = 0; i < players.size(); i++) {
-		players[i]->setVolume(1);
-		players[i]->play();
-	}
-
 	unsigned int currentSongPartIdx = metronome.getCurrentSongPartIdx();
 	int msTime = 0.0;
 	for (int i = 1; i <= currentSongPartIdx; i++)
@@ -315,9 +363,13 @@ void ofApp::startPlayback()
 		int ticks = m_songEvents[i].tick - m_songEvents[i - 1].tick;
 		msTime += ticks * 1000 / m_songEvents[currentSongPartIdx].bpm * 60;
 	}
+
 	for (int i = 0; i < players.size(); i++) {
+		players[i]->setVolume(1);
+		players[i]->play();
 		players[i]->setPositionMS(msTime, 0);
 	}
+
 	metronome.sendNextProgramChange();
 
 	m_videoClipSource.playVideo(msTime / 1000.0);
@@ -344,11 +396,6 @@ void ofApp::jumpToNextPart()
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-	if (m_projectionWindowFocus)  // TODO fonction activation/desactivation
-	{
-		m_piMapper.keyPressed(key);
-	}
-	
 	switch (key) {
 	case 'Q':
 		OF_EXIT_APP(0);
@@ -379,6 +426,9 @@ void ofApp::keyPressed(int key){
 			loadSong();
 		}
 		break;
+	case 'm':
+		m_setupMappingMode = !m_setupMappingMode;
+		break;
 	}
 }
 
@@ -389,7 +439,7 @@ void ofApp::newMidiMessage(ofxMidiMessage& message) {
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
-	m_piMapper.keyReleased(key);
+
 }
 
 //--------------------------------------------------------------
@@ -399,17 +449,43 @@ void ofApp::mouseMoved(int x, int y ){
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-	m_piMapper.mouseDragged(x, y, button);
+
+	if (m_setupMappingMode && m_quadMovedIdx >= 0 && m_quadMovedVertexIdx >= 0)
+	{
+		int xCoordInMappingFbo = x * m_fboMapping.getWidth() / ofGetWidth();
+		int yCoordInMappingFbo = y * m_fboMapping.getHeight() / ofGetHeight();
+		vector<Vec3> vertices = m_quadSurfaces[m_quadMovedIdx].getVertices();
+		vertices[m_quadMovedVertexIdx].x = xCoordInMappingFbo;
+		vertices[m_quadMovedVertexIdx].y = yCoordInMappingFbo;
+		m_quadSurfaces[m_quadMovedIdx].setVertices(vertices);
+	}
 }
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-	m_piMapper.mousePressed(x, y, button);
+	if (m_setupMappingMode)
+	{
+		for (int i = 0; i < m_quadSurfaces.size(); i++)
+		{
+			vector<Vec3> vertices = m_quadSurfaces[i].getVertices();
+			for (int j = 0; j < 4; j++)
+			{
+				int xInScreen = vertices[j].x * ofGetWidth() / m_fboMapping.getWidth();
+				int yInScreen = vertices[j].y * ofGetHeight() / m_fboMapping.getHeight();
+				if (abs(x - xInScreen) < QUAD_CORNER_HWIDTH && abs(y - yInScreen) < QUAD_CORNER_HWIDTH)
+				{
+					m_quadMovedIdx = i;
+					m_quadMovedVertexIdx = j;
+				}
+			}
+		}
+	}
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-	m_piMapper.mouseReleased(x, y, button);
+	m_quadMovedIdx = -1;
+	m_quadMovedVertexIdx = -1;
 }
 
 //--------------------------------------------------------------

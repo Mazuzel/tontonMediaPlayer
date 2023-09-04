@@ -42,7 +42,7 @@ void Metronome::setNewSong(std::vector<songEvent> songEvents)
 
 	for (int i = 0; i < m_songEvents.size(); i++) {
 		m_songEvents[i].tick *= m_ticksPerBeat;  // on adapte la valeur au nombre de coups réels transmis par pulsation
-		//m_songEvents[i].tick -= 12;  // heuristique // TODO la mettre dans la fonction d'update, pas ici !
+		m_songEvents[i].tick -= 12;  // heuristique // TODO la mettre dans la fonction d'update, pas ici !
 	}
 }
 

@@ -9,12 +9,16 @@
 #include "ofxSoundPlayerObject.h"
 
 #include "ofxGui.h"
+#include "ofxXmlSettings.h"
 
 #include "metronome.h"
 
-#include "ofxPiMapper.h"
-
 #include "videoClipSource.h"
+#include "QuadSurface.h"
+#include "Vec2.h"
+#include "Vec3.h"
+
+#define QUAD_CORNER_HWIDTH 8
 
 class ofApp : public ofBaseApp, public ofxMidiListener {
 
@@ -22,7 +26,7 @@ public:
 	void setup();
 	void update();
 	void draw();
-	void drawGui(ofEventArgs& args);
+	void drawMapping(ofEventArgs& args);
 	void exit();
 
 	void keyPressed(int key);
@@ -73,6 +77,7 @@ private:
 	void loadHwConfig();
 	void jumpToNextPart();
 	unsigned int m_startingSongPart = 1;
+	void drawMappingSetup();
 
 	ofxMidiOut midiOut;
 	ofxMidiIn midiIn;
@@ -89,9 +94,6 @@ private:
 	unsigned int m_midiOutputIdx = 0;
 	unsigned int m_audioOutputIdx = 0;
 	
-	
-	ofxPiMapper m_piMapper;
-
 	VideoClipSource m_videoClipSource;
 
 	std::vector<std::string> m_setlist;
@@ -102,6 +104,16 @@ private:
 	bool m_isMidiOutOpened = false;
 	bool m_isAudioOutOpened = false;
 
+	ofPoint m_corner;
+	bool m_polygonDragged = false;
+
+	std::vector<QuadSurface> m_quadSurfaces;
+	bool m_setupMappingMode = false;
+	int m_quadMovedIdx = -1;
+	int m_quadMovedVertexIdx = -1;
+
+	ofFbo m_fboSource;
+	ofFbo m_fboMapping;
 
 	// state
 	bool m_isPlaying = false;

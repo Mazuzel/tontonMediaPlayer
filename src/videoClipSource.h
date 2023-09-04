@@ -1,17 +1,18 @@
 #pragma once
 
 #include "ofMain.h"
-#include "FboSource.h"
 
-class VideoClipSource : public ofx::piMapper::FboSource {
+class VideoClipSource {
 public:
 	void setup();
 	void update();
-	void draw();
+	void draw(int targetWidth, int targetHeight);
 
 	void closeVideo();
 	void loadVideo(std::string videoPath);
 	void playVideo(float initTime);
+	ofTexture& getTexture();
+
 
 private:
 	int m_videoWidth;

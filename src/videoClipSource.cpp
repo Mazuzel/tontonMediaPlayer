@@ -1,16 +1,12 @@
 #include "videoClipSource.h"
 
 void VideoClipSource::setup() {
-	// Give our source a decent name
-	name = "Video Clip Source";
-
 	m_videoPlayer.setVolume(0);
 
 	m_videoWidth = 800;
 	m_videoHeight = 600;
 
 	// Allocate our FBO source, decide how big it should be
-	allocate(800, 600);
 	m_isPlaying = false;
 }
 
@@ -27,7 +23,6 @@ void VideoClipSource::loadVideo(std::string videoPath) {
 	m_videoPlayer.load(videoPath);
 	m_videoWidth = m_videoPlayer.getWidth();
 	m_videoHeight = m_videoPlayer.getHeight();
-	allocate(m_videoWidth, m_videoHeight);
 }
 
 void VideoClipSource::playVideo(float initTime) {
@@ -41,7 +36,7 @@ void VideoClipSource::playVideo(float initTime) {
 
 // No need to take care of fbo.begin() and fbo.end() here.
 // All within draw() is being rendered into fbo;
-void VideoClipSource::draw() {
+void VideoClipSource::draw(int targetWidth, int targetHeight) {
 	// Fill FBO with our rects
 	ofClear(0);
 	ofBackground(0);
@@ -49,6 +44,11 @@ void VideoClipSource::draw() {
 
 	if (m_isPlaying)
 	{
-		m_videoPlayer.draw(0, 0);
+		m_videoPlayer.draw(0, 0, targetWidth, targetHeight);
 	}
+}
+
+ofTexture& VideoClipSource::getTexture()
+{
+	return m_videoPlayer.getTextureReference();
 }
