@@ -7,6 +7,7 @@
 struct songEvent {
 	long tick; // duration of the part, in terms of tick count
 	int program;
+	string programName;
 	float bpm;
 };
 

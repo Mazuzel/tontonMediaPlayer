@@ -11,7 +11,7 @@ int main() {
 	settings.setSize(800, 600);
 	settings.setPosition(glm::vec2(300, 30));
 	settings.resizable = false;
-	settings.windowMode = OF_WINDOW; // OF_FULLSCREEN
+	settings.windowMode = OF_WINDOW;
 	settings.monitor = 1;
 	shared_ptr<ofAppBaseWindow> dawWindow = ofCreateWindow(settings);
 
@@ -28,6 +28,7 @@ int main() {
 
 	shared_ptr<ofApp> mainApp(new ofApp);
 	ofAddListener(mappingWindow->events().draw, mainApp.get(), &ofApp::drawMapping);
+	mainApp->mappingWindow = mappingWindow;
 
 	ofRunApp(dawWindow, mainApp);
 	ofRunMainLoop();

@@ -19,6 +19,7 @@
 #include "Vec3.h"
 
 #define QUAD_CORNER_HWIDTH 8
+#define TEXT_LIST_SPACING 15
 
 class ofApp : public ofBaseApp, public ofxMidiListener {
 
@@ -71,6 +72,8 @@ public:
 	bool m_projectionWindowFocus = false;
 	std::vector<songEvent> m_songEvents;
 
+	shared_ptr<ofAppBaseWindow> mappingWindow;
+
 private:
 	int openMidiOut();
 	int openAudioOut();
@@ -78,6 +81,10 @@ private:
 	void jumpToNextPart();
 	unsigned int m_startingSongPart = 1;
 	void drawMappingSetup();
+	void drawSequencerBackground();
+	void drawHelp();
+	void volumeUp();
+	void volumeDown();
 
 	ofxMidiOut midiOut;
 	ofxMidiIn midiIn;
@@ -88,6 +95,7 @@ private:
 
 	ofxSoundMixer mixer;
 	vector<unique_ptr<ofxSoundPlayerObject>> players;
+	vector<string> playersNames;
 
 	Metronome metronome;
 
@@ -104,9 +112,6 @@ private:
 	bool m_isMidiOutOpened = false;
 	bool m_isAudioOutOpened = false;
 
-	ofPoint m_corner;
-	bool m_polygonDragged = false;
-
 	std::vector<QuadSurface> m_quadSurfaces;
 	bool m_setupMappingMode = false;
 	int m_quadMovedIdx = -1;
@@ -117,5 +122,7 @@ private:
 
 	// state
 	bool m_isPlaying = false;
+
+	unsigned int m_selectedVolumeSetting = 0;
 	
 };

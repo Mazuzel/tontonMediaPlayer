@@ -4,25 +4,25 @@
 		<songpart>
 			<desc>"Intro"</desc>
 			<bpm>150</bpm>
-			<program>52</program>
+			<program>D05</program>
 			<tick>0</tick>
 		</songpart>
 		<songpart>
 			<desc>"Couplet1"</desc>
 			<bpm>150</bpm>
-			<program>53</program>
+			<program>D06</program>
 			<tick>32</tick>
 		</songpart>
 		<songpart>
 			<desc>"Refrain1"</desc>
 			<bpm>150</bpm>
-			<program>54</program>
+			<program>D07</program>
 			<tick>112</tick>
 		</songpart>
 		<songpart>
 			<desc>"End"</desc>
 			<bpm>150</bpm>
-			<program>94</program>
+			<program>F15</program>
 			<tick>196</tick>
 		</songpart>
 	</songparts>

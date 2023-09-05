@@ -1,5 +1,8 @@
 #include "ofApp.h"
 
+#include <filesystem>
+namespace fs = std::filesystem;
+
 //--------------------------------------------------------------
 void ofApp::setup(){
 	ofSetLogLevel(OF_LOG_VERBOSE);
@@ -72,9 +75,6 @@ void ofApp::setup(){
 	}
 
 	loadSong(); // chargement du premier morceau
-
-	m_corner.x = 30;
-	m_corner.y = 30;
 
 	m_quadSurfaces.push_back(QuadSurface());
 }
@@ -201,29 +201,69 @@ void ofApp::draw() {
 	}
 	else
 	{
+		//drawSequencerBackground();
 		drawSequencerPage();
 	}
+	drawHelp();
+}
+
+void ofApp::drawHelp()
+{
+	ofSetColor(150);
+	ofDrawBitmapString(
+		"f: fullscreen, m: mapping mode, v: vol. setting, n: vol. up, b: vol. down, Q: quit",
+		20,
+		580);
+}
+
+void ofApp::drawSequencerBackground()
+{
+	// TODO dessiner un arriere plan sympa
 }
 
 void ofApp::drawSequencerPage()
 {
+	ofSetColor(255);
 	ofDrawBitmapString("Mixer", 20, 50);
+	for (int i = 0; i < players.size(); i++)
+	{
+		float volume = mixer.getConnectionVolume(m_selectedVolumeSetting);
+		int y = 50 + TEXT_LIST_SPACING * (i + 1);
+		ofDrawBitmapString(playersNames[i], 190, y + 15);
+		int volumeBars = int(volume * 20);
+		int barWidth = 3;
+		int barPeriod = 8;
+		ofSetColor(255, 255 * volume, 255);
+		for (int j = 0; j < volumeBars; j++)
+		{
+			int xBar = 20 + j * barPeriod;
+			ofDrawRectangle(xBar, y, barWidth, TEXT_LIST_SPACING);
+		}
+	}
 
-	displayList(500, 50, "Setlist", m_setlist, m_currentSongIndex);
+	displayList(500, 50, "Setlist (up/down keys to change)", m_setlist, m_currentSongIndex);
 
 	ofDrawBitmapString("Song", 20, 450);
+	ofSetColor(150);
+	ofDrawBitmapString("(<- | N | ->)", 60, 450);
 	ofSetColor(50);
 	ofDrawRectangle(15, 475, 770, 50);
 	int songTicks = m_songEvents[m_songEvents.size() - 1].tick;
 	for (int i = 0; i < m_songEvents.size()-1; i++)
 	{
 		int x = 20 + 760 * (int)m_songEvents[i].tick / songTicks;
-		int w = 760 * ((int)m_songEvents[i+1].tick - (int)m_songEvents[i].tick) / songTicks;
+		int w = 760 * ((int)m_songEvents[i + 1].tick - (int)m_songEvents[i].tick) / songTicks;
 
 
 		int pc = (m_songEvents[i].program % 16) * 64;
-		ofSetColor((64 + pc) % 256, (32 + pc) % 256, (255 - pc) % 256);
+		int page = int(m_songEvents[i].program / 16);
+		int red = (50 + 20 * page + pc) % 200 + 50;
+		int green = (200 - 20 * page - pc) % 200 + 50;
+		int blue = ((50 + (40 * page) % 150) + 2 * pc) % 200 + 50;
+		ofSetColor(red, green, blue);
 		ofDrawRectangle(x, 480, w, 40);
+		ofSetColor(0, 0, 0);
+		ofDrawBitmapString(m_songEvents[i].programName, x + 0.5*w - 10, 500);
 		ofSetColor(255);
 	}
 
@@ -232,13 +272,14 @@ void ofApp::drawSequencerPage()
 
 void ofApp::displayList(unsigned int x, unsigned int y, string title, vector<string> elements, unsigned int selectedElement)
 {
+	ofSetColor(255);
 	ofDrawBitmapString(title, x, y);
 	for (int i = 0; i < elements.size(); i++)
 	{
 		if (i == selectedElement){
 			ofSetColor(255, 100, 100);
 		}
-		ofDrawBitmapString(elements[i], x, y + 20 + 15 * i);
+		ofDrawBitmapString(elements[i], x, y + 20 + TEXT_LIST_SPACING * i);
 		if (i == selectedElement){
 			ofSetColor(255);
 		}
@@ -284,6 +325,7 @@ void ofApp::loadSong()
 		players[i]->disconnect();
 	}
 	players.clear();
+	playersNames.clear();
 
 	midiOut << StartMidi() << 0xFC << FinishMidi(); // stop playback
 
@@ -311,7 +353,34 @@ void ofApp::loadSong()
 			settings.pushTag("songpart", i);
 			songEvent e;
 			e.bpm = settings.getValue("bpm", 0.0);
-			e.program = settings.getValue("program", 0);
+			e.programName = settings.getValue("program", "F16");
+			char bankName = e.programName[0];
+			int bankOffset = 0;
+			switch (bankName) {
+			case 'A':
+				break;
+			case 'B':
+				bankOffset = 16;
+				break;
+			case 'C':
+				bankOffset = 32;
+				break;
+			case 'D':
+				bankOffset = 48;
+				break;
+			case 'E':
+				bankOffset = 64;
+				break;
+			case 'F':
+				bankOffset = 80;
+				break;
+			}
+
+			std::stringstream strm;
+			strm << e.programName.substr(1, 2);
+			int num = std::stoi(strm.str());
+			
+			e.program = bankOffset + num - 1;
 			e.tick = settings.getValue("tick", 0);
 			cout << e.bpm << " " << e.program << " " << e.tick << endl;
 			m_songEvents.push_back(e);
@@ -324,12 +393,15 @@ void ofApp::loadSong()
 	}
 
 	players.resize(dir.size());
+	m_selectedVolumeSetting = 0;
 
 	for (int i = 0; i < dir.size(); i++) {
 		cout << dir.getPath(i) << endl;
 		players[i] = make_unique<ofxSoundPlayerObject>();
 		players[i]->setLoop(true);
 		players[i]->load(ofToDataPath(dir.getPath(i)));
+		string songName = fs::path(dir.getPath(i)).filename().string();
+		playersNames.push_back(songName);
 	}
 
 	// start playing
@@ -394,6 +466,30 @@ void ofApp::jumpToNextPart()
 	metronome.sendNextProgramChange();*/
 }
 
+void ofApp::volumeUp()
+{
+	if (m_selectedVolumeSetting >= players.size())
+	{
+		return;
+	}
+
+	float volume = mixer.getConnectionVolume(m_selectedVolumeSetting);
+	volume = min(1.0, max(0.0, volume + 0.05));
+	mixer.setConnectionVolume(m_selectedVolumeSetting, volume);
+}
+
+void ofApp::volumeDown()
+{
+	if (m_selectedVolumeSetting >= players.size())
+	{
+		return;
+	}
+
+	float volume = mixer.getConnectionVolume(m_selectedVolumeSetting);
+	volume = min(1.0, max(0.0, volume - 0.05));
+	mixer.setConnectionVolume(m_selectedVolumeSetting, volume);
+}
+
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
 	switch (key) {
@@ -428,6 +524,18 @@ void ofApp::keyPressed(int key){
 		break;
 	case 'm':
 		m_setupMappingMode = !m_setupMappingMode;
+		break;
+	case 'f':
+		mappingWindow->toggleFullscreen();
+		break;
+	case 'v':
+		m_selectedVolumeSetting = (m_selectedVolumeSetting + 1) % players.size();
+		break;
+	case 'n':
+		volumeUp();
+		break;
+	case 'b':
+		volumeDown();
 		break;
 	}
 }
