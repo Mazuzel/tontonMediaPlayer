@@ -38,8 +38,6 @@ void VideoClipSource::playVideo(float initTime) {
 // All within draw() is being rendered into fbo;
 void VideoClipSource::draw(int targetWidth, int targetHeight) {
 	// Fill FBO with our rects
-	ofClear(0);
-	ofBackground(0);
 	ofSetColor(255);
 
 	if (m_isPlaying)
