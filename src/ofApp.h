@@ -8,7 +8,6 @@
 #include "ofxSoundMixer.h"
 #include "ofxSoundPlayerObject.h"
 
-#include "ofxGui.h"
 #include "ofxXmlSettings.h"
 
 #include "metronome.h"
@@ -18,7 +17,7 @@
 #include "Vec2.h"
 #include "Vec3.h"
 
-#define QUAD_CORNER_HWIDTH 8
+#define QUAD_CORNER_HWIDTH 12
 #define TEXT_LIST_SPACING 15
 
 class ofApp : public ofBaseApp, public ofxMidiListener {
@@ -49,29 +48,11 @@ public:
 
 	void displayList(unsigned int x, unsigned int y, string title, vector<string> elements, unsigned int selectedElement);
 
-	// gui
-	ofxPanel m_gui;
-	//ofxToggle m_buttonSetMidiOutDevice;
-	//ofxIntField m_fieldSelectedMidiOutDevice;
-
-
-	ofParameterGroup parameters;  // A collection of parameters with events to notify if a parameter changed
-	
-	ofxButton m_buttonConnect;
-
-	unsigned int m_currentSongIndex = 0;
-
 	void loadSong();
 	void stopPlayback();
 	void startPlayback();
 
-	// exit button
-	ofxButton m_buttonExit;
-	void exitButtonPressed(const void* sender);
-
-	bool m_projectionWindowFocus = false;
 	std::vector<songEvent> m_songEvents;
-
 	shared_ptr<ofAppBaseWindow> mappingWindow;
 
 private:
@@ -81,48 +62,50 @@ private:
 	void jumpToNextPart();
 	unsigned int m_startingSongPart = 1;
 	void drawMappingSetup();
-	void drawSequencerBackground();
 	void drawHelp();
 	void volumeUp();
 	void volumeDown();
 
-	ofxMidiOut midiOut;
-	ofxMidiIn midiIn;
-
-	// SOUND STREAM
+	// internal sound and midi handlers
 	ofSoundStream soundStream;
 	ofxSoundOutput output;
-
 	ofxSoundMixer mixer;
 	vector<unique_ptr<ofxSoundPlayerObject>> players;
 	vector<string> playersNames;
-
 	Metronome metronome;
-
-	unsigned int m_midiOutputIdx = 0;
-	unsigned int m_audioOutputIdx = 0;
-	
-	VideoClipSource m_videoClipSource;
-
-	std::vector<std::string> m_setlist;
-
 	std::vector<std::string> m_midiOutDevices;
 	std::vector<ofSoundDevice> m_audioDevices;
+	ofxMidiOut midiOut;
+	ofxMidiIn midiIn;
 
+	// internal video handlers
+	VideoClipSource m_videoClipSource;
+	std::vector<QuadSurface> m_quadSurfaces;
+	ofFbo m_fboSource;
+	ofFbo m_fboMapping;
+
+	// settings.xml
+	unsigned int m_bufferSize = 128;
+	unsigned int m_midiInputIdx = 0;
+	unsigned int m_midiOutputIdx = 0;
+	unsigned int m_audioOutputIdx = 0;
+	std::string m_songsRootDir = "songs/";  // path to directory containing songs
+
+	// setlist data and state
+	std::vector<std::string> m_setlist;
+	unsigned int m_currentSongIndex = 0;
+
+	// audio state
 	bool m_isMidiOutOpened = false;
 	bool m_isAudioOutOpened = false;
+	bool m_isPlaying = false;
 
-	std::vector<QuadSurface> m_quadSurfaces;
+	// mapping setup state
 	bool m_setupMappingMode = false;
 	int m_quadMovedIdx = -1;
 	int m_quadMovedVertexIdx = -1;
 
-	ofFbo m_fboSource;
-	ofFbo m_fboMapping;
-
-	// state
-	bool m_isPlaying = false;
-
+	// audio parameters
 	unsigned int m_selectedVolumeSetting = 0;
-	
+	bool m_stemMode = true;  // play stems separately instead of master if we find them
 };

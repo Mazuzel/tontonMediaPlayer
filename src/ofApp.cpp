@@ -28,9 +28,6 @@ void ofApp::setup(){
 		}
 	}
 
-	// wait for the user to press enter to confirm
-
-
 	// ----------------------------------------
 	// midi in (clock)
 	midiIn.listInPorts();
@@ -45,14 +42,12 @@ void ofApp::setup(){
 	openMidiOut();
 	openAudioOut();
 
-	// Enable or disable audio for video sources globally
-
 	m_fboSource.allocate(1920, 1080, GL_RGBA);
 	m_fboMapping.allocate(1920, 1080, GL_RGBA);
 
 	// chargement setlist
 	ofDirectory dir;
-	dir.listDir("songs");
+	dir.listDir(m_songsRootDir);
 
 	ofxXmlSettings settings;
 	string filePath = "setlist.xml";
@@ -86,15 +81,16 @@ void ofApp::loadHwConfig() {
 		settings.pushTag("settings");
 		m_midiOutputIdx = settings.getValue("midi_out", 0);
 		m_audioOutputIdx = settings.getValue("audio_out", 0);
+		m_midiInputIdx = settings.getValue("midi_input", 0);
+		m_bufferSize = settings.getValue("buffer_size", 128);
+		if (settings.tagExists("songs_root_dir"))
+		{
+			m_songsRootDir = settings.getValue("songs_root_dir", "songs/");
+		}
 	}
 	else {
 		ofLogError() << "settings.xml not found, using default hw config";
 	}
-}
-
-
-void ofApp::exitButtonPressed(const void* sender) {
-	OF_EXIT_APP(0);
 }
 
 int ofApp::openMidiOut() {
@@ -112,7 +108,7 @@ int ofApp::openAudioOut()
 	settings.sampleRate = 44100;
 	settings.numOutputChannels = 2;
 	settings.numInputChannels = 0;
-	settings.bufferSize = 256;
+	settings.bufferSize = m_bufferSize;
 	settings.numBuffers = 1;
 
 	std::vector<ofSoundDevice> devices = soundStream.getMatchingDevices("Elektron Model:Cycles", UINT_MAX, 2, ofSoundDevice::Api::MS_WASAPI);
@@ -141,8 +137,13 @@ void ofApp::update(){
 	m_videoClipSource.update();
 
 	m_fboSource.begin();
-	ofClear(0, 0, 0, 255);
+	ofClear(0);
 	ofSetColor(255);
+	if (m_setupMappingMode)
+	{
+		// on dessine un arrière plan au cas où il n'y ait pas de vidéo
+		ofBackground(128);
+	}
 	m_videoClipSource.draw(m_fboSource.getWidth(), m_fboSource.getHeight());
 	m_fboSource.end();
 
@@ -193,15 +194,13 @@ void ofApp::drawMappingSetup()
 void ofApp::draw() {
 	ofShowCursor();
 
-	m_buttonExit.draw();
-
+	ofSetColor(255);
 	if (m_setupMappingMode)
 	{
 		m_fboMapping.draw(0, 0, ofGetWidth(), ofGetHeight());
 	}
 	else
 	{
-		//drawSequencerBackground();
 		drawSequencerPage();
 	}
 	drawHelp();
@@ -216,28 +215,30 @@ void ofApp::drawHelp()
 		580);
 }
 
-void ofApp::drawSequencerBackground()
-{
-	// TODO dessiner un arriere plan sympa
-}
-
 void ofApp::drawSequencerPage()
 {
 	ofSetColor(255);
 	ofDrawBitmapString("Mixer", 20, 50);
 	for (int i = 0; i < players.size(); i++)
 	{
-		float volume = mixer.getConnectionVolume(m_selectedVolumeSetting);
+		float volume = mixer.getConnectionVolume(i);
 		int y = 50 + TEXT_LIST_SPACING * (i + 1);
-		ofDrawBitmapString(playersNames[i], 190, y + 15);
+		ofSetColor(180);
+		if (i == m_selectedVolumeSetting)
+		{
+			ofSetColor(255);
+		}
+		ofDrawBitmapString(playersNames[i], 230, y + 15);
+		ofSetColor(255);
 		int volumeBars = int(volume * 20);
 		int barWidth = 3;
 		int barPeriod = 8;
-		ofSetColor(255, 255 * volume, 255);
+		ofSetColor(255 * (1.0 - volume), 255 * volume, 100 * (1.0 + volume));
+		ofDrawBitmapString(volume, 190, y + 15);
 		for (int j = 0; j < volumeBars; j++)
 		{
 			int xBar = 20 + j * barPeriod;
-			ofDrawRectangle(xBar, y, barWidth, TEXT_LIST_SPACING);
+			ofDrawRectangle(xBar, y, barWidth, TEXT_LIST_SPACING - 2);
 		}
 	}
 
@@ -254,13 +255,11 @@ void ofApp::drawSequencerPage()
 		int x = 20 + 760 * (int)m_songEvents[i].tick / songTicks;
 		int w = 760 * ((int)m_songEvents[i + 1].tick - (int)m_songEvents[i].tick) / songTicks;
 
-
-		int pc = (m_songEvents[i].program % 16) * 64;
-		int page = int(m_songEvents[i].program / 16);
-		int red = (50 + 20 * page + pc) % 200 + 50;
-		int green = (200 - 20 * page - pc) % 200 + 50;
-		int blue = ((50 + (40 * page) % 150) + 2 * pc) % 200 + 50;
-		ofSetColor(red, green, blue);
+		ofSetColor(
+			15 * (m_songEvents[i].program % 16),
+			127 * (m_songEvents[i].program % 2),
+			255 - 15 * (m_songEvents[i].program % 16)
+		);
 		ofDrawRectangle(x, 480, w, 40);
 		ofSetColor(0, 0, 0);
 		ofDrawBitmapString(m_songEvents[i].programName, x + 0.5*w - 10, 500);
@@ -308,10 +307,7 @@ void ofApp::stopPlayback()
 
 	for (int i = 0; i < players.size(); i++) {
 		players[i]->stop();
-		/*players[i]->unload();
-		players[i]->disconnect();*/
 	}
-	//players.clear();
 	mixer.setMasterVolume(0);
 
 	m_videoClipSource.closeVideo();
@@ -333,18 +329,16 @@ void ofApp::loadSong()
 	ofDirectory dir;
 	dir.allowExt("wav");
 
-	float mixerMasterVolume = 0.5;  // TODO config
-
 	string songName = m_setlist[m_currentSongIndex];
 
-	dir.listDir("songs/" + songName + "/audio");
+	dir.listDir(m_songsRootDir + songName + "/export/audio");
 
-	m_videoClipSource.loadVideo("songs/" + songName + "/clip/clip.mp4");
+	m_videoClipSource.loadVideo(m_songsRootDir + songName + "/export/clip/clip.mp4");
 
 	m_songEvents.clear();
 
 	ofxXmlSettings settings;
-	string filePath = "songs/" + songName + "/structure.xml";
+	string filePath = m_songsRootDir + songName + "/export/structure.xml";
 	if (settings.loadFile(filePath)) {
 		settings.pushTag("structure");
 		settings.pushTag("songparts");
@@ -392,22 +386,44 @@ void ofApp::loadSong()
 		return;
 	}
 
-	players.resize(dir.size());
-	m_selectedVolumeSetting = 0;
-
+	// find suitable wav files
+	vector<string> trackFilesToLoad;
 	for (int i = 0; i < dir.size(); i++) {
 		cout << dir.getPath(i) << endl;
+		string trackName = fs::path(dir.getPath(i)).filename().string();
+
+		if (!m_stemMode && trackName != "master.wav")
+		{
+			continue;
+		}
+		else if (m_stemMode && dir.size() > 1 && trackName == "master.wav")
+		{
+			// if stem mode we ignore master, excepted when there is only one master audio
+			continue;
+		}
+
+		trackFilesToLoad.push_back(dir.getPath(i));
+	}
+
+	// create players
+	players.resize(trackFilesToLoad.size());
+	m_selectedVolumeSetting = 0;
+	for (int i = 0; i < trackFilesToLoad.size(); i++)
+	{
+		string trackName = fs::path(trackFilesToLoad[i]).filename().string();
+		playersNames.push_back(trackName);
 		players[i] = make_unique<ofxSoundPlayerObject>();
 		players[i]->setLoop(true);
-		players[i]->load(ofToDataPath(dir.getPath(i)));
-		string songName = fs::path(dir.getPath(i)).filename().string();
-		playersNames.push_back(songName);
+		players[i]->load(ofToDataPath(trackFilesToLoad[i]));
+	}
+
+	for (int i = 0; i < players.size(); i++) {
+		players[i]->connectTo(mixer);
 	}
 
 	// start playing
 	metronome.setNewSong(m_songEvents);
 	metronome.sendNextProgramChange();  // envoi du premier pch
-
 }
 
 void ofApp::startPlayback()
@@ -418,12 +434,6 @@ void ofApp::startPlayback()
 	midiOut << StartMidi() << 0xF8 << FinishMidi();  // tick
 	midiOut << StartMidi() << 0xFC << FinishMidi();  // stop
 	ofSleepMillis(2);
-
-	metronome.setEnabled(true);
-
-	for (int i = 0; i < players.size(); i++) {
-		players[i]->connectTo(mixer);
-	}
 
 	// chain components
 	mixer.connectTo(metronome).connectTo(output);
@@ -436,10 +446,14 @@ void ofApp::startPlayback()
 		msTime += ticks * 1000 / m_songEvents[currentSongPartIdx].bpm * 60;
 	}
 
+	metronome.setEnabled(true);
 	for (int i = 0; i < players.size(); i++) {
-		players[i]->setVolume(1);
 		players[i]->play();
-		players[i]->setPositionMS(msTime, 0);
+		if (currentSongPartIdx > 0)
+		{
+			players[i]->setPositionMS(msTime, 0);
+		}
+		
 	}
 
 	metronome.sendNextProgramChange();
@@ -459,11 +473,6 @@ void ofApp::jumpToNextPart()
 	{
 		metronome.setCurrentSongPartIdx(currentSongPartIdx + 1);
 	}
-	/*int msTime = m_songEvents[1].tick * 1000 / 60;
-	for (int i = 0; i < players.size(); i++) {
-		players[i]->setPositionMS(msTime, 0);
-	}
-	metronome.sendNextProgramChange();*/
 }
 
 void ofApp::volumeUp()
@@ -486,7 +495,7 @@ void ofApp::volumeDown()
 	}
 
 	float volume = mixer.getConnectionVolume(m_selectedVolumeSetting);
-	volume = min(1.0, max(0.0, volume - 0.05));
+	volume = min(1.0, max(0.05, volume - 0.05));
 	mixer.setConnectionVolume(m_selectedVolumeSetting, volume);
 }
 
@@ -562,6 +571,13 @@ void ofApp::mouseDragged(int x, int y, int button){
 	{
 		int xCoordInMappingFbo = x * m_fboMapping.getWidth() / ofGetWidth();
 		int yCoordInMappingFbo = y * m_fboMapping.getHeight() / ofGetHeight();
+
+		xCoordInMappingFbo = min(xCoordInMappingFbo, int(m_fboMapping.getWidth()));
+		xCoordInMappingFbo = max(xCoordInMappingFbo, 0);
+
+		yCoordInMappingFbo = min(yCoordInMappingFbo, int(m_fboMapping.getHeight()));
+		yCoordInMappingFbo = max(yCoordInMappingFbo, 0);
+
 		vector<Vec3> vertices = m_quadSurfaces[m_quadMovedIdx].getVertices();
 		vertices[m_quadMovedVertexIdx].x = xCoordInMappingFbo;
 		vertices[m_quadMovedVertexIdx].y = yCoordInMappingFbo;
