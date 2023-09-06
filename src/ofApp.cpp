@@ -134,7 +134,11 @@ void ofApp::update(){
 	// update the sound playing system:
 	ofSoundUpdate();
 
-	m_videoClipSource.update();
+	if (m_videoLoaded)
+	{
+		m_videoClipSource.update();
+	}
+	
 
 	m_fboSource.begin();
 	ofClear(0);
@@ -144,7 +148,10 @@ void ofApp::update(){
 		// on dessine un arrière plan au cas où il n'y ait pas de vidéo
 		ofBackground(128);
 	}
-	m_videoClipSource.draw(m_fboSource.getWidth(), m_fboSource.getHeight());
+	if (m_videoLoaded)
+	{
+		m_videoClipSource.draw(m_fboSource.getWidth(), m_fboSource.getHeight());
+	}
 	m_fboSource.end();
 
 	m_fboMapping.begin();
@@ -333,7 +340,12 @@ void ofApp::loadSong()
 
 	dir.listDir(m_songsRootDir + songName + "/export/audio");
 
-	m_videoClipSource.loadVideo(m_songsRootDir + songName + "/export/clip/clip.mp4");
+	m_videoLoaded = false;
+	if (ofFile(m_songsRootDir + songName + "/export/clip/clip.mp4").exists())
+	{
+		m_videoClipSource.loadVideo(m_songsRootDir + songName + "/export/clip/clip.mp4");
+		m_videoLoaded = true;
+	}
 
 	m_songEvents.clear();
 
@@ -376,7 +388,6 @@ void ofApp::loadSong()
 			
 			e.program = bankOffset + num - 1;
 			e.tick = settings.getValue("tick", 0);
-			cout << e.bpm << " " << e.program << " " << e.tick << endl;
 			m_songEvents.push_back(e);
 			settings.popTag();
 		}
@@ -389,7 +400,6 @@ void ofApp::loadSong()
 	// find suitable wav files
 	vector<string> trackFilesToLoad;
 	for (int i = 0; i < dir.size(); i++) {
-		cout << dir.getPath(i) << endl;
 		string trackName = fs::path(dir.getPath(i)).filename().string();
 
 		if (!m_stemMode && trackName != "master.wav")

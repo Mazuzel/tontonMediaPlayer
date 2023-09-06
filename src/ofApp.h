@@ -83,6 +83,7 @@ private:
 	std::vector<QuadSurface> m_quadSurfaces;
 	ofFbo m_fboSource;
 	ofFbo m_fboMapping;
+	bool m_videoLoaded;
 
 	// settings.xml
 	unsigned int m_bufferSize = 128;
