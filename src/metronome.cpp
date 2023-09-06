@@ -103,7 +103,10 @@ void Metronome::process(ofSoundBuffer& input, ofSoundBuffer& output) {
 				sendNextProgramChange();
 			}
 
-			if (m_totalTickCount > 4) {
+			if (m_totalTickCount > 4)
+			{
+				// heuristique pour retarder le métronome et le caler sur l'audio
+				// TODO paramètre xml
 				tick();
 			}
 		}
