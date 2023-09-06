@@ -2,5 +2,8 @@
 <settings>
 	<midi_out>1</midi_out>
 	<audio_out>2</audio_out>
+	<midi_in>0</midi_in>
+	<buffer_size>128</buffer_size>
 	<startup_config_check>0</startup_config_check>
+	<songs_root_dir>P:/Groupes/MamanJaiPeur/Live2023/reaper/</songs_root_dir>
 </settings>
