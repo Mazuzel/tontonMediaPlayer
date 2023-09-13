@@ -423,7 +423,7 @@ void ofApp::loadSong()
 		string trackName = fs::path(trackFilesToLoad[i]).filename().string();
 		playersNames.push_back(trackName);
 		players[i] = make_unique<ofxSoundPlayerObject>();
-		players[i]->setLoop(true);
+		players[i]->setLoop(false);
 		players[i]->load(ofToDataPath(trackFilesToLoad[i]));
 	}
 
