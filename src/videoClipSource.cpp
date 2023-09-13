@@ -21,6 +21,7 @@ void VideoClipSource::update() {
 
 void VideoClipSource::loadVideo(std::string videoPath) {
 	m_videoPlayer.load(videoPath);
+	m_videoPlayer.setVolume(0.0);
 	m_videoWidth = m_videoPlayer.getWidth();
 	m_videoHeight = m_videoPlayer.getHeight();
 }
@@ -30,7 +31,10 @@ void VideoClipSource::playVideo(float initTime) {
 	float pct = initTime / duration;
 	ofLogError() << "duration:" << duration << ", pct:" << pct;
 	m_videoPlayer.play();
-	m_videoPlayer.setPosition(pct);
+	if (pct > 0.0)
+	{
+		m_videoPlayer.setPosition(pct);
+	}
 	m_isPlaying = true;
 }
 
