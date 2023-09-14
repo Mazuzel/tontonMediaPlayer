@@ -274,6 +274,7 @@ void ofApp::drawSequencerPage()
 	}
 
 	ofDrawRectangle(20 + 760 * metronome.getTickCount() / songTicks - 2, 480, 4, 40);
+	ofDrawBitmapString(metronome.getTickCount() + 1, 20, 465);
 }
 
 void ofApp::displayList(unsigned int x, unsigned int y, string title, vector<string> elements, unsigned int selectedElement)
