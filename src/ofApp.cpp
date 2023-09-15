@@ -88,6 +88,7 @@ void ofApp::loadHwConfig() {
 		{
 			m_songsRootDir = settings.getValue("songs_root_dir", "songs/");
 		}
+		m_videoStartDelayMs = settings.getValue("video_start_delay_ms", 0);
 	}
 	else {
 		ofLogError() << "settings.xml not found, using default hw config";
@@ -476,7 +477,8 @@ void ofApp::startPlayback()
 
 	metronome.sendNextProgramChange();
 
-	m_videoClipSource.playVideo(msTime / 1000.0);
+	float videoStartTime = (msTime + m_videoStartDelayMs) / 1000.0;  // m_videoStartDelayMs is an offset for latency compensation
+	m_videoClipSource.playVideo(videoStartTime);
 
 	mixer.setMasterVolume(1.0); // TODO config
 

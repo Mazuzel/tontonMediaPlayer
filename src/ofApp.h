@@ -109,4 +109,7 @@ private:
 	// audio parameters
 	unsigned int m_selectedVolumeSetting = 0;
 	bool m_stemMode = true;  // play stems separately instead of master if we find them
+
+	// video parameters
+	unsigned int m_videoStartDelayMs = 0;
 };
