@@ -5,6 +5,7 @@ namespace fs = std::filesystem;
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+
 	ofSetLogLevel(OF_LOG_VERBOSE);
 
 	ofBackground(0);
@@ -308,6 +309,10 @@ void ofApp::exit() {
 	midiIn.removeListener(this);
 }
 
+//------------- Changing state --------------------------------
+
+// TODO add lock system to avoid contradictory actions
+
 void ofApp::stopPlayback()
 {
 	metronome.setEnabled(false);
@@ -318,7 +323,7 @@ void ofApp::stopPlayback()
 	}
 	mixer.setMasterVolume(0);
 
-	m_videoClipSource.closeVideo();
+	m_isPlaying = false;
 }
 
 void ofApp::loadSong()
@@ -330,6 +335,8 @@ void ofApp::loadSong()
 	}
 	players.clear();
 	playersNames.clear();
+
+	m_videoClipSource.closeVideo();
 
 	midiOut << StartMidi() << 0xFC << FinishMidi(); // stop playback
 
@@ -474,15 +481,28 @@ void ofApp::startPlayback()
 	mixer.setMasterVolume(1.0); // TODO config
 
 	midiOut << StartMidi() << 0xFA << FinishMidi(); // start playback
+
+	m_isPlaying = true;
 }
 
 void ofApp::jumpToNextPart()
 {
-	// supposed to be run before playback
+	bool playingBeforeAction = m_isPlaying;
+
+	if (playingBeforeAction)
+	{
+		stopPlayback();
+	}
+
 	unsigned int currentSongPartIdx = metronome.getCurrentSongPartIdx();
 	if (currentSongPartIdx < m_songEvents.size() - 1)
 	{
 		metronome.setCurrentSongPartIdx(currentSongPartIdx + 1);
+	}
+
+	if (playingBeforeAction)
+	{
+		startPlayback();
 	}
 }
 
