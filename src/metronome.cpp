@@ -93,9 +93,9 @@ void Metronome::process(ofSoundBuffer& input, ofSoundBuffer& output) {
 
 			m_totalTickCount += 1;
 
-			if (m_totalTickCount % m_ticksPerBeat == 0) {
+			/*if (m_totalTickCount % m_ticksPerBeat == 0) {
 				ofLog() << "tick #" << int(m_totalTickCount / m_ticksPerBeat) + 1 << ", song part #" << m_currentSongPartIndex << ", song events -> " << m_songEvents.size();
-			}
+			}*/
 
 			if ((m_currentSongPartIndex < m_songEvents.size() - 1) && (m_totalTickCount == m_songEvents[m_currentSongPartIndex + 1].tick))
 			{
