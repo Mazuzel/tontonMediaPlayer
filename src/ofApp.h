@@ -65,6 +65,7 @@ private:
 	void drawHelp();
 	void volumeUp();
 	void volumeDown();
+	double getCurrentSongTimeMs();
 
 	// internal sound and midi handlers
 	ofSoundStream soundStream;

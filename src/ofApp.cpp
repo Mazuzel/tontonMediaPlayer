@@ -136,9 +136,10 @@ void ofApp::update(){
 	// update the sound playing system:
 	ofSoundUpdate();
 
-	if (m_videoLoaded)
+	if (m_videoLoaded && m_isPlaying)
 	{
-		m_videoClipSource.update();
+		float currentSongTimeMs = getCurrentSongTimeMs();
+		m_videoClipSource.update(currentSongTimeMs);
 	}
 	
 
@@ -445,6 +446,11 @@ void ofApp::loadSong()
 	metronome.sendNextProgramChange();  // envoi du premier pch
 }
 
+double ofApp::getCurrentSongTimeMs()
+{
+	return metronome.getPlaybackPositionMs();
+}
+
 void ofApp::startPlayback()
 {
 	// force midi device to go to the first pattern
@@ -462,7 +468,7 @@ void ofApp::startPlayback()
 	for (int i = 1; i <= currentSongPartIdx; i++)
 	{
 		int ticks = m_songEvents[i].tick - m_songEvents[i - 1].tick;
-		msTime += ticks * 1000 / m_songEvents[currentSongPartIdx].bpm * 60;
+		msTime += ticks * 1000 / m_songEvents[i - 1].bpm * 60;
 	}
 
 	metronome.setEnabled(true);

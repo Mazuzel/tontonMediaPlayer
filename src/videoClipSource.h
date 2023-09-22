@@ -5,7 +5,7 @@
 class VideoClipSource {
 public:
 	void setup();
-	void update();
+	void update(float currentSongTimeMs);
 	void draw(int targetWidth, int targetHeight);
 
 	void closeVideo();
@@ -20,5 +20,7 @@ private:
 	ofVideoPlayer m_videoPlayer;
 	ofTexture m_videoTexture;
 	bool m_isPlaying;
+	bool m_delayCompensationInProgress = false;
+	int m_frameCountSinceSpeedAnalysis = 0;
 };
 
