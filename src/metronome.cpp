@@ -30,6 +30,27 @@ void Metronome::setCurrentSongPartIdx(unsigned int newSongPartIdx)
 	m_totalTickCount = m_songEvents[m_currentSongPartIndex].tick + 12;
 }
 
+double Metronome::getPlaybackPositionMs() const
+{
+	double msTime = 0.0;
+	for (int i = 0; i < m_songEvents.size() - 1; i++)
+	{
+		if (m_totalTickCount >= m_songEvents[i + 1].tick)
+		{
+			// we already passed this whole part, we sum it
+			unsigned int partTicksCount = m_songEvents[i + 1].tick - m_songEvents[i].tick;
+			msTime += 1000.0 * partTicksCount / m_ticksPerBeat / m_songEvents[i].bpm * 60.0;
+		}
+		else
+		{
+			// we are in the current part
+			msTime += 1000.0 * (m_totalTickCount - m_songEvents[i].tick) / m_ticksPerBeat / m_songEvents[i].bpm * 60.0;
+			break;
+		}
+	}
+	return msTime;
+}
+
 void Metronome::setNewSong(std::vector<songEvent> songEvents)
 {
 	m_songEvents.clear();

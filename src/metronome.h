@@ -31,6 +31,8 @@ public:
 	bool isSongEnded();
 
 	const unsigned int getTickCount() const;
+	double getPlaybackPositionMs() const;
+
 	const unsigned int getCurrentSongPartIdx() const;
 	void setCurrentSongPartIdx(unsigned int newSongPartIdx);
 
