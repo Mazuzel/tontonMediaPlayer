@@ -20,7 +20,8 @@ private:
 	ofVideoPlayer m_videoPlayer;
 	ofTexture m_videoTexture;
 	bool m_isPlaying;
-	bool m_delayCompensationInProgress = false;
-	int m_frameCountSinceSpeedAnalysis = 0;
+	float m_NextPlaybackTimeSpeedCheck = 0;
+	float m_speedChangeDelayMs = 30.0;
+	float m_nextTheoreticalPlaybackTime = 0.0;
 };
 
