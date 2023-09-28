@@ -548,6 +548,16 @@ void ofApp::volumeDown()
 	mixer.setConnectionVolume(m_selectedVolumeSetting, volume);
 }
 
+void ofApp::loadSongByIndex(unsigned int index)
+{
+	if (index >= m_setlist.size())
+	{
+		return;
+	}
+	m_currentSongIndex = index;
+	loadSong();
+}
+
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
 	switch (key) {
@@ -579,6 +589,36 @@ void ofApp::keyPressed(int key){
 			m_currentSongIndex += 1;
 			loadSong();
 		}
+		break;
+	case '0':
+		loadSongByIndex(0);
+		break;
+	case '1':
+		loadSongByIndex(1);
+		break;
+	case '2':
+		loadSongByIndex(2);
+		break;
+	case '3':
+		loadSongByIndex(3);
+		break;
+	case '4':
+		loadSongByIndex(4);
+		break;
+	case '5':
+		loadSongByIndex(5);
+		break;
+	case '6':
+		loadSongByIndex(6);
+		break;
+	case '7':
+		loadSongByIndex(7);
+		break;
+	case '8':
+		loadSongByIndex(8);
+		break;
+	case '9':
+		loadSongByIndex(9);
 		break;
 	case 'm':
 		m_setupMappingMode = !m_setupMappingMode;

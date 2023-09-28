@@ -66,6 +66,7 @@ private:
 	void volumeUp();
 	void volumeDown();
 	double getCurrentSongTimeMs();
+	void loadSongByIndex(unsigned int index);
 
 	// internal sound and midi handlers
 	ofSoundStream soundStream;
