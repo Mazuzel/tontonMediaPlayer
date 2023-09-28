@@ -31,13 +31,16 @@ void ofApp::setup(){
 
 	// ----------------------------------------
 	// midi in (clock)
-	midiIn.listInPorts();
-	midiIn.openPort(0);
-	midiIn.ignoreTypes(true, // sysex  <-- ignore timecode messages!
-		true, // timing <-- ignore clock messages!
-		true); // sensing
-	// add ofApp as a listener
-	midiIn.addListener(this);
+	if (m_enableMidiIn)
+	{
+		midiIn.listInPorts();
+		midiIn.openPort(0);
+		midiIn.ignoreTypes(true, // sysex  <-- ignore timecode messages!
+			true, // timing <-- ignore clock messages!
+			true); // sensing
+		// add ofApp as a listener
+		midiIn.addListener(this);
+	}
 
 	// ----------------------------------------
 	openMidiOut();
@@ -307,8 +310,11 @@ void ofApp::exit() {
 	midiOut.closePort();
 
 	// clean up
-	midiIn.closePort();
-	midiIn.removeListener(this);
+	if (m_enableMidiIn)
+	{
+		midiIn.closePort();
+		midiIn.removeListener(this);
+	}
 }
 
 //------------- Changing state --------------------------------

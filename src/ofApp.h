@@ -102,6 +102,9 @@ private:
 	bool m_isAudioOutOpened = false;
 	bool m_isPlaying = false;
 
+	// midi input
+	bool m_enableMidiIn = false;
+
 	// mapping setup state
 	bool m_setupMappingMode = false;
 	int m_quadMovedIdx = -1;
