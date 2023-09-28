@@ -30,6 +30,7 @@ void VideoClipSource::update(float currentSongTimeMs) {
 				m_videoPlayer.setSpeed(1.0);
 			}
 			ofLog() << "sync ok: " << delayMs << " cd=" << m_speedChangeDelayMs;
+			m_NextPlaybackTimeSpeedCheck = currentSongTimeMs + 30000.0;  // longer check delay
 		}
 		else
 		{
@@ -49,8 +50,8 @@ void VideoClipSource::update(float currentSongTimeMs) {
 
 			m_videoPlayer.setSpeed(newSpeed);
 			ofLog() << "sync not ok: " << delayMs << " (speed:" << newSpeed << ")" << " cd=" << m_speedChangeDelayMs;
+			m_NextPlaybackTimeSpeedCheck = currentSongTimeMs + 3000.0;
 		}
-		m_NextPlaybackTimeSpeedCheck = currentSongTimeMs + 3000.0;
 		//double diff = videoTimeMs - currentSongTimeMs;
 		//ofLog() << "video time: " << videoTimeMs << "  / expected: " << currentSongTimeMs << "   / diff: " << diff;
 	}
