@@ -46,7 +46,7 @@ public:
 
 	void drawSequencerPage();
 
-	void displayList(unsigned int x, unsigned int y, string title, vector<string> elements, unsigned int selectedElement);
+	void displayList(unsigned int x, unsigned int y, string title, vector<string> elements, unsigned int selectedElement, bool showIndex);
 
 	void loadSong();
 	void stopPlayback();

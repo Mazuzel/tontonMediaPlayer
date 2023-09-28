@@ -255,7 +255,7 @@ void ofApp::drawSequencerPage()
 		}
 	}
 
-	displayList(500, 50, "Setlist (up/down keys to change)", m_setlist, m_currentSongIndex);
+	displayList(500, 50, "Setlist (up/down keys to change)", m_setlist, m_currentSongIndex, true);
 
 	ofDrawBitmapString("Song", 20, 450);
 	ofSetColor(150);
@@ -283,7 +283,7 @@ void ofApp::drawSequencerPage()
 	ofDrawBitmapString(metronome.getTickCount() + 1, 20, 465);
 }
 
-void ofApp::displayList(unsigned int x, unsigned int y, string title, vector<string> elements, unsigned int selectedElement)
+void ofApp::displayList(unsigned int x, unsigned int y, string title, vector<string> elements, unsigned int selectedElement, bool showIndex)
 {
 	ofSetColor(255);
 	ofDrawBitmapString(title, x, y);
@@ -291,6 +291,10 @@ void ofApp::displayList(unsigned int x, unsigned int y, string title, vector<str
 	{
 		if (i == selectedElement){
 			ofSetColor(255, 100, 100);
+		}
+		if (showIndex)
+		{
+			ofDrawBitmapString(to_string(i), x - 25, y + 20 + TEXT_LIST_SPACING * i);
 		}
 		ofDrawBitmapString(elements[i], x, y + 20 + TEXT_LIST_SPACING * i);
 		if (i == selectedElement){
