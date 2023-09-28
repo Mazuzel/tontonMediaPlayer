@@ -49,5 +49,6 @@ private:
 	std::vector<songEvent> m_songEvents;
 	long m_totalTickCount;
 	int m_currentSongPartIndex;
+	int m_tickCountStartThreshold;
 
 };

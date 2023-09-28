@@ -28,6 +28,7 @@ void Metronome::setCurrentSongPartIdx(unsigned int newSongPartIdx)
 {
 	m_currentSongPartIndex = newSongPartIdx;
 	m_totalTickCount = m_songEvents[m_currentSongPartIndex].tick + 12;
+	m_tickCountStartThreshold = m_totalTickCount + 4;
 }
 
 double Metronome::getPlaybackPositionMs() const
@@ -60,6 +61,7 @@ void Metronome::setNewSong(std::vector<songEvent> songEvents)
 	m_totalTickCount = 0;
 	m_currentSongPartIndex = 0;
 	m_samples = 0;
+	m_tickCountStartThreshold = 4;
 
 	for (int i = 0; i < m_songEvents.size(); i++) {
 		m_songEvents[i].tick *= m_ticksPerBeat;  // on adapte la valeur au nombre de coups réels transmis par pulsation
@@ -124,7 +126,7 @@ void Metronome::process(ofSoundBuffer& input, ofSoundBuffer& output) {
 				sendNextProgramChange();
 			}
 
-			if (m_totalTickCount > 4)
+			if (m_totalTickCount > m_tickCountStartThreshold)
 			{
 				// heuristique pour retarder le métronome et le caler sur l'audio
 				// TODO paramètre xml
