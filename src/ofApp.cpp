@@ -479,7 +479,7 @@ void ofApp::startPlayback()
 	for (int i = 1; i <= currentSongPartIdx; i++)
 	{
 		int ticks = m_songEvents[i].tick - m_songEvents[i - 1].tick;
-		msTime += ticks * 1000 / m_songEvents[i - 1].bpm * 60;
+		msTime += ticks * 1000.0 / m_songEvents[i - 1].bpm * 60.0;
 	}
 
 	float videoStartTime = (msTime + m_videoStartDelayMs) / 1000.0;  // m_videoStartDelayMs is an offset for latency compensation
