@@ -355,6 +355,7 @@ void ofApp::loadSong()
 	// load audio
 	ofDirectory dir;
 	dir.allowExt("wav");
+	dir.allowExt("flac");
 
 	string songName = m_setlist[m_currentSongIndex];
 
