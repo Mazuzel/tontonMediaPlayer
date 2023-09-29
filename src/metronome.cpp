@@ -27,7 +27,7 @@ const unsigned int Metronome::getCurrentSongPartIdx() const
 void Metronome::setCurrentSongPartIdx(unsigned int newSongPartIdx)
 {
 	m_currentSongPartIndex = newSongPartIdx;
-	m_totalTickCount = m_songEvents[m_currentSongPartIndex].tick + 12;
+	m_totalTickCount = m_songEvents[m_currentSongPartIndex].tick;
 	m_tickCountStartThreshold = m_totalTickCount + 4;
 }
 
@@ -65,7 +65,6 @@ void Metronome::setNewSong(std::vector<songEvent> songEvents)
 
 	for (int i = 0; i < m_songEvents.size(); i++) {
 		m_songEvents[i].tick *= m_ticksPerBeat;  // on adapte la valeur au nombre de coups réels transmis par pulsation
-		m_songEvents[i].tick -= 12;  // heuristique // TODO la mettre dans la fonction d'update, pas ici !
 	}
 }
 
@@ -120,7 +119,7 @@ void Metronome::process(ofSoundBuffer& input, ofSoundBuffer& output) {
 				ofLog() << "tick #" << int(m_totalTickCount / m_ticksPerBeat) + 1 << ", song part #" << m_currentSongPartIndex << ", song events -> " << m_songEvents.size();
 			}*/
 
-			if ((m_currentSongPartIndex < m_songEvents.size() - 1) && (m_totalTickCount == m_songEvents[m_currentSongPartIndex + 1].tick))
+			if ((m_currentSongPartIndex < m_songEvents.size() - 1) && (m_totalTickCount >= m_songEvents[m_currentSongPartIndex + 1].tick - 24))
 			{
 				m_currentSongPartIndex += 1;
 				sendNextProgramChange();
