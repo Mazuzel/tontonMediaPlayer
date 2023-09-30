@@ -485,8 +485,6 @@ void ofApp::startPlayback()
 	float videoStartTime = (msTime + m_videoStartDelayMs) / 1000.0;  // m_videoStartDelayMs is an offset for latency compensation
 	m_videoClipSource.playVideo(videoStartTime);
 
-	metronome.sendNextProgramChange();
-	metronome.setEnabled(true);
 	midiOut << StartMidi() << 0xFA << FinishMidi(); // start playback
 	for (int i = 0; i < players.size(); i++) {
 		players[i]->play();
@@ -496,6 +494,7 @@ void ofApp::startPlayback()
 		}
 		
 	}
+	metronome.setEnabled(true);
 
 	mixer.setMasterVolume(1.0); // TODO config
 
@@ -515,6 +514,7 @@ void ofApp::jumpToNextPart()
 	if (currentSongPartIdx < m_songEvents.size() - 1)
 	{
 		metronome.setCurrentSongPartIdx(currentSongPartIdx + 1);
+		metronome.sendNextProgramChange();
 	}
 
 	if (playingBeforeAction)
