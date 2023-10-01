@@ -144,35 +144,6 @@ void ofApp::update(){
 		float currentSongTimeMs = getCurrentSongTimeMs();
 		m_videoClipSource.update(currentSongTimeMs);
 	}
-	
-
-	m_fboSource.begin();
-	ofClear(0);
-	ofSetColor(255);
-	if (m_setupMappingMode)
-	{
-		// on dessine un arrière plan au cas où il n'y ait pas de vidéo
-		ofBackground(128);
-	}
-	if (m_videoLoaded)
-	{
-		m_videoClipSource.draw(m_fboSource.getWidth(), m_fboSource.getHeight());
-	}
-	m_fboSource.end();
-
-	m_fboMapping.begin();
-	ofClear(0, 0, 0, 255);
-	ofSetColor(255);
-	for (int i = 0; i < m_quadSurfaces.size(); i++)
-	{
-		m_quadSurfaces[i].draw(m_fboSource.getTexture());
-	}
-
-	if (m_setupMappingMode)
-	{
-		drawMappingSetup();
-	}
-	m_fboMapping.end();
 }
 
 //--------------------------------------------------------------
@@ -206,6 +177,34 @@ void ofApp::drawMappingSetup()
 //--------------------------------------------------------------
 void ofApp::draw() {
 	ofShowCursor();
+
+	m_fboSource.begin();
+	ofClear(0);
+	ofSetColor(255);
+	if (m_setupMappingMode)
+	{
+		// on dessine un arrière plan au cas où il n'y ait pas de vidéo
+		ofBackground(128);
+	}
+	if (m_videoLoaded)
+	{
+		m_videoClipSource.draw(m_fboSource.getWidth(), m_fboSource.getHeight());
+	}
+	m_fboSource.end();
+
+	m_fboMapping.begin();
+	ofClear(0, 0, 0, 255);
+	ofSetColor(255);
+	for (int i = 0; i < m_quadSurfaces.size(); i++)
+	{
+		m_quadSurfaces[i].draw(m_fboSource.getTexture());
+	}
+
+	if (m_setupMappingMode)
+	{
+		drawMappingSetup();
+	}
+	m_fboMapping.end();
 
 	ofSetColor(255);
 	if (m_setupMappingMode)
