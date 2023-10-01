@@ -12,6 +12,7 @@
 
 #include "metronome.h"
 
+#include "shadersSource.h"
 #include "videoClipSource.h"
 #include "QuadSurface.h"
 #include "Vec2.h"
@@ -86,6 +87,9 @@ private:
 	ofFbo m_fboSource;
 	ofFbo m_fboMapping;
 	bool m_videoLoaded;
+
+	// internal shaders handlers
+	ShadersSource m_shadersSource;
 
 	// settings.xml
 	unsigned int m_bufferSize = 128;

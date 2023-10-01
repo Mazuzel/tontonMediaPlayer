@@ -9,6 +9,7 @@ struct songEvent {
 	int program;
 	string programName;
 	float bpm;
+	string shader;
 };
 
 class Metronome : public ofxSoundObject {

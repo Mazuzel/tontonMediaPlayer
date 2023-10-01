@@ -197,9 +197,13 @@ void ofApp::draw() {
 		// on dessine un arrière plan au cas où il n'y ait pas de vidéo
 		ofBackground(128);
 	}
-	if (m_videoLoaded)
+	if (m_isPlaying)
 	{
-		m_videoClipSource.draw(m_fboSource.getWidth(), m_fboSource.getHeight());
+		if (m_videoLoaded)
+		{
+			m_videoClipSource.draw(m_fboSource.getWidth(), m_fboSource.getHeight());
+		}
+		m_shadersSource.draw(m_fboSource.getWidth(), m_fboSource.getHeight(), metronome.getTickCount(), metronome.getPlaybackPositionMs() / 1000.0);
 	}
 	m_fboSource.end();
 
@@ -419,6 +423,10 @@ void ofApp::loadSong()
 			
 			e.program = bankOffset + num - 1;
 			e.tick = settings.getValue("tick", 0);
+			if (settings.tagExists("shader"))
+			{
+				e.shader = settings.getValue("shader", "");
+			}
 			m_songEvents.push_back(e);
 			settings.popTag();
 		}
@@ -488,6 +496,9 @@ void ofApp::loadSong()
 	catch (const std::exception& e) {
 		ofLog() << "could not load song volumes, an error occured: " << e.what();
 	}
+
+	// load shaders
+	m_shadersSource.setup(m_songEvents);
 
 	// configure output device and metronome
 	metronome.setNewSong(m_songEvents);
