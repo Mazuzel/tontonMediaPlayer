@@ -36,6 +36,8 @@ public:
 	const unsigned int getCurrentSongPartIdx() const;
 	void setCurrentSongPartIdx(unsigned int newSongPartIdx);
 
+	void setNbIgnoredStartupsTicks(int nbIgnoredStartupTicks);
+
 private:
 
 	void tick();

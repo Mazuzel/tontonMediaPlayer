@@ -12,7 +12,7 @@ public:
 	void loadVideo(std::string videoPath);
 	void playVideo(float initTime);
 	ofTexture& getTexture();
-
+	void setSpeedChangeDelay(float speedChangeDelay);
 
 private:
 	int m_videoWidth;

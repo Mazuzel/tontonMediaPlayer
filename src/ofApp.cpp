@@ -95,6 +95,14 @@ void ofApp::loadHwConfig() {
 			m_songsRootDir = settings.getValue("songs_root_dir", "songs/");
 		}
 		m_videoStartDelayMs = settings.getValue("video_start_delay_ms", 0);
+		if (settings.tagExists("video_speed_change_delay_ms"))
+		{
+			m_videoClipSource.setSpeedChangeDelay(settings.getValue("video_speed_change_delay_ms", 30.0));
+		}
+		if (settings.tagExists("nb_ignored_startup_ticks"))
+		{
+			metronome.setNbIgnoredStartupsTicks(settings.getValue("nb_ignored_startup_ticks", 4));
+		}
 	}
 	else {
 		ofLogError() << "settings.xml not found, using default hw config";

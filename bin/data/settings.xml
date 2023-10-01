@@ -6,5 +6,7 @@
 	<buffer_size>128</buffer_size>
 	<startup_config_check>0</startup_config_check>
 	<songs_root_dir>P:/Groupes/MamanJaiPeur/Live2023/reaper/</songs_root_dir>
-	<video_start_delay_ms>100</video_start_delay_ms>
+	<video_start_delay_ms>30</video_start_delay_ms>
+	<video_speed_change_delay_ms>50</video_speed_change_delay_ms>
+	<nb_ignored_startup_ticks>4</nb_ignored_startup_ticks>
 </settings>

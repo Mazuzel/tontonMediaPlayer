@@ -10,6 +10,14 @@ void VideoClipSource::setup() {
 	m_isPlaying = false;
 }
 
+void VideoClipSource::setSpeedChangeDelay(float speedChangeDelay)
+{
+	if (speedChangeDelay > 0)
+	{
+		m_speedChangeDelayMs = speedChangeDelay;
+	}
+}
+
 void VideoClipSource::closeVideo() {
 	m_videoPlayer.close();
 	m_isPlaying = false;

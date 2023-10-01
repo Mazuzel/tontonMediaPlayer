@@ -14,6 +14,14 @@ Metronome::~Metronome() {
 
 }
 
+void Metronome::setNbIgnoredStartupsTicks(int nbIgnoredStartupTicks)
+{
+	if (nbIgnoredStartupTicks > 0)
+	{
+		m_tickCountStartThreshold = nbIgnoredStartupTicks;
+	}
+}
+
 const unsigned int Metronome::getTickCount() const
 {
 	return m_totalTickCount / m_ticksPerBeat;
