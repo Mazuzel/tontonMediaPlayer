@@ -1,6 +1,9 @@
 #include "ofApp.h"
 
+#include "volumesDb.h"
+
 #include <filesystem>
+#include <utility>
 namespace fs = std::filesystem;
 
 //--------------------------------------------------------------
@@ -451,7 +454,34 @@ void ofApp::loadSong()
 		players[i]->connectTo(mixer);
 	}
 
-	// start playing
+	// load volumes from database
+	try
+	{
+		vector<pair<string, float>> storedVolumes;
+		for (int i = 0; i < playersNames.size(); i++)
+		{
+			storedVolumes.push_back(make_pair(playersNames[i], 1.0));
+		}
+		VolumesDb::getStoredSongVolumes(songName, storedVolumes);
+
+		for (int i = 0; i < storedVolumes.size(); i++)
+		{
+			string stem = storedVolumes[i].first;
+			float volume = storedVolumes[i].second;
+			for (int j = 0; j < playersNames.size(); j++)
+			{
+				if (stem == playersNames[j] && j < players.size())
+				{
+					mixer.setConnectionVolume(j, volume);
+				}
+			}
+		}
+	}
+	catch (const std::exception& e) {
+		ofLog() << "could not load song volumes, an error occured: " << e.what();
+	}
+
+	// configure output device and metronome
 	metronome.setNewSong(m_songEvents);
 	metronome.sendNextProgramChange();  // envoi du premier pch
 }
@@ -632,6 +662,17 @@ void ofApp::keyPressed(int key){
 		break;
 	case 'b':
 		volumeDown();
+		break;
+	case 's':
+		// store volumes
+		vector<pair<string, float>> volumes;
+		for (int i = 0; i < players.size(); i++)
+		{
+			float volume = mixer.getConnectionVolume(i);
+			string stem = playersNames[i];
+			volumes.push_back(make_pair(stem, volume));
+		}
+		VolumesDb::setStoredSongVolumes(m_setlist[m_currentSongIndex], volumes);
 		break;
 	}
 }
