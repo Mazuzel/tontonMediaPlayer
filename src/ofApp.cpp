@@ -225,7 +225,7 @@ void ofApp::drawHelp()
 {
 	ofSetColor(150);
 	ofDrawBitmapString(
-		"f: fullscreen, m: mapping mode, v: vol. setting, n: vol. up, b: vol. down, Q: quit",
+		"f: fullscreen, m: mapping, v: select stem, n: vol. up, b: vol. down, s: store volumes, Q: quit",
 		20,
 		580);
 }
