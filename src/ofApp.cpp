@@ -46,7 +46,7 @@ void ofApp::setup(){
 	openMidiOut();
 	openAudioOut();
 
-	m_fboSource.allocate(1920, 1080, GL_RGBA);
+	m_fboSource.allocate(960, 540, GL_RGBA);
 	m_fboMapping.allocate(1920, 1080, GL_RGBA);
 
 	// chargement setlist
