@@ -76,6 +76,8 @@ void ofApp::setup(){
 		}
 	}
 
+	metronome.setSampleRate(m_sampleRate);
+
 	loadSong(); // chargement du premier morceau
 
 	m_quadSurfaces.push_back(QuadSurface());
@@ -103,6 +105,10 @@ void ofApp::loadHwConfig() {
 		{
 			metronome.setNbIgnoredStartupsTicks(settings.getValue("nb_ignored_startup_ticks", 4));
 		}
+		if (settings.tagExists("sample_rate"))
+		{
+			m_sampleRate = settings.getValue("sample_rate", 22050);
+		}
 	}
 	else {
 		ofLogError() << "settings.xml not found, using default hw config";
@@ -121,7 +127,7 @@ int ofApp::openAudioOut()
 {
 	ofSoundStreamSettings settings;
 	settings.setOutListener(this);
-	settings.sampleRate = 44100;
+	settings.sampleRate = m_sampleRate;
 	settings.numOutputChannels = 2;
 	settings.numInputChannels = 0;
 	settings.bufferSize = m_bufferSize;

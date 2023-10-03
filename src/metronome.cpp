@@ -22,6 +22,11 @@ void Metronome::setNbIgnoredStartupsTicks(int nbIgnoredStartupTicks)
 	}
 }
 
+void Metronome::setSampleRate(unsigned int sampleRate)
+{
+	m_sampleRate = sampleRate;
+}
+
 const unsigned int Metronome::getTickCount() const
 {
 	return m_totalTickCount / m_ticksPerBeat;
@@ -88,7 +93,7 @@ void Metronome::tick() {
 void Metronome::sendNextProgramChange() {
 	ofLog() << "sending PCh " << m_songEvents[m_currentSongPartIndex].program << " to external midi";
 	m_midiOut.sendProgramChange(10, m_songEvents[m_currentSongPartIndex].program);
-	m_samplesPerTick = (44100 * 60.0f) / m_songEvents[m_currentSongPartIndex].bpm / m_ticksPerBeat;
+	m_samplesPerTick = (m_sampleRate * 60.0f) / m_songEvents[m_currentSongPartIndex].bpm / m_ticksPerBeat;
 }
 
 bool Metronome::isSongEnded()

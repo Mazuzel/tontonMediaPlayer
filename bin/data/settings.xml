@@ -8,5 +8,6 @@
 	<songs_root_dir>P:/Groupes/MamanJaiPeur/Live2023/reaper/</songs_root_dir>
 	<video_start_delay_ms>30</video_start_delay_ms>
 	<video_speed_change_delay_ms>50</video_speed_change_delay_ms>
-	<nb_ignored_startup_ticks>4</nb_ignored_startup_ticks>
+	<nb_ignored_startup_ticks>0</nb_ignored_startup_ticks>
+	<sample_rate>22050</sample_rate>
 </settings>

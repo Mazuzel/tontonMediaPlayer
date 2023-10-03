@@ -80,6 +80,7 @@ private:
 	std::vector<ofSoundDevice> m_audioDevices;
 	ofxMidiOut midiOut;
 	ofxMidiIn midiIn;
+	unsigned int m_sampleRate = 22050;
 
 	// internal video handlers
 	VideoClipSource m_videoClipSource;

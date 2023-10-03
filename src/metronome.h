@@ -38,6 +38,7 @@ public:
 	void setCurrentSongPartIdx(unsigned int newSongPartIdx);
 
 	void setNbIgnoredStartupsTicks(int nbIgnoredStartupTicks);
+	void setSampleRate(unsigned int sampleRate);
 
 private:
 
@@ -48,10 +49,10 @@ private:
 	int m_samplesPerTick;
 	int m_ticksPerBeat;
 	int m_samples = 0;
-
 	std::vector<songEvent> m_songEvents;
 	long m_totalTickCount;
 	int m_currentSongPartIndex;
 	int m_tickCountStartThreshold;
 
+	unsigned int m_sampleRate;
 };
