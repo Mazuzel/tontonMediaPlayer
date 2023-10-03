@@ -105,6 +105,17 @@ bool Metronome::isSongEnded()
 	return m_currentSongPartIndex == (m_songEvents.size() - 1);
 }
 
+void Metronome::correctTicksToPlaybackPosition(double realPlaybackPositionMs)
+{
+	if (m_totalTickCount % m_ticksPerBeat * 4 == 0)
+	{
+		double metronomePositionMs = getPlaybackPositionMs();
+		double timeLate = realPlaybackPositionMs - metronomePositionMs;
+		m_ticksLate = timeLate * m_songEvents[m_currentSongPartIndex].bpm / 60.0 / m_ticksPerBeat;
+		ofLog() << "metronome is late " << timeLate << " ms, " << m_ticksLate << " ticks";
+	}
+}
+
 void Metronome::process(ofSoundBuffer& input, ofSoundBuffer& output) {
 
 	output = input;
@@ -125,12 +136,28 @@ void Metronome::process(ofSoundBuffer& input, ofSoundBuffer& output) {
 		if (++m_samples == m_samplesPerTick)
 		{
 			m_samples = 0;
-
-			m_totalTickCount += 1;
+			if (m_ticksLate >= 0)
+			{
+				m_totalTickCount += 1;
+			}
 
 			/*if (m_totalTickCount % m_ticksPerBeat == 0) {
 				ofLog() << "tick #" << int(m_totalTickCount / m_ticksPerBeat) + 1 << ", song part #" << m_currentSongPartIndex << ", song events -> " << m_songEvents.size();
 			}*/
+			if (m_totalTickCount > m_tickCountStartThreshold)
+			{
+				// heuristique pour retarder le métronome et le caler sur l'audio
+				// TODO paramètre xml
+				if (m_ticksLate >= 0)
+				{
+					tick();
+				}
+				else
+				{
+					m_ticksLate += 1;
+				}
+			}
+
 
 			if ((m_currentSongPartIndex < m_songEvents.size() - 1) && (m_totalTickCount >= m_songEvents[m_currentSongPartIndex + 1].tick - 24))
 			{
@@ -138,11 +165,11 @@ void Metronome::process(ofSoundBuffer& input, ofSoundBuffer& output) {
 				sendNextProgramChange();
 			}
 
-			if (m_totalTickCount > m_tickCountStartThreshold)
+			if (m_ticksLate > 0)
 			{
-				// heuristique pour retarder le métronome et le caler sur l'audio
-				// TODO paramètre xml
+				m_totalTickCount += 1;
 				tick();
+				m_ticksLate -= 1;
 			}
 		}
 	}

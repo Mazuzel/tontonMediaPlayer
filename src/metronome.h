@@ -38,6 +38,7 @@ public:
 	void setCurrentSongPartIdx(unsigned int newSongPartIdx);
 
 	void setNbIgnoredStartupsTicks(int nbIgnoredStartupTicks);
+	void correctTicksToPlaybackPosition(double realPlaybackPositionMs);
 	void setSampleRate(unsigned int sampleRate);
 
 private:
@@ -53,6 +54,7 @@ private:
 	long m_totalTickCount;
 	int m_currentSongPartIndex;
 	int m_tickCountStartThreshold;
+	int m_ticksLate = 0;
 
 	unsigned int m_sampleRate;
 };

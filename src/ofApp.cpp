@@ -156,6 +156,12 @@ void ofApp::update(){
 	// update the sound playing system:
 	ofSoundUpdate();
 
+	if (m_isPlaying && players.size() > 0 && metronome.getTickCount() % 4 == 0)
+	{
+		double realPlaybackPositionMs = players[0]->getPositionMS();
+		metronome.correctTicksToPlaybackPosition(realPlaybackPositionMs);
+	}
+
 	if (m_videoLoaded && m_isPlaying)
 	{
 		float currentSongTimeMs = getCurrentSongTimeMs();
