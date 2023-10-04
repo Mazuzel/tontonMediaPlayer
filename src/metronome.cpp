@@ -131,46 +131,42 @@ void Metronome::process(ofSoundBuffer& input, ofSoundBuffer& output) {
 		return;
 	}
 
-	for (size_t i = 0; i < output.getNumFrames(); ++i)
+	for (size_t i = 0; i < output.getNumFrames(); i++)
 	{
 		if (++m_samples == m_samplesPerTick)
 		{
 			m_samples = 0;
-			if (m_ticksLate >= 0)
-			{
-				m_totalTickCount += 1;
-			}
 
-			/*if (m_totalTickCount % m_ticksPerBeat == 0) {
-				ofLog() << "tick #" << int(m_totalTickCount / m_ticksPerBeat) + 1 << ", song part #" << m_currentSongPartIndex << ", song events -> " << m_songEvents.size();
-			}*/
-			if (m_totalTickCount > m_tickCountStartThreshold)
-			{
-				// heuristique pour retarder le métronome et le caler sur l'audio
-				// TODO paramètre xml
-				if (m_ticksLate >= 0)
-				{
-					tick();
-				}
-				else
-				{
-					m_ticksLate += 1;
-				}
-			}
-
-
-			if ((m_currentSongPartIndex < m_songEvents.size() - 1) && (m_totalTickCount >= m_songEvents[m_currentSongPartIndex + 1].tick - 24))
+			if ((m_currentSongPartIndex < m_songEvents.size() - 1) && (m_totalTickCount >= m_songEvents[m_currentSongPartIndex + 1].tick - 20))
 			{
 				m_currentSongPartIndex += 1;
 				sendNextProgramChange();
 			}
 
-			if (m_ticksLate > 0)
+			if (m_ticksLate >= 0)
 			{
+				// metronome is accurate with playback or late, we can send a new tick
 				m_totalTickCount += 1;
-				tick();
-				m_ticksLate -= 1;
+				if (m_totalTickCount > m_tickCountStartThreshold)
+				{
+					tick();
+				}
 			}
+			else
+			{
+				// metronome is running in advance compared to playback
+				// so now we skip one tick
+				m_ticksLate += 1;
+			}
+
+		}
+		else if (m_ticksLate > 0 && m_samples == int(m_samplesPerTick / 2))
+		{
+			// metronome is running late compared to playback
+			// so now we add one tick at half tick time
+			m_totalTickCount += 1;
+			tick();
+			m_ticksLate -= 1;
 		}
 	}
 }
