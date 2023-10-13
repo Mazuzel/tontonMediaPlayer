@@ -313,7 +313,7 @@ void ofApp::drawSequencerPage()
 		}
 	}
 
-	displayList(500, 50, "Setlist (up/down keys to change)", m_setlist, m_currentSongIndex, true);
+	displayList(600, 50, "Setlist (up/down: change)", m_setlist, m_currentSongIndex, true);
 
 	ofDrawBitmapString("Song", 20, 450);
 	ofSetColor(150);
@@ -349,7 +349,7 @@ void ofApp::drawSequencerPage()
 void ofApp::displayList(unsigned int x, unsigned int y, string title, vector<string> elements, unsigned int selectedElement, bool showIndex)
 {
 	ofSetColor(255);
-	ofDrawBitmapString(title, x, y);
+	ofDrawBitmapString(title, x - 20, y);
 	for (int i = 0; i < elements.size(); i++)
 	{
 		if (i == selectedElement){
