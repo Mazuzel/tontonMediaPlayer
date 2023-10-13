@@ -122,4 +122,8 @@ private:
 
 	// video parameters
 	unsigned int m_videoStartDelayMs = 0;
+
+	// default video
+	ofShader m_defaultShader;
+	bool m_isDefaultShaderLoaded;
 };

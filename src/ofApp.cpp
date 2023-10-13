@@ -81,6 +81,8 @@ void ofApp::setup(){
 	loadSong(); // chargement du premier morceau
 
 	m_quadSurfaces.push_back(QuadSurface());
+
+	m_isDefaultShaderLoaded = m_defaultShader.load("shaders/default.vert", "shaders/bad_tv.frag");
 }
 
 void ofApp::loadHwConfig() {
@@ -217,6 +219,15 @@ void ofApp::draw() {
 		}
 		m_shadersSource.draw(m_fboSource.getWidth(), m_fboSource.getHeight(), metronome.getTickCount(), metronome.getPlaybackPositionMs() / 1000.0);
 	}
+	else if (m_isDefaultShaderLoaded)
+	{
+		m_defaultShader.begin();
+		m_defaultShader.setUniform1f("time", ofGetElapsedTimef());
+		m_defaultShader.setUniform1f("bpm", 60.0);
+		m_defaultShader.setUniform2f("resolution", m_fboSource.getWidth(), m_fboSource.getHeight());
+		ofDrawRectangle(0, 0, m_fboSource.getWidth(), m_fboSource.getHeight());
+		m_defaultShader.end();
+	}
 	m_fboSource.end();
 
 	m_fboMapping.begin();
@@ -249,7 +260,7 @@ void ofApp::drawHelp()
 {
 	ofSetColor(150);
 	ofDrawBitmapString(
-		"f: fullscreen, m: mapping, v: select stem, n: vol. up, b: vol. down, s: store volumes, Q: quit",
+		"f: fullscreen, m: mapping, v: sel. stem, n: vol. up, b: vol. down, s: store vols, Q: quit, p: launch next",
 		20,
 		580);
 }
@@ -362,6 +373,7 @@ void ofApp::stopPlayback()
 	mixer.setMasterVolume(0);
 
 	m_isPlaying = false;
+	ofSleepMillis(4);
 }
 
 void ofApp::loadSong()
@@ -649,35 +661,78 @@ void ofApp::keyPressed(int key){
 			loadSong();
 		}
 		break;
+	case 'p':
+		stopPlayback();
+		if (m_currentSongIndex < m_setlist.size() - 1)
+		{
+			m_currentSongIndex += 1;
+			loadSong();
+			startPlayback();
+		}
+		break;
 	case '0':
 		loadSongByIndex(0);
+		startPlayback();
 		break;
 	case '1':
 		loadSongByIndex(1);
+		startPlayback();
 		break;
 	case '2':
 		loadSongByIndex(2);
+		startPlayback();
 		break;
 	case '3':
 		loadSongByIndex(3);
+		startPlayback();
 		break;
 	case '4':
 		loadSongByIndex(4);
+		startPlayback();
 		break;
 	case '5':
 		loadSongByIndex(5);
+		startPlayback();
 		break;
 	case '6':
 		loadSongByIndex(6);
+		startPlayback();
 		break;
 	case '7':
 		loadSongByIndex(7);
+		startPlayback();
 		break;
 	case '8':
 		loadSongByIndex(8);
+		startPlayback();
 		break;
 	case '9':
 		loadSongByIndex(9);
+		startPlayback();
+		break;
+	case 'a':
+		loadSongByIndex(10);
+		startPlayback();
+		break;
+	case 'z':
+		loadSongByIndex(11);
+		startPlayback();
+		break;
+	case 'e':
+		loadSongByIndex(12);
+		startPlayback();
+		break;
+	case 'r':
+		loadSongByIndex(13);
+		startPlayback();
+		break;
+	case 't':
+		loadSongByIndex(14);
+		startPlayback();
+		break;
+	case 'y':
+		loadSongByIndex(15);
+		startPlayback();
 		break;
 	case 'm':
 		m_setupMappingMode = !m_setupMappingMode;
