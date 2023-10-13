@@ -7,8 +7,6 @@ int main() {
 
 	ofGLFWWindowSettings settings;
 
-	settings.setGLVersion(3, 2); //we define the OpenGL version we want to use
-
 	// main window (daw)
 	settings.setSize(800, 600);
 	settings.setPosition(glm::vec2(300, 30));
