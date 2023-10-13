@@ -31,7 +31,7 @@ void VideoClipSource::update(float currentSongTimeMs) {
 	{
 		float delayMs = videoTimeMs - currentSongTimeMs;
 
-		if (delayMs > -25 + m_speedChangeDelayMs && delayMs < 25 + m_speedChangeDelayMs)
+		if (delayMs > -30 + m_speedChangeDelayMs && delayMs < 30 + m_speedChangeDelayMs)
 		{
 			if (m_videoPlayer.getSpeed() != 1.0)
 			{
@@ -44,7 +44,7 @@ void VideoClipSource::update(float currentSongTimeMs) {
 		{
 			float delayCaped = min(100.0, max(-100.0, double(delayMs)));
 			delayCaped -= m_speedChangeDelayMs;
-			float newSpeed = 1.0 - delayCaped / 2900.0; // heuristic to provide slight overshoot and try to achieve better value when stopping
+			float newSpeed = 1.0 - delayCaped / 2800.0; // heuristic to provide slight overshoot and try to achieve better value when stopping
 			if (newSpeed > 1.0 && newSpeed < 1.01)
 			{
 				newSpeed = 1.01;  // else if does not seem to have any effect...
