@@ -332,10 +332,15 @@ void ofApp::drawSequencerPage()
 			255 - 15 * (m_songEvents[i].program % 16)
 		);
 		ofDrawRectangle(x, 480, w, 40);
-		ofSetColor(0, 0, 0);
-		ofDrawBitmapString(m_songEvents[i].programName, x + 0.5*w - 10, 500);
-		ofSetColor(255);
 	}
+	ofSetColor(0, 0, 0);
+	for (int i = 0; i < m_songEvents.size() - 1; i++)
+	{
+		int x = 20 + 760 * (int)m_songEvents[i].tick / songTicks;
+		int w = 760 * ((int)m_songEvents[i + 1].tick - (int)m_songEvents[i].tick) / songTicks;
+		ofDrawBitmapString(m_songEvents[i].programName, x + 0.5 * w - 10, 500);
+	}
+	ofSetColor(255);
 
 	ofDrawRectangle(20 + 760 * metronome.getTickCount() / songTicks - 2, 480, 4, 40);
 	ofDrawBitmapString(metronome.getTickCount() + 1, 20, 465);
