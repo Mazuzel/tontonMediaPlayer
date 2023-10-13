@@ -153,6 +153,16 @@ void ofApp::update(){
 	if (metronome.isSongEnded())
 	{
 		stopPlayback();
+
+		if (m_autoPlayNext)
+		{
+			if (m_currentSongIndex < m_setlist.size() - 1)
+			{
+				m_currentSongIndex += 1;
+				loadSong();
+				startPlayback();
+			}
+		}
 	}
 
 	// update the sound playing system:
@@ -268,6 +278,17 @@ void ofApp::drawHelp()
 void ofApp::drawSequencerPage()
 {
 	ofSetColor(255);
+
+	ofDrawBitmapString("Auto play (g)", 680, 15);
+	ofSetColor(128);
+	if (m_autoPlayNext)
+	{
+		ofSetColor(50, 255, 25);
+	}
+	ofDrawRectangle(660, 5, 10, 10);
+
+	ofSetColor(255);
+
 	ofDrawBitmapString("Mixer", 20, 50);
 	for (int i = 0; i < players.size(); i++)
 	{
@@ -748,6 +769,9 @@ void ofApp::keyPressed(int key){
 		break;
 	case 'b':
 		volumeDown();
+		break;
+	case 'g':
+		m_autoPlayNext = !m_autoPlayNext;
 		break;
 	case 's':
 		// store volumes
