@@ -107,7 +107,8 @@ bool Metronome::isSongEnded()
 
 void Metronome::correctTicksToPlaybackPosition(double realPlaybackPositionMs)
 {
-	if (m_totalTickCount % m_ticksPerBeat * 4 == 0)
+	// do not check at playback beginning: measurement lacks precison and overcorrects, causing lags
+	if ((m_totalTickCount > 8 * m_ticksPerBeat) && m_totalTickCount % (m_ticksPerBeat * 8) == 0)
 	{
 		double metronomePositionMs = getPlaybackPositionMs();
 		double timeLate = realPlaybackPositionMs - metronomePositionMs;
@@ -143,7 +144,7 @@ void Metronome::process(ofSoundBuffer& input, ofSoundBuffer& output) {
 				sendNextProgramChange();
 			}
 
-			if (m_ticksLate >= 0)
+			if (m_ticksLate >= -1)
 			{
 				// metronome is accurate with playback or late, we can send a new tick
 				m_totalTickCount += 1;
@@ -152,7 +153,7 @@ void Metronome::process(ofSoundBuffer& input, ofSoundBuffer& output) {
 					tick();
 				}
 			}
-			else
+			else // correct only if two tick of advance measured (error of 1 could be noise and lead to excessive correction)
 			{
 				// metronome is running in advance compared to playback
 				// so now we skip one tick
@@ -160,7 +161,7 @@ void Metronome::process(ofSoundBuffer& input, ofSoundBuffer& output) {
 			}
 
 		}
-		else if (m_ticksLate > 0 && m_samples == int(m_samplesPerTick / 2))
+		else if (m_ticksLate > 1 && m_samples == int(m_samplesPerTick / 2))  // correct only if two tick late measured (error of 1 could be noise and lead to excessive correction)
 		{
 			// metronome is running late compared to playback
 			// so now we add one tick at half tick time
