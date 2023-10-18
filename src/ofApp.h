@@ -105,7 +105,6 @@ private:
 	unsigned int m_currentSongIndex = 0;
 
 	// audio state
-	bool m_isMidiOutOpened = false;
 	bool m_isAudioOutOpened = false;
 	bool m_isPlaying = false;
 

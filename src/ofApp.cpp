@@ -47,7 +47,11 @@ void ofApp::setup(){
 
 	// ----------------------------------------
 	openMidiOut();
+	// set metronome controls
+	metronome.setMidiOut(midiOut);
+	ofLog() << "init midi out";
 	openAudioOut();
+	ofLog() << "init audio out";
 
 	m_fboSource.allocate(960, 540, GL_RGBA);
 	m_fboMapping.allocate(1920, 1080, GL_RGBA);
@@ -75,14 +79,17 @@ void ofApp::setup(){
 			m_setlist.push_back(dir.getName(i));
 		}
 	}
+	ofLog() << "init setlist";
 
 	metronome.setSampleRate(m_sampleRate);
 
 	loadSong(); // chargement du premier morceau
+	ofLog() << "init first song";
 
 	m_quadSurfaces.push_back(QuadSurface());
 
 	m_isDefaultShaderLoaded = m_defaultShader.load("shaders/default.vert", "shaders/bad_tv.frag");
+	ofLog() << "init default shader";
 }
 
 void ofApp::loadHwConfig() {
@@ -118,10 +125,12 @@ void ofApp::loadHwConfig() {
 }
 
 int ofApp::openMidiOut() {
-	m_isMidiOutOpened = true;
+
 	midiOut.openPort(m_midiOutputIdx); // by number
-	// set metronome controls
-	metronome.setMidiOut(midiOut);
+	if (!midiOut.isOpen())
+	{
+		ofLogError() << "Could not open midi out!!!";
+	}
 	return 0;
 }
 
@@ -384,11 +393,14 @@ void ofApp::displayList(unsigned int x, unsigned int y, string title, vector<str
 void ofApp::exit() {
 
 	// stop external midi device
-	midiOut << StartMidi() << 0xFC << FinishMidi(); // stop playback
-	midiOut.sendProgramChange(10, 95);  // back to sync F16 program
+	if (midiOut.isOpen())
+	{
+		midiOut << StartMidi() << 0xFC << FinishMidi(); // stop playback
+		midiOut.sendProgramChange(10, 95);  // back to sync F16 program
 
-	// clean up
-	midiOut.closePort();
+		// clean up
+		midiOut.closePort();
+	}
 
 	// clean up
 	if (m_enableMidiIn)
@@ -405,7 +417,10 @@ void ofApp::exit() {
 void ofApp::stopPlayback()
 {
 	metronome.setEnabled(false);
-	midiOut << StartMidi() << 0xFC << FinishMidi();  // stop
+	if (midiOut.isOpen())
+	{
+		midiOut << StartMidi() << 0xFC << FinishMidi();  // stop
+	}
 
 	for (int i = 0; i < players.size(); i++) {
 		players[i]->stop();
@@ -428,7 +443,10 @@ void ofApp::loadSong()
 
 	m_videoClipSource.closeVideo();
 
-	midiOut << StartMidi() << 0xFC << FinishMidi(); // stop playback
+	if (midiOut.isOpen())
+	{
+		midiOut << StartMidi() << 0xFC << FinishMidi(); // stop playback
+	}
 
 	// load audio
 	ofDirectory dir;
@@ -578,9 +596,12 @@ void ofApp::startPlayback()
 {
 	// force midi device to go to the first pattern
 	ofSleepMillis(2);
-	midiOut << StartMidi() << 0xFA << FinishMidi();  // start
-	midiOut << StartMidi() << 0xF8 << FinishMidi();  // tick
-	midiOut << StartMidi() << 0xFC << FinishMidi();  // stop
+	if (midiOut.isOpen())
+	{
+		midiOut << StartMidi() << 0xFA << FinishMidi();  // start
+		midiOut << StartMidi() << 0xF8 << FinishMidi();  // tick
+		midiOut << StartMidi() << 0xFC << FinishMidi();  // stop
+	}
 	ofSleepMillis(2);
 
 	// chain components
@@ -597,7 +618,10 @@ void ofApp::startPlayback()
 	float videoStartTime = (msTime + m_videoStartDelayMs) / 1000.0;  // m_videoStartDelayMs is an offset for latency compensation
 	m_videoClipSource.playVideo(videoStartTime);
 
-	midiOut << StartMidi() << 0xFA << FinishMidi(); // start playback
+	if (midiOut.isOpen())
+	{
+		midiOut << StartMidi() << 0xFA << FinishMidi(); // start playback
+	}
 	for (int i = 0; i < players.size(); i++) {
 		players[i]->play();
 		if (currentSongPartIdx > 0)
