@@ -20,6 +20,7 @@
 
 #define QUAD_CORNER_HWIDTH 12
 #define TEXT_LIST_SPACING 15
+#define VOLUME_MAX 2.0
 
 class ofApp : public ofBaseApp, public ofxMidiListener {
 

@@ -309,13 +309,14 @@ void ofApp::drawSequencerPage()
 		{
 			ofSetColor(255);
 		}
-		ofDrawBitmapString(playersNames[i], 400, y + 15);
+		ofDrawBitmapString(playersNames[i], 280, y + 15);
 		ofSetColor(255);
-		int volumeBars = round(volume * 20);
-		int barWidth = 3;
-		int barPeriod = 8;
-		ofSetColor(255 * (2.0 - volume), 128 * volume, 100 * (2.0 + volume));
-		ofDrawBitmapString(volume, 350, y + 15);
+		float volumeNorm = volume / VOLUME_MAX;
+		int volumeBars = round(volumeNorm * 40);
+		int barWidth = 2;
+		int barPeriod = 5;
+		ofSetColor(255 * volumeNorm, 128, 255 * (1.0 - volumeNorm));
+		ofDrawBitmapString(volume, 230, y + 15);
 		for (int j = 0; j < volumeBars; j++)
 		{
 			int xBar = 20 + j * barPeriod;
@@ -323,7 +324,7 @@ void ofApp::drawSequencerPage()
 		}
 	}
 
-	displayList(600, 50, "Setlist (up/down: change)", m_setlist, m_currentSongIndex, true);
+	displayList(550, 50, "Setlist (up/down: change)", m_setlist, m_currentSongIndex, true);
 
 	ofDrawBitmapString("Measured video delay (ms):", 500, 450);
 	ofDrawBitmapString(m_measuredVideoDelayMs, 710, 450);
@@ -645,7 +646,7 @@ void ofApp::volumeUp()
 	// stick volume to closest step value (to avoid offset due to min value in volumeDown func)
 	volume = round(volume * 20) / 20.0;
 
-	volume = min(2.0, volume + 0.05);
+	volume = min(VOLUME_MAX, volume + 0.05);
 	mixer.setConnectionVolume(m_selectedVolumeSetting, volume);
 }
 
