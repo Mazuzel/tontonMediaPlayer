@@ -629,7 +629,10 @@ void ofApp::volumeUp()
 	}
 
 	float volume = mixer.getConnectionVolume(m_selectedVolumeSetting);
-	volume = min(2.0, max(0.0, volume + 0.05));
+	// stick volume to closest step value (to avoid offset due to min value in volumeDown func)
+	volume = round(volume * 20) / 20.0;
+
+	volume = min(2.0, volume + 0.05);
 	mixer.setConnectionVolume(m_selectedVolumeSetting, volume);
 }
 
@@ -641,7 +644,7 @@ void ofApp::volumeDown()
 	}
 
 	float volume = mixer.getConnectionVolume(m_selectedVolumeSetting);
-	volume = min(2.0, max(0.05, volume - 0.05));
+	volume = max(0.01, volume - 0.05);  // avoid null volumes, it stops stem playback
 	mixer.setConnectionVolume(m_selectedVolumeSetting, volume);
 }
 
