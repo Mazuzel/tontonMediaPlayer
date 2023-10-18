@@ -23,45 +23,52 @@ void VideoClipSource::closeVideo() {
 	m_isPlaying = false;
 }
 
-void VideoClipSource::update(float currentSongTimeMs) {
-	float pct = m_videoPlayer.getPosition();
-	float duration = m_videoPlayer.getDuration();
-	float videoTimeMs = 1000.0 * pct * duration;
+void VideoClipSource::update(bool resync, float currentSongTimeMs, float& measuredDelayMs) {
+	
 	if (currentSongTimeMs >= m_NextPlaybackTimeSpeedCheck)
 	{
-		float delayMs = videoTimeMs - currentSongTimeMs;
+		float pct = m_videoPlayer.getPosition();
+		float duration = m_videoPlayer.getDuration();
+		float videoTimeMs = 1000.0 * pct * duration;
+		measuredDelayMs = videoTimeMs - currentSongTimeMs;
+		m_NextPlaybackTimeSpeedCheck = currentSongTimeMs + 3000.0;
 
-		if (delayMs > -30 + m_speedChangeDelayMs && delayMs < 30 + m_speedChangeDelayMs)
+		if (resync)
 		{
-			if (m_videoPlayer.getSpeed() != 1.0)
+			if (measuredDelayMs > -40 && measuredDelayMs < 40)
 			{
-				m_videoPlayer.setSpeed(1.0);
+				if (m_videoPlayer.getSpeed() != 1.0)
+				{
+					m_videoPlayer.setSpeed(1.0);
+				}
+				ofLog() << "sync ok: " << measuredDelayMs << " cd=" << m_speedChangeDelayMs;
+				m_NextPlaybackTimeSpeedCheck = currentSongTimeMs + 20000.0;  // longer check delay
 			}
-			ofLog() << "sync ok: " << delayMs << " cd=" << m_speedChangeDelayMs;
-			m_NextPlaybackTimeSpeedCheck = currentSongTimeMs + 30000.0;  // longer check delay
-		}
-		else
-		{
-			float delayCaped = min(100.0, max(-100.0, double(delayMs)));
-			delayCaped -= m_speedChangeDelayMs;
-			float newSpeed = 1.0 - delayCaped / 2800.0; // heuristic to provide slight overshoot and try to achieve better value when stopping
-			if (newSpeed > 1.0 && newSpeed < 1.01)
+			else
 			{
-				newSpeed = 1.01;  // else if does not seem to have any effect...
-			}
-			else if (newSpeed < 1.0 && newSpeed > 0.99)
-			{
-				newSpeed = 0.99;
-			}
+				float delayCaped = min(100.0, max(-100.0, double(measuredDelayMs)));
+				delayCaped -= m_speedChangeDelayMs;
+				float newSpeed = 1.0 - delayCaped / 2800.0; // heuristic to provide slight overshoot and try to achieve better value when stopping
+				if (newSpeed > 1.0 && newSpeed < 1.01)
+				{
+					newSpeed = 1.01;  // else if does not seem to have any effect...
+				}
+				else if (newSpeed < 1.0 && newSpeed > 0.99)
+				{
+					newSpeed = 0.99;
+				}
 
-			m_nextTheoreticalPlaybackTime = videoTimeMs + newSpeed * 3000.0;
+				m_nextTheoreticalPlaybackTime = videoTimeMs + newSpeed * 3000.0;
 
-			m_videoPlayer.setSpeed(newSpeed);
-			ofLog() << "sync not ok: " << delayMs << " (speed:" << newSpeed << ")" << " cd=" << m_speedChangeDelayMs;
-			m_NextPlaybackTimeSpeedCheck = currentSongTimeMs + 3000.0;
+				m_videoPlayer.setSpeed(newSpeed);
+				ofLog() << "sync not ok: " << measuredDelayMs << " (speed:" << newSpeed << ")" << " cd=" << m_speedChangeDelayMs;
+			}
 		}
-		//double diff = videoTimeMs - currentSongTimeMs;
-		//ofLog() << "video time: " << videoTimeMs << "  / expected: " << currentSongTimeMs << "   / diff: " << diff;
+	}
+
+	if (!resync && m_videoPlayer.getSpeed() != 1.0)
+	{
+		m_videoPlayer.setSpeed(1.0);
 	}
 
 	m_videoPlayer.update();

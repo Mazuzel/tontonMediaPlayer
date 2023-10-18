@@ -123,8 +123,12 @@ private:
 
 	// video parameters
 	unsigned int m_videoStartDelayMs = 0;
+	bool m_videoResync = true;
 
 	// default video
 	ofShader m_defaultShader;
 	bool m_isDefaultShaderLoaded;
+
+	// video monitoring
+	float m_measuredVideoDelayMs = 0.0;
 };

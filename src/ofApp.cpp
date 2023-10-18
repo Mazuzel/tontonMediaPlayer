@@ -177,7 +177,7 @@ void ofApp::update(){
 	if (m_videoLoaded && m_isPlaying)
 	{
 		float currentSongTimeMs = getCurrentSongTimeMs();
-		m_videoClipSource.update(currentSongTimeMs);
+		m_videoClipSource.update(m_videoResync, currentSongTimeMs, m_measuredVideoDelayMs);
 	}
 }
 
@@ -279,13 +279,23 @@ void ofApp::drawSequencerPage()
 {
 	ofSetColor(255);
 
-	ofDrawBitmapString("Auto play (g)", 680, 15);
+	ofDrawBitmapString("Auto play (w)", 680, 15);
 	ofSetColor(128);
 	if (m_autoPlayNext)
 	{
 		ofSetColor(50, 255, 25);
 	}
 	ofDrawRectangle(660, 5, 10, 10);
+
+	ofSetColor(255);
+
+	ofDrawBitmapString("Video resync (x)", 520, 15);
+	ofSetColor(128);
+	if (m_videoResync)
+	{
+		ofSetColor(50, 255, 25);
+	}
+	ofDrawRectangle(500, 5, 10, 10);
 
 	ofSetColor(255);
 
@@ -314,6 +324,9 @@ void ofApp::drawSequencerPage()
 	}
 
 	displayList(600, 50, "Setlist (up/down: change)", m_setlist, m_currentSongIndex, true);
+
+	ofDrawBitmapString("Measured video delay (ms):", 500, 450);
+	ofDrawBitmapString(m_measuredVideoDelayMs, 710, 450);
 
 	ofDrawBitmapString("Song", 20, 450);
 	ofSetColor(150);
@@ -778,8 +791,11 @@ void ofApp::keyPressed(int key){
 	case 'b':
 		volumeDown();
 		break;
-	case 'g':
+	case 'w':
 		m_autoPlayNext = !m_autoPlayNext;
+		break;
+	case 'x':
+		m_videoResync = !m_videoResync;
 		break;
 	case 's':
 		// store volumes

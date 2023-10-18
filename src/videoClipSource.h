@@ -5,7 +5,7 @@
 class VideoClipSource {
 public:
 	void setup();
-	void update(float currentSongTimeMs);
+	void update(bool resync, float currentSongTimeMs, float& measuredDelayMs);
 	void draw(int targetWidth, int targetHeight);
 
 	void closeVideo();
