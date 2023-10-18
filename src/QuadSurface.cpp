@@ -11,10 +11,15 @@ QuadSurface::~QuadSurface(){
 
 void QuadSurface::setup(){
 	// Create 4 points for the 2 triangles
-	Vec3 p1 = Vec3(50, 50, 0.0f);
-	Vec3 p4 = Vec3(50, 450, 0.0f);
-	Vec3 p3 = Vec3(450, 450, 0.0f);
-	Vec3 p2 = Vec3(450, 50, 0.0f);
+	Vec3 p1 = Vec3(100, 100, 0.0f);
+	Vec3 p4 = Vec3(100, 880, 0.0f);
+	Vec3 p3 = Vec3(1720, 880, 0.0f);
+	Vec3 p2 = Vec3(1720, 100, 0.0f);
+
+	//Vec3 p1 = Vec3(50, 50, 0.0f);
+	//Vec3 p4 = Vec3(50, 650, 0.0f);
+	//Vec3 p3 = Vec3(850, 650, 0.0f);
+	//Vec3 p2 = Vec3(850, 50, 0.0f);
 
 	// Create 4 point for the texture coordinates
 	Vec2 t1 = Vec2(0.0f, 0.0f);
