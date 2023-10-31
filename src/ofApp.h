@@ -99,6 +99,8 @@ private:
 	unsigned int m_midiOutputIdx = 0;
 	unsigned int m_audioOutputIdx = 0;
 	std::string m_songsRootDir = "songs/";  // path to directory containing songs
+    std::string m_requestedAudioOutDevice = "";
+    ofSoundDevice::Api m_requestedAudioOutApi = ofSoundDevice::Api::DEFAULT;
 
 	// setlist data and state
 	std::vector<std::string> m_setlist;
@@ -117,6 +119,8 @@ private:
 	int m_quadMovedVertexIdx = -1;
 
 	// audio parameters
+    std::string m_openedAudioDeviceName = "";
+    ofSoundDevice::Api m_openedAudioDeviceApi;
 	unsigned int m_selectedVolumeSetting = 0;
 	bool m_stemMode = true;  // play stems separately instead of master if we find them
 	bool m_autoPlayNext = false;

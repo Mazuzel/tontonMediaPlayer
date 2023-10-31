@@ -118,6 +118,21 @@ void ofApp::loadHwConfig() {
 		{
 			m_sampleRate = settings.getValue("sample_rate", 22050);
 		}
+        if (settings.tagExists("requested_audio_out_device"))
+        {
+            m_requestedAudioOutDevice = settings.getValue("requested_audio_out_device", "");
+        }
+        if (settings.tagExists("requested_audio_out_api"))
+        {
+            string value = settings.getValue("requested_audio_out_api", "");
+            for (int i = 0; i <= ofSoundDevice::Api::NUM_APIS; i++)
+            {
+                if (value == toString((ofSoundDevice::Api)i))
+                {
+                    m_requestedAudioOutApi = (ofSoundDevice::Api)i;
+                }
+            }
+        }
 	}
 	else {
 		ofLogError() << "settings.xml not found, using default hw config";
@@ -144,14 +159,30 @@ int ofApp::openAudioOut()
 	settings.bufferSize = m_bufferSize;
 	settings.numBuffers = 1;
 
-	std::vector<ofSoundDevice> devices = soundStream.getMatchingDevices("Elektron Model:Cycles", UINT_MAX, 2, ofSoundDevice::Api::MS_WASAPI);
-	settings.setApi(ofSoundDevice::Api::MS_WASAPI);
-	settings.setOutDevice(devices[0]);
+    if (m_requestedAudioOutDevice.size() > 0)
+    {
+        std::vector<ofSoundDevice> devices = soundStream.getMatchingDevices(m_requestedAudioOutDevice, UINT_MAX, 2, m_requestedAudioOutApi);
+        if (devices.size() == 0)
+        {
+            ofLogError() << "Audio out device not found: " << m_requestedAudioOutDevice;
+            ofLog() << "Trying to connect to default audio device";
+        }
+        else
+        {
+            settings.setApi(m_requestedAudioOutApi);
+            settings.setOutDevice(devices[0]);
+        }
+    }
 
 	m_isAudioOutOpened = soundStream.setup(settings);
 	if (m_isAudioOutOpened)
 	{
 		soundStream.setOutput(output);
+        if (soundStream.getSoundStream() != nullptr)
+        {
+            m_openedAudioDeviceName = soundStream.getSoundStream()->getOutDevice().name;
+            m_openedAudioDeviceApi = soundStream.getSoundStream()->getOutDevice().api;
+        }
 	}
 	
 	return 0;
@@ -262,6 +293,12 @@ void ofApp::draw() {
 		drawMappingSetup();
 	}
 	m_fboMapping.end();
+    
+    ofSetColor(255);
+    ofDrawBitmapString("Audio out: ", 20, 15);
+    ofDrawBitmapString(m_openedAudioDeviceName, 100, 15);
+    ofDrawBitmapString("API:", 300, 15);
+    ofDrawBitmapString(toString(m_openedAudioDeviceApi), 330, 15);
 
 	ofSetColor(255);
 	if (m_setupMappingMode)
