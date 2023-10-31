@@ -87,6 +87,7 @@ void ofApp::setup(){
 	ofLog() << "init first song";
 
 	m_quadSurfaces.push_back(QuadSurface());
+    loadMappingNodes();
 
 	m_isDefaultShaderLoaded = m_defaultShader.load("shaders/default.vert", "shaders/bad_tv.frag");
 	ofLog() << "init default shader";
@@ -740,6 +741,68 @@ void ofApp::loadSongByIndex(unsigned int index)
 	loadSong();
 }
 
+void ofApp::saveMappingNodes()
+{
+    ofxXmlSettings settings;
+
+    settings.addTag("surfaces");
+    settings.pushTag("surfaces");
+    for (int i = 0; i < m_quadSurfaces.size(); i++)
+    {
+        settings.addTag("surface");
+        settings.pushTag("surface", i);
+        vector<Vec3> vertices = m_quadSurfaces[i].getVertices();
+        for (int j = 0; j < vertices.size(); j++)
+        {
+            settings.addTag("vertex");
+            settings.pushTag("vertex", j);
+            settings.addValue("x", int(vertices[j].x));
+            settings.addValue("y", int(vertices[j].y));
+            settings.popTag();
+        }
+        settings.popTag();
+    }
+    settings.popTag();
+    settings.save("mapping.xml");
+}
+
+void ofApp::loadMappingNodes()
+{
+    ofxXmlSettings settings;
+    if (!settings.load("mapping.xml"))
+    {
+        ofLogError() << "Failed to load mapping file (mapping.xml)";
+        return;
+    }
+    settings.pushTag("surfaces");
+    int numberOfSurfaces = settings.getNumTags("surface");
+    for (int i = 0; i < numberOfSurfaces; i++)
+    {
+        if (i >= m_quadSurfaces.size())
+        {
+            ofLogError() << "too many surfaces serialized into mapping.xml file";
+            break;
+        }
+        settings.pushTag("surface", i);
+        int numberOfVertices = settings.getNumTags("vertex");
+        if (numberOfVertices != 4)
+        {
+            ofLogError() << "unexpected surface in mapping.xml, with nb vertices = " << numberOfVertices;
+            break;
+        }
+        vector<Vec3> vertices = m_quadSurfaces[i].getVertices();
+        for (int j = 0; j < numberOfVertices; j++)
+        {
+            settings.pushTag("vertex", j);
+            vertices[j].x = settings.getValue("x", 0);
+            vertices[j].y = settings.getValue("y", 0);
+            settings.popTag();
+        }
+        m_quadSurfaces[i].setVertices(vertices);
+        settings.popTag();
+    }
+}
+
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
 	switch (key) {
@@ -846,6 +909,10 @@ void ofApp::keyPressed(int key){
 		startPlayback();
 		break;
 	case 'm':
+        if (m_setupMappingMode)
+        {
+            saveMappingNodes();
+        }
 		m_setupMappingMode = !m_setupMappingMode;
 		break;
 	case 'f':
