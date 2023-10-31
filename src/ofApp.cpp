@@ -297,14 +297,14 @@ void ofApp::draw() {
 	m_fboMapping.end();
     
     ofSetColor(255);
-    ofDrawBitmapString("Audio out: ", 20, 15);
-    ofDrawBitmapString(m_openedAudioDeviceName, 100, 15);
-    ofDrawBitmapString("API:", 300, 15);
-    ofDrawBitmapString(toString(m_openedAudioDeviceApi), 330, 15);
+    
+    std::stringstream strmAudioOut;
+    strmAudioOut << "Audio out: " << m_openedAudioDeviceName << " | Api: " << toString(m_openedAudioDeviceApi);
+    ofDrawBitmapString(strmAudioOut.str(), 20, 15);
     
     std::stringstream strmFps;
-    strmFps << ofGetFrameRate() << " fps";
-    ofDrawBitmapString(strmFps.str(), 450, 15);
+    strmFps << round(ofGetFrameRate()) << " fps";
+    ofDrawBitmapString(strmFps.str(), 400, 15);
 
 	ofSetColor(255);
 	if (m_setupMappingMode)
