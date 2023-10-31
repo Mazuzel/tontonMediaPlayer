@@ -90,6 +90,8 @@ void ofApp::setup(){
 
 	m_isDefaultShaderLoaded = m_defaultShader.load("shaders/default.vert", "shaders/bad_tv.frag");
 	ofLog() << "init default shader";
+    
+    ofSetFrameRate(24);
 }
 
 void ofApp::loadHwConfig() {
@@ -299,6 +301,10 @@ void ofApp::draw() {
     ofDrawBitmapString(m_openedAudioDeviceName, 100, 15);
     ofDrawBitmapString("API:", 300, 15);
     ofDrawBitmapString(toString(m_openedAudioDeviceApi), 330, 15);
+    
+    std::stringstream strmFps;
+    strmFps << ofGetFrameRate() << " fps";
+    ofDrawBitmapString(strmFps.str(), 450, 15);
 
 	ofSetColor(255);
 	if (m_setupMappingMode)
