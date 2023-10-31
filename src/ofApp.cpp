@@ -62,7 +62,7 @@ void ofApp::setup(){
 
 	ofxXmlSettings settings;
 	string filePath = "setlist.xml";
-	if (settings.loadFile(filePath)) {
+	if (settings.load(filePath)) {
 		settings.pushTag("setlist");
 		int numberOfSongs = settings.getNumTags("song");
 		for (int i = 0; i < numberOfSongs; i++) {
@@ -95,7 +95,7 @@ void ofApp::setup(){
 void ofApp::loadHwConfig() {
 	ofxXmlSettings settings;
 	string filePath = "settings.xml";
-	if (settings.loadFile(filePath)) {
+	if (settings.load(filePath)) {
 		settings.pushTag("settings");
 		m_midiOutputIdx = settings.getValue("midi_out", 0);
 		m_audioOutputIdx = settings.getValue("audio_out", 0);
@@ -468,7 +468,7 @@ void ofApp::loadSong()
 
 	ofxXmlSettings settings;
 	string filePath = m_songsRootDir + songName + "/export/structure.xml";
-	if (settings.loadFile(filePath)) {
+	if (settings.load(filePath)) {
 		settings.pushTag("structure");
 		settings.pushTag("songparts");
 		int numberOfParts = settings.getNumTags("songpart");
