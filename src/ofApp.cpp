@@ -221,6 +221,34 @@ void ofApp::update(){
 		float currentSongTimeMs = getCurrentSongTimeMs();
 		m_videoClipSource.update(m_videoResync, currentSongTimeMs, m_measuredVideoDelayMs);
 	}
+    
+    // drawing into fbo
+    m_fboSource.begin();
+    ofClear(0);
+    ofSetColor(255);
+    if (m_setupMappingMode)
+    {
+        // on dessine un arrière plan au cas où il n'y ait pas de vidéo
+        ofBackground(128);
+    }
+    if (m_isPlaying)
+    {
+        if (m_videoLoaded)
+        {
+            m_videoClipSource.draw(m_fboSource.getWidth(), m_fboSource.getHeight());
+        }
+        m_shadersSource.draw(m_fboSource.getWidth(), m_fboSource.getHeight(), metronome.getTickCount(), metronome.getPlaybackPositionMs() / 1000.0);
+    }
+    else if (m_isDefaultShaderLoaded)
+    {
+        m_defaultShader.begin();
+        m_defaultShader.setUniform1f("time", ofGetElapsedTimef());
+        m_defaultShader.setUniform1f("bpm", 60.0);
+        m_defaultShader.setUniform2f("resolution", m_fboSource.getWidth(), m_fboSource.getHeight());
+        ofDrawRectangle(0, 0, m_fboSource.getWidth(), m_fboSource.getHeight());
+        m_defaultShader.end();
+    }
+    m_fboSource.end();
 }
 
 //--------------------------------------------------------------
@@ -254,33 +282,6 @@ void ofApp::drawMappingSetup()
 //--------------------------------------------------------------
 void ofApp::draw() {
 	ofShowCursor();
-
-	m_fboSource.begin();
-	ofClear(0);
-	ofSetColor(255);
-	if (m_setupMappingMode)
-	{
-		// on dessine un arrière plan au cas où il n'y ait pas de vidéo
-		ofBackground(128);
-	}
-	if (m_isPlaying)
-	{
-		if (m_videoLoaded)
-		{
-			m_videoClipSource.draw(m_fboSource.getWidth(), m_fboSource.getHeight());
-		}
-		m_shadersSource.draw(m_fboSource.getWidth(), m_fboSource.getHeight(), metronome.getTickCount(), metronome.getPlaybackPositionMs() / 1000.0);
-	}
-	else if (m_isDefaultShaderLoaded)
-	{
-		m_defaultShader.begin();
-		m_defaultShader.setUniform1f("time", ofGetElapsedTimef());
-		m_defaultShader.setUniform1f("bpm", 60.0);
-		m_defaultShader.setUniform2f("resolution", m_fboSource.getWidth(), m_fboSource.getHeight());
-		ofDrawRectangle(0, 0, m_fboSource.getWidth(), m_fboSource.getHeight());
-		m_defaultShader.end();
-	}
-	m_fboSource.end();
 
 	m_fboMapping.begin();
 	ofClear(0, 0, 0, 255);
