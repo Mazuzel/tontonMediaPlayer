@@ -16,7 +16,7 @@ int main() {
 	shared_ptr<ofAppBaseWindow> dawWindow = ofCreateWindow(settings);
 
 	// secondary window (mapping)
-	settings.setSize(800, 600);
+	settings.setSize(1600, 1000);
 	settings.setPosition(glm::vec2(0, 30));
 	settings.resizable = true;
 	settings.windowMode = OF_WINDOW;
