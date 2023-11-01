@@ -457,8 +457,6 @@ void ofApp::exit() {
 
 //------------- Changing state --------------------------------
 
-// TODO add lock system to avoid contradictory actions
-
 void ofApp::stopPlayback()
 {
     mixer.setMasterVolume(0);
