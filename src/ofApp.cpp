@@ -856,70 +856,14 @@ void ofApp::keyPressed(int key){
 		}
         m_lastSongChangeTime = ofGetElapsedTimef();
 		break;
-	case '0':
-		loadSongByIndex(0);
-		startPlayback();
-		break;
-	case '1':
-		loadSongByIndex(1);
-		startPlayback();
-		break;
-	case '2':
-		loadSongByIndex(2);
-		startPlayback();
-		break;
-	case '3':
-		loadSongByIndex(3);
-		startPlayback();
-		break;
-	case '4':
-		loadSongByIndex(4);
-		startPlayback();
-		break;
-	case '5':
-		loadSongByIndex(5);
-		startPlayback();
-		break;
-	case '6':
-		loadSongByIndex(6);
-		startPlayback();
-		break;
-	case '7':
-		loadSongByIndex(7);
-		startPlayback();
-		break;
-	case '8':
-		loadSongByIndex(8);
-		startPlayback();
-		break;
-	case '9':
-		loadSongByIndex(9);
-		startPlayback();
-		break;
-	case 'a':
-		loadSongByIndex(10);
-		startPlayback();
-		break;
-	case 'z':
-		loadSongByIndex(11);
-		startPlayback();
-		break;
-	case 'e':
-		loadSongByIndex(12);
-		startPlayback();
-		break;
-	case 'r':
-		loadSongByIndex(13);
-		startPlayback();
-		break;
-	case 't':
-		loadSongByIndex(14);
-		startPlayback();
-		break;
-	case 'y':
-		loadSongByIndex(15);
-		startPlayback();
-		break;
+	case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
+        {
+            // C and C++ store characters as integers using their underlying ASCII codes, so '0' is 48, '1' is 49, and so on.
+            int number = key - '0';
+            loadSongByIndex(number);
+            startPlayback();
+            break;
+        }
 	case 'm':
         if (m_setupMappingMode)
         {
