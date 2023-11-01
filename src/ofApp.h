@@ -137,4 +137,8 @@ private:
 
 	// video monitoring
 	float m_measuredVideoDelayMs = 0.0;
+    
+    // debounce
+    float m_lastSongReloadTime;
+    float m_lastSongChangeTime;
 };

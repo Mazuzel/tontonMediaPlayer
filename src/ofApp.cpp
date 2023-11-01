@@ -813,29 +813,40 @@ void ofApp::keyPressed(int key){
 		startPlayback();
 		break;
 	case OF_KEY_LEFT:
+        if (!m_isPlaying && (ofGetElapsedTimef() - m_lastSongReloadTime < 1.0))
+            break;
 		stopPlayback();
 		loadSong();
+        m_lastSongReloadTime = ofGetElapsedTimef();
 		break;
 	case OF_KEY_UP:
+        if (ofGetElapsedTimef() - m_lastSongChangeTime < 0.1)
+            break;
 		stopPlayback();
 		if (m_currentSongIndex > 0)
 		{
 			m_currentSongIndex -= 1;
 			loadSong();
 		}
+        m_lastSongChangeTime = ofGetElapsedTimef();
 		break;
 	case 'N':  // next song part
 		jumpToNextPart();
 		break;
 	case OF_KEY_DOWN:
+        if (ofGetElapsedTimef() - m_lastSongChangeTime < 0.1)
+            break;
 		stopPlayback();
 		if (m_currentSongIndex < m_setlist.size() - 1)
 		{
 			m_currentSongIndex += 1;
 			loadSong();
 		}
+        m_lastSongChangeTime = ofGetElapsedTimef();
 		break;
 	case 'p':
+        if (ofGetElapsedTimef() - m_lastSongChangeTime < 0.1)
+            break;
 		stopPlayback();
 		if (m_currentSongIndex < m_setlist.size() - 1)
 		{
@@ -843,6 +854,7 @@ void ofApp::keyPressed(int key){
 			loadSong();
 			startPlayback();
 		}
+        m_lastSongChangeTime = ofGetElapsedTimef();
 		break;
 	case '0':
 		loadSongByIndex(0);
