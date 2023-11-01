@@ -461,6 +461,7 @@ void ofApp::exit() {
 
 void ofApp::stopPlayback()
 {
+    mixer.setMasterVolume(0);
 	metronome.setEnabled(false);
 	if (midiOut.isOpen())
 	{
@@ -470,7 +471,6 @@ void ofApp::stopPlayback()
 	for (int i = 0; i < players.size(); i++) {
 		players[i]->stop();
 	}
-	mixer.setMasterVolume(0);
 
 	m_isPlaying = false;
 	ofSleepMillis(4);
