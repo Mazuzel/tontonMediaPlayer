@@ -565,17 +565,6 @@ void ofApp::loadSong()
 	vector<string> trackFilesToLoad;
 	for (int i = 0; i < dir.size(); i++) {
 		string trackName = fs::path(dir.getPath(i)).filename().string();
-
-		if (!m_stemMode && trackName != "master.wav")
-		{
-			continue;
-		}
-		else if (m_stemMode && dir.size() > 1 && trackName == "master.wav")
-		{
-			// if stem mode we ignore master, excepted when there is only one master audio
-			continue;
-		}
-
 		trackFilesToLoad.push_back(dir.getPath(i));
 	}
 

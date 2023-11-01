@@ -124,7 +124,6 @@ private:
     std::string m_openedAudioDeviceName = "";
     ofSoundDevice::Api m_openedAudioDeviceApi;
 	unsigned int m_selectedVolumeSetting = 0;
-	bool m_stemMode = true;  // play stems separately instead of master if we find them
 	bool m_autoPlayNext = false;
 
 	// video parameters
