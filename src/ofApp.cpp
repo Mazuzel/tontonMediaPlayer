@@ -300,6 +300,9 @@ void ofApp::draw() {
     
     ofSetColor(255);
     
+    // mini-view of the video window
+    m_fboSource.draw(20, 300, 180, 140);
+    
     std::stringstream strmAudioOut;
     strmAudioOut << "Audio out: " << m_openedAudioDeviceName << " | Api: " << toString(m_openedAudioDeviceApi);
     ofDrawBitmapString(strmAudioOut.str(), 20, 15);
