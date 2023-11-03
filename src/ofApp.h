@@ -80,7 +80,6 @@ private:
 	vector<string> playersNames;
 	Metronome metronome;
 	std::vector<std::string> m_midiOutDevices;
-	std::vector<ofSoundDevice> m_audioDevices;
 	ofxMidiOut midiOut;
 	ofxMidiIn midiIn;
 	unsigned int m_sampleRate = 22050;

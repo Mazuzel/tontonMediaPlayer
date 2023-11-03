@@ -10,15 +10,12 @@ namespace fs = std::filesystem;
 void ofApp::setup(){
 
 	ofSetLogLevel(OF_LOG_VERBOSE);
-
 	ofBackground(0);
 
-	// print devices list
-	m_midiOutDevices = midiOut.getOutPortList();
-	m_audioDevices = soundStream.getDeviceList(ofSoundDevice::MS_WASAPI);
-
-	// print devices selected by config
 	loadHwConfig();
+
+	ofLog() << "--------------------Midi out-------------------------";
+	m_midiOutDevices = midiOut.getOutPortList();
 	ofLog() << "Midi out devices:";
 	for (int idx = 0; idx < m_midiOutDevices.size(); idx++)
 	{
@@ -31,6 +28,7 @@ void ofApp::setup(){
 			ofLog() << m_midiOutDevices[idx];
 		}
 	}
+	ofLog() << "------------------------------------------------------";
 
 	// ----------------------------------------
 	// midi in (clock)
@@ -124,17 +122,19 @@ void ofApp::loadHwConfig() {
         if (settings.tagExists("requested_audio_out_device"))
         {
             m_requestedAudioOutDevice = settings.getValue("requested_audio_out_device", "");
+			ofLog() << "Requested audio out device value from settings: " << m_requestedAudioOutDevice;
         }
         if (settings.tagExists("requested_audio_out_api"))
         {
             string value = settings.getValue("requested_audio_out_api", "");
-            for (int i = 0; i <= ofSoundDevice::Api::NUM_APIS; i++)
-            {
-                if (value == toString((ofSoundDevice::Api)i))
-                {
-                    m_requestedAudioOutApi = (ofSoundDevice::Api)i;
-                }
-            }
+			ofLog() << "Requested audio out API value from settings: " << value;
+			for (int i = ofSoundDevice::ALSA; i < ofSoundDevice::NUM_APIS; i++)
+			{
+				if (value == to_string((ofSoundDevice::Api)i))
+				{
+					m_requestedAudioOutApi = (ofSoundDevice::Api)i;
+				}
+			}
         }
 	}
 	else {
@@ -162,9 +162,14 @@ int ofApp::openAudioOut()
 	settings.bufferSize = m_bufferSize;
 	settings.numBuffers = 1;
 
+	ofLog() << "--------------------Audio out-------------------------";
+	soundStream.printDeviceList();
+
+	ofLog() << "----     Connecting...";
+
     if (m_requestedAudioOutDevice.size() > 0)
     {
-        std::vector<ofSoundDevice> devices = soundStream.getMatchingDevices(m_requestedAudioOutDevice, UINT_MAX, 2, m_requestedAudioOutApi);
+        std::vector<ofSoundDevice> devices = soundStream.getMatchingDevices(m_requestedAudioOutDevice, UINT_MAX, 2, ofSoundDevice::MS_WASAPI);
         if (devices.size() == 0)
         {
             ofLogError() << "Audio out device not found: " << m_requestedAudioOutDevice;
@@ -183,10 +188,18 @@ int ofApp::openAudioOut()
 		soundStream.setOutput(output);
         if (soundStream.getSoundStream() != nullptr)
         {
-            m_openedAudioDeviceName = soundStream.getSoundStream()->getOutDevice().name;
+			string fullDevName = soundStream.getSoundStream()->getOutDevice().name;
+			int idx0 = fullDevName.find("(");
+			int idx1 = fullDevName.find(")");
+			if (idx1 > idx0)
+				m_openedAudioDeviceName = fullDevName.substr(idx0 + 1, idx1 - idx0 - 1);
+			else
+				m_openedAudioDeviceName = fullDevName;
             m_openedAudioDeviceApi = soundStream.getSoundStream()->getOutDevice().api;
         }
 	}
+
+	ofLog() << "------------------------------------------------------";
 	
 	return 0;
 }
@@ -304,12 +317,12 @@ void ofApp::draw() {
     m_fboSource.draw(20, 300, 180, 140);
     
     std::stringstream strmAudioOut;
-    strmAudioOut << "Audio out: " << m_openedAudioDeviceName << " | Api: " << toString(m_openedAudioDeviceApi);
+    strmAudioOut << "Audio out: " << m_openedAudioDeviceName << "(" << toString(m_openedAudioDeviceApi) << ")";
     ofDrawBitmapString(strmAudioOut.str(), 20, 15);
     
     std::stringstream strmFps;
     strmFps << round(ofGetFrameRate()) << " fps";
-    ofDrawBitmapString(strmFps.str(), 400, 15);
+    ofDrawBitmapString(strmFps.str(), 420, 15);
 
 	ofSetColor(255);
 	if (m_setupMappingMode)
