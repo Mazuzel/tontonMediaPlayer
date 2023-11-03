@@ -327,8 +327,8 @@ void ofApp::drawHelp()
 {
 	ofSetColor(150);
 	ofDrawBitmapString(
-		"f: fullscreen, m: mapping, v: sel. stem, n: vol. up, b: vol. down, s: store vols, Q: quit, p: launch next",
-		20,
+		"f:fullscreen, m:mapping, v:sel. stem, n:vol. up, b:vol. down, s:store vols, Q:quit, p:launch next",
+		10,
 		580);
 }
 
