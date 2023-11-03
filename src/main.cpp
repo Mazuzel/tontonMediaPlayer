@@ -9,7 +9,7 @@ int main() {
 
 	// main window (daw)
 	settings.setSize(800, 600);
-	settings.setPosition(glm::vec2(300, 30));
+	settings.setPosition(glm::vec2(10, 30));
 	settings.resizable = false;
 	settings.windowMode = OF_WINDOW;
 	settings.monitor = 1;
@@ -17,7 +17,7 @@ int main() {
 
 	// secondary window (mapping)
 	settings.setSize(1600, 1000);
-	settings.setPosition(glm::vec2(0, 30));
+	settings.setPosition(glm::vec2(300, 30));
 	settings.resizable = true;
 	settings.windowMode = OF_WINDOW;
 	settings.monitor = 0;
