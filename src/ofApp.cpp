@@ -380,14 +380,15 @@ void ofApp::drawSequencerPage()
 
 	displayList(550, 50, "Setlist (up/down: change)", m_setlist, m_currentSongIndex, true);
 
-	ofDrawBitmapString("Measured video delay (ms):", 500, 450);
-	ofDrawBitmapString(m_measuredVideoDelayMs, 710, 450);
-
-	ofDrawBitmapString("Song", 20, 450);
+    int ySeq = 480;
+    ofDrawBitmapString("Measured video delay (ms):", 500, ySeq);
+    ofDrawBitmapString(m_measuredVideoDelayMs, 710, ySeq);
+    
+	ofDrawBitmapString("Song", 20, ySeq);
 	ofSetColor(150);
-	ofDrawBitmapString("(<- | N | ->)", 60, 450);
+	ofDrawBitmapString("(<- | N | ->)", 60, ySeq);
 	ofSetColor(50);
-	ofDrawRectangle(15, 475, 770, 50);
+	ofDrawRectangle(15, ySeq + 25, 770, 50);
 	int songTicks = m_songEvents[m_songEvents.size() - 1].tick;
 	for (int i = 0; i < m_songEvents.size()-1; i++)
 	{
@@ -399,19 +400,19 @@ void ofApp::drawSequencerPage()
 			127 * (m_songEvents[i].program % 2),
 			255 - 15 * (m_songEvents[i].program % 16)
 		);
-		ofDrawRectangle(x, 480, w, 40);
+		ofDrawRectangle(x, ySeq + 30, w, 40);
 	}
 	ofSetColor(0, 0, 0);
 	for (int i = 0; i < m_songEvents.size() - 1; i++)
 	{
 		int x = 20 + 760 * (int)m_songEvents[i].tick / songTicks;
 		int w = 760 * ((int)m_songEvents[i + 1].tick - (int)m_songEvents[i].tick) / songTicks;
-		ofDrawBitmapString(m_songEvents[i].programName, x + 0.5 * w - 10, 500);
+		ofDrawBitmapString(m_songEvents[i].programName, x + 0.5 * w - 10, ySeq + 50);
 	}
 	ofSetColor(255);
 
-	ofDrawRectangle(20 + 760 * metronome.getTickCount() / songTicks - 2, 480, 4, 40);
-	ofDrawBitmapString(metronome.getTickCount() + 1, 20, 465);
+	ofDrawRectangle(20 + 760 * metronome.getTickCount() / songTicks - 2, ySeq + 30, 4, 40);
+	ofDrawBitmapString(metronome.getTickCount() + 1, 20, ySeq + 15);
 }
 
 void ofApp::displayList(unsigned int x, unsigned int y, string title, vector<string> elements, unsigned int selectedElement, bool showIndex)
