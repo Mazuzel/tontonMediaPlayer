@@ -71,6 +71,7 @@ private:
 	void loadSongByIndex(unsigned int index);
     void saveMappingNodes();
     void loadMappingNodes();
+	void loadPiMapperSurfaces();
 
 	// internal sound and midi handlers
 	ofSoundStream soundStream;
@@ -100,6 +101,7 @@ private:
 	unsigned int m_midiOutputIdx = 0;
 	unsigned int m_audioOutputIdx = 0;
 	std::string m_songsRootDir = "songs/";  // path to directory containing songs
+	std::string m_mappingConfigFileOverride = "";
     std::string m_requestedAudioOutDevice = "";
     ofSoundDevice::Api m_requestedAudioOutApi = ofSoundDevice::Api::DEFAULT;
 

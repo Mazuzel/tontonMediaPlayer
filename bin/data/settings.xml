@@ -12,4 +12,5 @@
 	<sample_rate>44100</sample_rate>
 	<requested_audio_out_api>WASAPI</requested_audio_out_api>
 	<requested_audio_out_device>Elektron Model:Cycles</requested_audio_out_device>
+	<load_pi_mapper_config>E:/Dev/OF/apps/myApps/monsterize/bin/data/ofxpimapper.xml</load_pi_mapper_config>
 </settings>
