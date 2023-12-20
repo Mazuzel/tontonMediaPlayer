@@ -188,6 +188,7 @@
     <ClCompile Include="src\ofApp.cpp" />
     <ClCompile Include="src\metronome.cpp" />
     <ClCompile Include="src\QuadSurface.cpp" />
+    <ClCompile Include="src\shadersSource.cpp" />
     <ClCompile Include="src\Types\Vec2.cpp" />
     <ClCompile Include="src\Types\Vec3.cpp" />
     <ClCompile Include="src\Utils\HomographyHelper.cpp" />
@@ -232,11 +233,13 @@
     <ClCompile Include="..\..\..\addons\ofxXmlSettings\libs\tinyxml.cpp" />
     <ClCompile Include="..\..\..\addons\ofxXmlSettings\libs\tinyxmlerror.cpp" />
     <ClCompile Include="..\..\..\addons\ofxXmlSettings\libs\tinyxmlparser.cpp" />
+    <ClCompile Include="src\volumesDb.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ofApp.h" />
     <ClInclude Include="src\metronome.h" />
     <ClInclude Include="src\QuadSurface.h" />
+    <ClInclude Include="src\shadersSource.h" />
     <ClInclude Include="src\Types\Vec2.h" />
     <ClInclude Include="src\Types\Vec3.h" />
     <ClInclude Include="src\Utils\HomographyHelper.h" />
@@ -295,6 +298,7 @@
     <ClInclude Include="..\..\..\addons\ofxSoundObjects\src\SoundObjects\waveformDraw.h" />
     <ClInclude Include="..\..\..\addons\ofxXmlSettings\src\ofxXmlSettings.h" />
     <ClInclude Include="..\..\..\addons\ofxXmlSettings\libs\tinyxml.h" />
+    <ClInclude Include="src\volumesDb.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(OF_ROOT)\libs\openFrameworksCompiled\project\vs\openframeworksLib.vcxproj">
