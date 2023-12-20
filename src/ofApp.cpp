@@ -780,13 +780,10 @@ void ofApp::loadMappingNodes()
     }
     settings.pushTag("surfaces");
     int numberOfSurfaces = settings.getNumTags("surface");
+	m_quadSurfaces.clear();
     for (int i = 0; i < numberOfSurfaces; i++)
     {
-        if (i >= m_quadSurfaces.size())
-        {
-            ofLogError() << "too many surfaces serialized into mapping.xml file";
-            break;
-        }
+		m_quadSurfaces.push_back(QuadSurface());
         settings.pushTag("surface", i);
         int numberOfVertices = settings.getNumTags("vertex");
         if (numberOfVertices != 4)
