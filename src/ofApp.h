@@ -88,7 +88,7 @@ private:
 	// internal video handlers
 	VideoClipSource m_videoClipSource;
 	std::vector<QuadSurface> m_quadSurfaces;
-	ofFbo m_fboSource;
+	std::vector<ofFbo> m_fboSources;
 	ofFbo m_fboMapping;
 	bool m_videoLoaded;
 

@@ -36,7 +36,7 @@ void ShadersSource::setup(std::vector<songEvent> songEvents)
     }
 }
 
-void ShadersSource::draw(int targetWidth, int targetHeight, int ticks, float time)
+void ShadersSource::draw(int targetWidth, int targetHeight, int ticks, float time, int screenId)
 {
     while (m_currentSongPartIndex < m_events.size() && ticks >= m_events[m_currentSongPartIndex + 1].tick)
     {
@@ -50,6 +50,7 @@ void ShadersSource::draw(int targetWidth, int targetHeight, int ticks, float tim
         m_shaders[m_events[m_currentSongPartIndex].shader].setUniform1f("time", time);
         m_shaders[m_events[m_currentSongPartIndex].shader].setUniform1f("bpm", m_events[m_currentSongPartIndex].bpm);
         m_shaders[m_events[m_currentSongPartIndex].shader].setUniform2f("resolution", targetWidth, targetHeight);
+        m_shaders[m_events[m_currentSongPartIndex].shader].setUniform1i("screenId", screenId);
         ofDrawRectangle(0, 0, targetWidth, targetHeight);
         m_shaders[m_events[m_currentSongPartIndex].shader].end();
     }

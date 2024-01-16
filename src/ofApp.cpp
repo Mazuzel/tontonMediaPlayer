@@ -51,9 +51,6 @@ void ofApp::setup(){
 	openAudioOut();
 	ofLog() << "init audio out";
 
-	m_fboSource.allocate(960, 540, GL_RGBA);
-	m_fboMapping.allocate(1920, 1080, GL_RGBA);
-
 	// chargement setlist
 	ofDirectory dir;
 	dir.listDir(m_songsRootDir);
@@ -93,6 +90,14 @@ void ofApp::setup(){
 	{
 		loadMappingNodes();
 	}
+
+	for (uint32_t i = 0; i < m_quadSurfaces.size(); i++)
+	{
+		ofFbo fbo;
+		fbo.allocate(960, 540, GL_RGBA);
+		m_fboSources.push_back(fbo);
+	}
+	m_fboMapping.allocate(1920, 1080, GL_RGBA);
 
 	m_isDefaultShaderLoaded = m_defaultShader.load("shaders/default.vert", "shaders/bad_tv.frag");
 	ofLog() << "init default shader";
@@ -252,32 +257,35 @@ void ofApp::update(){
 	}
     
     // drawing into fbo
-    m_fboSource.begin();
-    ofClear(0);
-    ofSetColor(255);
-    if (m_setupMappingMode)
-    {
-        // on dessine un arrière plan au cas où il n'y ait pas de vidéo
-        ofBackground(128);
-    }
-    if (m_isPlaying)
-    {
-        if (m_videoLoaded)
-        {
-            m_videoClipSource.draw(m_fboSource.getWidth(), m_fboSource.getHeight());
-        }
-        m_shadersSource.draw(m_fboSource.getWidth(), m_fboSource.getHeight(), metronome.getTickCount(), metronome.getPlaybackPositionMs() / 1000.0);
-    }
-    else if (m_isDefaultShaderLoaded)
-    {
-        m_defaultShader.begin();
-        m_defaultShader.setUniform1f("time", ofGetElapsedTimef());
-        m_defaultShader.setUniform1f("bpm", 60.0);
-        m_defaultShader.setUniform2f("resolution", m_fboSource.getWidth(), m_fboSource.getHeight());
-        ofDrawRectangle(0, 0, m_fboSource.getWidth(), m_fboSource.getHeight());
-        m_defaultShader.end();
-    }
-    m_fboSource.end();
+	for (uint32_t i = 0; i < m_fboSources.size(); i++)
+	{
+		m_fboSources[i].begin();
+		ofClear(0);
+		ofSetColor(255);
+		if (m_setupMappingMode)
+		{
+			// on dessine un arrière plan au cas où il n'y ait pas de vidéo
+			ofBackground(128);
+		}
+		if (m_isPlaying)
+		{
+			if (m_videoLoaded)
+			{
+				m_videoClipSource.draw(m_fboSources[i].getWidth(), m_fboSources[i].getHeight());
+			}
+			m_shadersSource.draw(m_fboSources[i].getWidth(), m_fboSources[i].getHeight(), metronome.getTickCount(), metronome.getPlaybackPositionMs() / 1000.0, i);
+		}
+		else if (m_isDefaultShaderLoaded)
+		{
+			m_defaultShader.begin();
+			m_defaultShader.setUniform1f("time", ofGetElapsedTimef());
+			m_defaultShader.setUniform1f("bpm", 60.0);
+			m_defaultShader.setUniform2f("resolution", m_fboSources[i].getWidth(), m_fboSources[i].getHeight());
+			ofDrawRectangle(0, 0, m_fboSources[i].getWidth(), m_fboSources[i].getHeight());
+			m_defaultShader.end();
+		}
+		m_fboSources[i].end();
+	}
 }
 
 //--------------------------------------------------------------
@@ -317,7 +325,7 @@ void ofApp::draw() {
 	ofSetColor(255);
 	for (int i = 0; i < m_quadSurfaces.size(); i++)
 	{
-		m_quadSurfaces[i].draw(m_fboSource.getTexture());
+		m_quadSurfaces[i].draw(m_fboSources[i].getTexture());
 	}
 
 	if (m_setupMappingMode)
@@ -329,7 +337,7 @@ void ofApp::draw() {
     ofSetColor(255);
     
     // mini-view of the video window
-    m_fboSource.draw(20, 300, 180, 140);
+    m_fboSources[0].draw(20, 300, 180, 140);
     
     std::stringstream strmAudioOut;
     strmAudioOut << "Audio out: " << m_openedAudioDeviceName << "(" << toString(m_openedAudioDeviceApi) << ")";

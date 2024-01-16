@@ -13,7 +13,7 @@ struct shaderEvent {
 class ShadersSource {
 public:
 	void setup(std::vector<songEvent> songEvents);
-	void draw(int targetWidth, int targetHeight, int ticks, float time);
+	void draw(int targetWidth, int targetHeight, int ticks, float time, int screenId);
 
 private:
 	std::map<std::string, ofShader> m_shaders;

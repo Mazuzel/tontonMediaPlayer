@@ -1,11 +1,15 @@
 #include "ofMain.h"
 #include "ofApp.h"
 #include "ofAppGLFWWindow.h"
+#include "ofxXmlSettings.h"
 
 //========================================================================
 int main() {
 
 	ofGLFWWindowSettings settings;
+
+	ofxXmlSettings xmlSettings;
+	xmlSettings.loadFile("settings.xml");
 
 	// main window (daw)
 	settings.setSize(800, 600);
@@ -16,8 +20,12 @@ int main() {
 	shared_ptr<ofAppBaseWindow> dawWindow = ofCreateWindow(settings);
 
 	// secondary window (mapping)
-	settings.setSize(1800, 1200);
-	settings.setPosition(glm::vec2(20, 20));
+	int x = xmlSettings.getValue("settings:window_pos_x", 20);
+	int y = xmlSettings.getValue("settings:window_pos_y", 20);
+	int w = xmlSettings.getValue("settings:window_pos_w", 1800);
+	int h = xmlSettings.getValue("settings:window_pos_h", 1200);
+	settings.setSize(w, h);
+	settings.setPosition(glm::vec2(x, y));
 	settings.resizable = true;
 	settings.windowMode = OF_WINDOW;
 	settings.monitor = 0;
