@@ -1,5 +1,6 @@
 # Tonton Media Player
 
+DIY software for commanding live audio, groove machines, and video!
 ![](demo/main.jpg)
 Main screen
 
@@ -26,7 +27,10 @@ Pressing 'm' enters mapping mode where you can drag and drop the mapping nodes.
 ### Setlist
 Songs structures are defined into xml files. A setlist definition file can also be provided to sort properly the songs for a live set.
 
-## Openframeworks addons needed to build Tonton Media Player
+## Development
+Tonton Media Player is based on Openframeworks (our favorite creative coding framework): https://openframeworks.cc/
+
+It needs the following addons to build:
 * ofxGui
 * ofxXmlSettings
 * ofxAudioFile [download here: https://github.com/npisanti/ofxAudioFile]
@@ -34,4 +38,4 @@ Songs structures are defined into xml files. A setlist definition file can also 
 * ofxSoundObjects [download here: https://github.com/Mazuzel/ofxSoundObjects.git] (forked from https://github.com/roymacdonald/ofxSoundObjects)
 
 ## Note
-Tonton Media Player is a DIY software from and for **Maman ! J'ai Peur** band (https://mamanjaipeur.bandcamp.com). Development is still ongoing. Want to chat about it ? Don't hesitate to chat with us at maaamanjaipeuuur@gmail.com. We would be happy to share our software and our knowledge to help the music community.
+Tonton Media Player is a DIY software from and for **Maman ! J'ai Peur** band (https://mamanjaipeur.bandcamp.com). Development is still ongoing. Want to chat about it ? Don't hesitate to reach us at maaamanjaipeuuur@gmail.com or on social media (instagram: @mamangpeur). We would be happy to share our software and our knowledge to help the music community.
