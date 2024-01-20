@@ -6,8 +6,8 @@ Metronome::Metronome():ofxSoundObject(OFX_SOUND_OBJECT_PROCESSOR) {
 	m_ticksPerBeat = 24;
 }
 
-void Metronome::setMidiOut(ofxMidiOut& midiOut) {
-	m_midiOut = midiOut;
+void Metronome::setMidiOuts(std::vector<ofxMidiOut>& midiOuts) {
+	m_midiOuts = midiOuts;
 }
 
 Metronome::~Metronome() {
@@ -37,11 +37,17 @@ const unsigned int Metronome::getCurrentSongPartIdx() const
 	return m_currentSongPartIndex;
 }
 
+const bool Metronome::loopEndReached() const
+{
+	return m_loopEndReached;
+}
+
 void Metronome::setCurrentSongPartIdx(unsigned int newSongPartIdx)
 {
 	m_currentSongPartIndex = newSongPartIdx;
 	m_totalTickCount = m_songEvents[m_currentSongPartIndex].tick;
 	m_tickCountStartThreshold = m_totalTickCount + 4;
+	m_loopEndReached = false;
 }
 
 double Metronome::getPlaybackPositionMs() const
@@ -86,19 +92,32 @@ void Metronome::setEnabled(bool enabled) {
 	m_enabled = enabled;
 }
 
+void Metronome::setLoopMode(bool loop)
+{
+	m_loop = loop;
+}
+
 void Metronome::tick() {
-	if (m_midiOut.isOpen())
+	for each (auto midiOut in m_midiOuts)
 	{
-		m_midiOut << StartMidi() << 0xF8 << FinishMidi();
+		if (midiOut.isOpen())
+		{
+			midiOut << StartMidi() << 0xF8 << FinishMidi();
+		}
 	}
+
 }
 
 void Metronome::sendNextProgramChange() {
-	if (m_midiOut.isOpen())
+	for each (auto midiOut in m_midiOuts)
 	{
-		ofLog() << "sending PCh " << m_songEvents[m_currentSongPartIndex].program << " to external midi";
-		m_midiOut.sendProgramChange(10, m_songEvents[m_currentSongPartIndex].program);
+		if (midiOut.isOpen())
+		{
+			ofLog() << "sending PCh " << m_songEvents[m_currentSongPartIndex].program << " to external midi";
+			midiOut.sendProgramChange(10, m_songEvents[m_currentSongPartIndex].program);
+		}
 	}
+
 	m_samplesPerTick = (m_sampleRate * 60.0f) / m_songEvents[m_currentSongPartIndex].bpm / m_ticksPerBeat;
 }
 
@@ -148,6 +167,10 @@ void Metronome::process(ofSoundBuffer& input, ofSoundBuffer& output) {
 			{
 				m_currentSongPartIndex += 1;
 				sendNextProgramChange();
+				if (m_loop)
+				{
+					m_loopEndReached = true;
+				}
 			}
 
 			if (m_ticksLate >= -1)

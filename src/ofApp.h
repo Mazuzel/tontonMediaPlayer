@@ -62,6 +62,7 @@ private:
 	int openAudioOut();
 	void loadHwConfig();
 	void jumpToNextPart();
+	void jumpToPreviousPart();
 	unsigned int m_startingSongPart = 1;
 	void drawMappingSetup();
 	void drawHelp();
@@ -81,7 +82,7 @@ private:
 	vector<string> playersNames;
 	Metronome metronome;
 	std::vector<std::string> m_midiOutDevices;
-	ofxMidiOut midiOut;
+	std::vector<ofxMidiOut> midiOuts;
 	ofxMidiIn midiIn;
 	unsigned int m_sampleRate = 22050;
 
@@ -98,7 +99,7 @@ private:
 	// settings.xml
 	unsigned int m_bufferSize = 128;
 	unsigned int m_midiInputIdx = 0;
-	unsigned int m_midiOutputIdx = 0;
+	std::vector<unsigned int> m_midiOutPorts;
 	unsigned int m_audioOutputIdx = 0;
 	std::string m_songsRootDir = "songs/";  // path to directory containing songs
 	std::string m_mappingConfigFileOverride = "";
@@ -126,6 +127,9 @@ private:
     ofSoundDevice::Api m_openedAudioDeviceApi;
 	unsigned int m_selectedVolumeSetting = 0;
 	bool m_autoPlayNext = false;
+
+	// loop mode
+	bool m_loop = false;
 
 	// video parameters
 	unsigned int m_videoStartDelayMs = 0;

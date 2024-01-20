@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <settings>
-	<midi_out>1</midi_out>
+	<midi_out_ports>
+		<midi_out><port>2</port></midi_out>
+		<midi_out><port>1</port></midi_out>
+	</midi_out_ports>
 	<audio_out>2</audio_out>
 	<midi_in>0</midi_in>
 	<buffer_size>128</buffer_size>

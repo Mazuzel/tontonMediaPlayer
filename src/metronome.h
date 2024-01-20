@@ -17,19 +17,22 @@ public:
 	Metronome();
 	virtual ~Metronome();
 
-	void setMidiOut(ofxMidiOut& midiOut);
+	void setMidiOuts(std::vector<ofxMidiOut>& midiOuts);
 
 	void setNewSong(std::vector<songEvent> songEvents);
 
 	void process(ofSoundBuffer& input, ofSoundBuffer& output);
 
-	ofxMidiOut m_midiOut;
+	std::vector<ofxMidiOut> m_midiOuts;
 
 	void sendNextProgramChange();
 
 	void setEnabled(bool enabled);
 
 	bool isSongEnded();
+
+	void setLoopMode(bool loop);
+	const bool loopEndReached() const;
 
 	const unsigned int getTickCount() const;
 	double getPlaybackPositionMs() const;
@@ -44,6 +47,9 @@ public:
 private:
 
 	void tick();
+
+	bool m_loop = false;
+	bool m_loopEndReached = false;
 
 	bool m_enabled = false;
 

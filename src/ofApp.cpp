@@ -15,18 +15,12 @@ void ofApp::setup(){
 	loadHwConfig();
 
 	ofLog() << "--------------------Midi out-------------------------";
-	m_midiOutDevices = midiOut.getOutPortList();
+	ofxMidiOut testMidiOut;
+	m_midiOutDevices = testMidiOut.getOutPortList();
 	ofLog() << "Midi out devices:";
 	for (int idx = 0; idx < m_midiOutDevices.size(); idx++)
 	{
-		if (idx == m_midiOutputIdx)
-		{
-			ofLog() << "*" << m_midiOutDevices[idx] << "(selected)";
-		}
-		else
-		{
 			ofLog() << m_midiOutDevices[idx];
-		}
 	}
 	ofLog() << "------------------------------------------------------";
 
@@ -46,7 +40,9 @@ void ofApp::setup(){
 	// ----------------------------------------
 	openMidiOut();
 	// set metronome controls
-	metronome.setMidiOut(midiOut);
+	metronome.setMidiOuts(midiOuts);
+	metronome.setLoopMode(m_loop);
+
 	ofLog() << "init midi out";
 	openAudioOut();
 	ofLog() << "init audio out";
@@ -110,7 +106,20 @@ void ofApp::loadHwConfig() {
 	string filePath = "settings.xml";
 	if (settings.load(filePath)) {
 		settings.pushTag("settings");
-		m_midiOutputIdx = settings.getValue("midi_out", 0);
+		if (settings.tagExists("midi_out_ports"))
+		{
+			settings.pushTag("midi_out_ports");
+			int nbMidiOut = settings.getNumTags("midi_out");
+			for (int i = 0; i < nbMidiOut; i++) {
+				settings.pushTag("midi_out", i);
+				unsigned int midiPort = settings.getValue("port", 0);
+				m_midiOutPorts.push_back(midiPort);
+				ofLog() << "Midi output port settings: " << midiPort;
+				settings.popTag();
+			}
+			settings.popTag();
+		}
+
 		m_audioOutputIdx = settings.getValue("audio_out", 0);
 		m_midiInputIdx = settings.getValue("midi_input", 0);
 		m_bufferSize = settings.getValue("buffer_size", 128);
@@ -164,10 +173,19 @@ void ofApp::loadHwConfig() {
 
 int ofApp::openMidiOut() {
 
-	midiOut.openPort(m_midiOutputIdx); // by number
-	if (!midiOut.isOpen())
+	for each (auto midiPort in m_midiOutPorts)
 	{
-		ofLogError() << "Could not open midi out!!!";
+		ofxMidiOut midiOut;
+		midiOut.openPort(midiPort);
+		if (!midiOut.isOpen())
+		{
+			ofLogError() << "Could not open midi out on port " << midiPort;
+		}
+		else
+		{
+			midiOuts.push_back(midiOut);
+			ofLog() << "Midi out successfully opened on port " << midiPort;
+		}
 	}
 	return 0;
 }
@@ -239,6 +257,11 @@ void ofApp::update(){
 				startPlayback();
 			}
 		}
+	}
+
+	if (metronome.loopEndReached())
+	{
+		jumpToPreviousPart();
 	}
 
 	// update the sound playing system:
@@ -450,7 +473,13 @@ void ofApp::drawSequencerPage()
 	}
 	ofSetColor(255);
 
-	ofDrawRectangle(20 + 760 * metronome.getTickCount() / songTicks - 2, ySeq + 30, 4, 40);
+	if (m_loop)
+	{
+		ofSetColor(200, 180, 120);
+	}
+	ofDrawRectangle(20 + 760 * metronome.getTickCount() / songTicks - 2, ySeq + 30, 4, 40);  // player cursor
+	ofSetColor(255);
+
 	ofDrawBitmapString(metronome.getTickCount() + 1, 20, ySeq + 15);
 }
 
@@ -478,13 +507,16 @@ void ofApp::displayList(unsigned int x, unsigned int y, string title, vector<str
 void ofApp::exit() {
 
 	// stop external midi device
-	if (midiOut.isOpen())
+	for each(auto midiOut in midiOuts)
 	{
-		midiOut << StartMidi() << 0xFC << FinishMidi(); // stop playback
-		midiOut.sendProgramChange(10, 95);  // back to sync F16 program
+		if (midiOut.isOpen())
+		{
+			midiOut << StartMidi() << 0xFC << FinishMidi(); // stop playback
+			midiOut.sendProgramChange(10, 95);  // back to sync F16 program
 
-		// clean up
-		midiOut.closePort();
+			// clean up
+			midiOut.closePort();
+		}
 	}
 
 	// clean up
@@ -501,10 +533,14 @@ void ofApp::stopPlayback()
 {
     mixer.setMasterVolume(0);
 	metronome.setEnabled(false);
-	if (midiOut.isOpen())
+	for each (auto midiOut in midiOuts)
 	{
-		midiOut << StartMidi() << 0xFC << FinishMidi();  // stop
+		if (midiOut.isOpen())
+		{
+			midiOut << StartMidi() << 0xFC << FinishMidi();  // stop
+		}
 	}
+
 
 	for (int i = 0; i < players.size(); i++) {
 		players[i]->stop();
@@ -526,9 +562,12 @@ void ofApp::loadSong()
 
 	m_videoClipSource.closeVideo();
 
-	if (midiOut.isOpen())
+	for each (auto midiOut in midiOuts)
 	{
-		midiOut << StartMidi() << 0xFC << FinishMidi(); // stop playback
+		if (midiOut.isOpen())
+		{
+			midiOut << StartMidi() << 0xFC << FinishMidi(); // stop playback
+		}
 	}
 
 	// load audio
@@ -668,12 +707,16 @@ void ofApp::startPlayback()
 {
 	// force midi device to go to the first pattern
 	ofSleepMillis(2);
-	if (midiOut.isOpen())
+	for each (auto midiOut in midiOuts)
 	{
-		midiOut << StartMidi() << 0xFA << FinishMidi();  // start
-		midiOut << StartMidi() << 0xF8 << FinishMidi();  // tick
-		midiOut << StartMidi() << 0xFC << FinishMidi();  // stop
+		if (midiOut.isOpen())
+		{
+			midiOut << StartMidi() << 0xFA << FinishMidi();  // start
+			midiOut << StartMidi() << 0xF8 << FinishMidi();  // tick
+			midiOut << StartMidi() << 0xFC << FinishMidi();  // stop
+		}
 	}
+
 	ofSleepMillis(2);
 
 	// chain components
@@ -690,10 +733,14 @@ void ofApp::startPlayback()
 	float videoStartTime = (msTime + m_videoStartDelayMs) / 1000.0;  // m_videoStartDelayMs is an offset for latency compensation
 	m_videoClipSource.playVideo(videoStartTime);
 
-	if (midiOut.isOpen())
+	for each (auto midiOut in midiOuts)
 	{
-		midiOut << StartMidi() << 0xFA << FinishMidi(); // start playback
+		if (midiOut.isOpen())
+		{
+			midiOut << StartMidi() << 0xFA << FinishMidi(); // start playback
+		}
 	}
+
 	for (int i = 0; i < players.size(); i++) {
 		players[i]->play();
 		if (currentSongPartIdx > 0)
@@ -722,6 +769,28 @@ void ofApp::jumpToNextPart()
 	if (currentSongPartIdx < m_songEvents.size() - 1)
 	{
 		metronome.setCurrentSongPartIdx(currentSongPartIdx + 1);
+		metronome.sendNextProgramChange();
+	}
+
+	if (playingBeforeAction)
+	{
+		startPlayback();
+	}
+}
+
+void ofApp::jumpToPreviousPart()
+{
+	bool playingBeforeAction = m_isPlaying;
+
+	if (playingBeforeAction)
+	{
+		stopPlayback();
+	}
+
+	unsigned int currentSongPartIdx = metronome.getCurrentSongPartIdx();
+	if (currentSongPartIdx > 0)
+	{
+		metronome.setCurrentSongPartIdx(currentSongPartIdx - 1);
 		metronome.sendNextProgramChange();
 	}
 
@@ -950,6 +1019,7 @@ void ofApp::keyPressed(int key){
 		m_videoResync = !m_videoResync;
 		break;
 	case 's':
+	{
 		// store volumes
 		vector<pair<string, float>> volumes;
 		for (int i = 0; i < players.size(); i++)
@@ -959,6 +1029,11 @@ void ofApp::keyPressed(int key){
 			volumes.push_back(make_pair(stem, volume));
 		}
 		VolumesDb::setStoredSongVolumes(m_setlist[m_currentSongIndex], volumes);
+		break;
+	}
+	case 'l':
+		m_loop = !m_loop;
+		metronome.setLoopMode(m_loop);
 		break;
 	}
 }
