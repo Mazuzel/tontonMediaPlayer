@@ -408,7 +408,7 @@ void ofApp::drawHelp()
 {
 	ofSetColor(150);
 	ofDrawBitmapString(
-		"f:fullscreen, m:mapping, v:sel. stem, n:vol. up, b:vol. down, s:store vols, Q:quit, p:launch next",
+		"f:fullscreen, m:mapping, s:store vols, Q:quit, p:launch next, l:loop",
 		10,
 		580);
 }
@@ -437,7 +437,7 @@ void ofApp::drawSequencerPage()
 
 	ofSetColor(255);
 
-	ofDrawBitmapString("Mixer", 20, 50);
+	ofDrawBitmapString("Mixer (v: scroll, b: increase, n: decrease", 20, 50);
 	for (int i = 0; i < players.size(); i++)
 	{
 		float volume = mixer.getConnectionVolume(i);
@@ -462,7 +462,7 @@ void ofApp::drawSequencerPage()
 		}
 	}
 
-	displayList(550, 50, "Setlist (up/down: change)", m_setlist, m_currentSongIndex, true);
+	displayList(550, 50, "Setlist (up/down/return)", m_setlist, m_currentSongIndex, m_songSelectorToolIdx, true);
 
     int ySeq = 480;
     ofDrawBitmapString("Measured video delay (ms):", 500, ySeq);
@@ -505,23 +505,24 @@ void ofApp::drawSequencerPage()
 	ofDrawBitmapString(metronome.getTickCount() + 1, 20, ySeq + 15);
 }
 
-void ofApp::displayList(unsigned int x, unsigned int y, string title, vector<string> elements, unsigned int selectedElement, bool showIndex)
+void ofApp::displayList(unsigned int x, unsigned int y, string title, vector<string> elements, unsigned int activeElement, unsigned int selectedElement, bool showIndex)
 {
 	ofSetColor(255);
 	ofDrawBitmapString(title, x - 20, y);
 	for (int i = 0; i < elements.size(); i++)
 	{
-		if (i == selectedElement){
+		if (i == activeElement){
 			ofSetColor(255, 100, 100);
+		}
+		else if (i == selectedElement) {
+			ofSetColor(200, 130, 50);
 		}
 		if (showIndex)
 		{
 			ofDrawBitmapString(to_string(i), x - 25, y + 20 + TEXT_LIST_SPACING * i);
 		}
 		ofDrawBitmapString(elements[i], x, y + 20 + TEXT_LIST_SPACING * i);
-		if (i == selectedElement){
-			ofSetColor(255);
-		}
+		ofSetColor(255);
 	}
 }
 
@@ -574,6 +575,7 @@ void ofApp::stopPlayback()
 
 void ofApp::loadSong()
 {
+	m_songSelectorToolIdx = m_currentSongIndex;
 	for (int i = 0; i < players.size(); i++) {
 		players[i]->stop();
 		players[i]->unload();
@@ -984,29 +986,25 @@ void ofApp::keyPressed(int key){
         m_lastSongReloadTime = ofGetElapsedTimef();
 		break;
 	case OF_KEY_UP:
-        if (ofGetElapsedTimef() - m_lastSongChangeTime < 0.1)
-            break;
-		stopPlayback();
-		if (m_currentSongIndex > 0)
-		{
-			m_currentSongIndex -= 1;
-			loadSong();
+		if (m_songSelectorToolIdx > 0){
+			m_songSelectorToolIdx -= 1;
 		}
-        m_lastSongChangeTime = ofGetElapsedTimef();
+		break;
+	case OF_KEY_RETURN:
+		if (ofGetElapsedTimef() - m_lastSongChangeTime < 0.1)
+			break;
+		stopPlayback();
+		m_currentSongIndex = m_songSelectorToolIdx;
+		loadSong();
+		m_lastSongChangeTime = ofGetElapsedTimef();
 		break;
 	case 'N':  // next song part
 		jumpToNextPart();
 		break;
 	case OF_KEY_DOWN:
-        if (ofGetElapsedTimef() - m_lastSongChangeTime < 0.1)
-            break;
-		stopPlayback();
-		if (m_currentSongIndex < m_setlist.size() - 1)
-		{
-			m_currentSongIndex += 1;
-			loadSong();
+		if (m_songSelectorToolIdx < m_setlist.size() - 1) {
+			m_songSelectorToolIdx += 1;
 		}
-        m_lastSongChangeTime = ofGetElapsedTimef();
 		break;
 	case 'p':
         if (ofGetElapsedTimef() - m_lastSongChangeTime < 0.1)

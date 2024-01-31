@@ -48,7 +48,7 @@ public:
 
 	void drawSequencerPage();
 
-	void displayList(unsigned int x, unsigned int y, string title, vector<string> elements, unsigned int selectedElement, bool showIndex);
+	void displayList(unsigned int x, unsigned int y, string title, vector<string> elements, unsigned int activeElement, unsigned int selectedElement, bool showIndex);
 
 	void loadSong();
 	void stopPlayback();
@@ -109,6 +109,7 @@ private:
 	// setlist data and state
 	std::vector<std::string> m_setlist;
 	unsigned int m_currentSongIndex = 0;
+	unsigned int m_songSelectorToolIdx = 0;
 
 	// audio state
 	bool m_isAudioOutOpened = false;
