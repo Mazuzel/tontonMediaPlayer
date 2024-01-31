@@ -165,6 +165,28 @@ void ofApp::loadHwConfig() {
 				m_mappingConfigFileOverride = value;
 			}
 		}
+		if (settings.tagExists("ignore_audio_files"))
+		{
+			settings.pushTag("ignore_audio_files");
+			int nbIgnored = settings.getNumTags("containing");
+			for (int i = 0; i < nbIgnored; i++)
+			{
+				settings.pushTag("containing", i);
+				std::string value = settings.getValue("value", "");
+				if (value.size() > 0)
+				{
+					transform(value.begin(), value.end(), value.begin(), ::tolower);
+					m_audioFilesIgnoreIfContains.push_back(value);
+				}
+				settings.popTag();
+			}
+			settings.popTag();
+			for (auto str : m_audioFilesIgnoreIfContains)
+			{
+				ofLog() << "files will be ignored if they contain this : " << str;
+			}
+			
+		}
 	}
 	else {
 		ofLogError() << "settings.xml not found, using default hw config";
@@ -640,11 +662,24 @@ void ofApp::loadSong()
 		return;
 	}
 
-	// find suitable wav files
+	// find suitable audio files
 	vector<string> trackFilesToLoad;
 	for (int i = 0; i < dir.size(); i++) {
 		string trackName = fs::path(dir.getPath(i)).filename().string();
-		trackFilesToLoad.push_back(dir.getPath(i));
+		bool ignoreFile = false;
+
+		string lowerTrackName = trackName;
+		transform(lowerTrackName.begin(), lowerTrackName.end(), lowerTrackName.begin(), ::tolower);
+		for (auto ignoreString : m_audioFilesIgnoreIfContains)
+		{
+			if (lowerTrackName.find(ignoreString) != string::npos)
+			{
+				ofLog() << "File " + trackName + " ignored";
+				ignoreFile = true;
+				continue;
+			}
+		}
+		if (!ignoreFile)	trackFilesToLoad.push_back(dir.getPath(i));
 	}
 
 	// create players

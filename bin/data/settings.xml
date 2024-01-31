@@ -20,4 +20,8 @@
 	<window_pos_y>200</window_pos_y>
 	<window_pos_w>1500</window_pos_w>
 	<window_pos_h>800</window_pos_h>
+	<ignore_audio_files>
+		<containing><value>backup</value></containing>
+		<containing><value>test</value></containing>
+	</ignore_audio_files>
 </settings>

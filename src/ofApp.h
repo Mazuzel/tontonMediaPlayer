@@ -145,4 +145,7 @@ private:
     // debounce
     float m_lastSongReloadTime;
     float m_lastSongChangeTime;
+
+	// audio files
+	std::vector<std::string> m_audioFilesIgnoreIfContains;
 };
