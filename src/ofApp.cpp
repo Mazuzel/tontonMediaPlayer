@@ -15,7 +15,7 @@ void ofApp::setup(){
 
 	loadHwConfig();
 	
-	{  // printint midi out devices
+	{  // print midi out devices
 		ofLog() << "--------------------Midi out-------------------------";
 		map<int, string> midiOutDevices = getMidiOutDevices();
 		for (auto itr = midiOutDevices.begin(); itr != midiOutDevices.end(); ++itr) {
@@ -98,7 +98,7 @@ void ofApp::setup(){
 	m_isDefaultShaderLoaded = m_defaultShader.load("shaders/default.vert", "shaders/bad_tv.frag");
 	ofLog() << "init default shader";
     
-    ofSetFrameRate(24);
+    ofSetFrameRate(m_audioRefreshRate);
 }
 
 void ofApp::loadHwConfig() {
@@ -266,6 +266,7 @@ int ofApp::openAudioOut()
 
 //--------------------------------------------------------------
 void ofApp::update(){
+	// AUDIO UPDATE
 	if (metronome.isSongEnded())
 	{
 		stopPlayback();
@@ -294,6 +295,15 @@ void ofApp::update(){
 		double realPlaybackPositionMs = players[0]->getPositionMS();
 		metronome.correctTicksToPlaybackPosition(realPlaybackPositionMs);
 	}
+
+	// VIDEO UPDATE
+	auto time = ofGetElapsedTimef();
+	if ((time - m_lastVideoRefreshTime) < (1.0 / m_videoRefreshRate))
+	{
+		// no video update
+		return;
+	}
+	m_lastVideoRefreshTime = time;
 
 	if (m_videoLoaded && m_isPlaying)
 	{

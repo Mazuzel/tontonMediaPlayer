@@ -148,4 +148,9 @@ private:
 
 	// audio files
 	std::vector<std::string> m_audioFilesIgnoreIfContains;
+
+	// framerate
+	unsigned int m_audioRefreshRate = 60;
+	unsigned int m_videoRefreshRate = 24;
+	float m_lastVideoRefreshTime = 0.0f;
 };
