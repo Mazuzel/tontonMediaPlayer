@@ -81,7 +81,6 @@ private:
 	vector<unique_ptr<ofxSoundPlayerObject>> players;
 	vector<string> playersNames;
 	Metronome metronome;
-	std::vector<std::string> m_midiOutDevices;
 	std::vector<ofxMidiOut> midiOuts;
 	ofxMidiIn midiIn;
 	unsigned int m_sampleRate = 22050;

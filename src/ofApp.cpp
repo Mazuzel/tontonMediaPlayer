@@ -1,5 +1,6 @@
 #include "ofApp.h"
 
+#include "midiUtils.h"
 #include "volumesDb.h"
 
 #include <filesystem>
@@ -13,16 +14,15 @@ void ofApp::setup(){
 	ofBackground(0);
 
 	loadHwConfig();
-
-	ofLog() << "--------------------Midi out-------------------------";
-	ofxMidiOut testMidiOut;
-	m_midiOutDevices = testMidiOut.getOutPortList();
-	ofLog() << "Midi out devices:";
-	for (int idx = 0; idx < m_midiOutDevices.size(); idx++)
-	{
-			ofLog() << m_midiOutDevices[idx];
+	
+	{  // printint midi out devices
+		ofLog() << "--------------------Midi out-------------------------";
+		map<int, string> midiOutDevices = getMidiOutDevices();
+		for (auto itr = midiOutDevices.begin(); itr != midiOutDevices.end(); ++itr) {
+			ofLog() << itr->second << " (port " << itr->first << ")";
+		}
+		ofLog() << "------------------------------------------------------";
 	}
-	ofLog() << "------------------------------------------------------";
 
 	// ----------------------------------------
 	// midi in (clock)
