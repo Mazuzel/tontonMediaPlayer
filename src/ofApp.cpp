@@ -1018,14 +1018,6 @@ void ofApp::keyPressed(int key){
 		}
         m_lastSongChangeTime = ofGetElapsedTimef();
 		break;
-	case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
-        {
-            // C and C++ store characters as integers using their underlying ASCII codes, so '0' is 48, '1' is 49, and so on.
-            int number = key - '0';
-            loadSongByIndex(number);
-            startPlayback();
-            break;
-        }
 	case 'm':
         if (m_setupMappingMode)
         {
