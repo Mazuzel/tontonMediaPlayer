@@ -35,3 +35,12 @@
 .vs
 obj/
 .user
+
+# Xcode
+*.xcodeproj
+*.xconfig
+.DS_Store
+
+# data
+bin/data/songs
+bin/data/shaders
