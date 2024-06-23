@@ -157,6 +157,9 @@
     <ClCompile Include="src\shadersSource.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\midiUtils.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -416,8 +419,14 @@
     <ClInclude Include="src\shadersSource.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\midiUtils.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="icon.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
   </ItemGroup>
 </Project>
