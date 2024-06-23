@@ -1036,7 +1036,10 @@ void ofApp::keyPressed(int key){
 		m_setupMappingMode = !m_setupMappingMode;
 		break;
 	case 'f':
-		mappingWindow->toggleFullscreen();
+		if (mappingWindow != nullptr)
+		{
+			mappingWindow->toggleFullscreen();
+		}
 		break;
 	case 'v':
 		m_selectedVolumeSetting = (m_selectedVolumeSetting + 1) % players.size();

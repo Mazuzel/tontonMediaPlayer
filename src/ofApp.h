@@ -55,7 +55,7 @@ public:
 	void startPlayback();
 
 	std::vector<songEvent> m_songEvents;
-	shared_ptr<ofAppBaseWindow> mappingWindow;
+	shared_ptr<ofAppBaseWindow> mappingWindow = nullptr;
 
 private:
 	int openMidiOut();

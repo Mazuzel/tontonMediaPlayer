@@ -24,4 +24,5 @@
 		<containing><value>backup</value></containing>
 		<containing><value>test</value></containing>
 	</ignore_audio_files>
+	<show_video_window>0</show_video_window>
 </settings>
