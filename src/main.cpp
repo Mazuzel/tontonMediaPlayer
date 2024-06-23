@@ -17,6 +17,7 @@ int main() {
 	settings.resizable = false;
 	settings.windowMode = OF_WINDOW;
 	settings.monitor = 1;
+	settings.title = "Tonton Media Player - DAW";
 	shared_ptr<ofAppBaseWindow> dawWindow = ofCreateWindow(settings);
 
 	shared_ptr<ofApp> mainApp(new ofApp);
@@ -33,6 +34,7 @@ int main() {
 		settings.resizable = true;
 		settings.windowMode = OF_WINDOW;
 		settings.monitor = 0;
+		settings.title = "Tonton Media Player - Video Output";
 		// uncomment next line to share main's OpenGL resources with gui
 		settings.shareContextWith = dawWindow;
 		shared_ptr<ofAppBaseWindow> mappingWindow = ofCreateWindow(settings);
