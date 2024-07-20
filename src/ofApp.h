@@ -48,6 +48,8 @@ public:
 
 	void drawSequencerPage();
 
+	void drawAnimatedLogo();
+
 	void displayList(unsigned int x, unsigned int y, string title, vector<string> elements, unsigned int activeElement, unsigned int selectedElement, bool showIndex);
 
 	void loadSong();
@@ -153,4 +155,7 @@ private:
 	unsigned int m_audioRefreshRate = 60;
 	unsigned int m_videoRefreshRate = 24;
 	float m_lastVideoRefreshTime = 0.0f;
+
+	// app logo
+	ofImage m_logo;
 };

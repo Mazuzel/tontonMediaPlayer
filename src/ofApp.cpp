@@ -99,6 +99,9 @@ void ofApp::setup(){
 	ofLog() << "init default shader";
     
     ofSetFrameRate(m_audioRefreshRate);
+
+	// load logo
+	m_logo = ofImage("TontonMediaPlayerLogo.png");
 }
 
 void ofApp::loadHwConfig() {
@@ -348,6 +351,7 @@ void ofApp::drawMapping(ofEventArgs& args){
 	m_fboMapping.draw(0, 0, ofGetWidth(), ofGetHeight());
 }
 
+//--------------------------------------------------------------
 void ofApp::drawMappingSetup()
 {
 	for (int i = 0; i < m_quadSurfaces.size(); i++)
@@ -372,8 +376,48 @@ void ofApp::drawMappingSetup()
 }
 
 //--------------------------------------------------------------
+void ofApp::drawAnimatedLogo()
+{
+	ofSetColor(200);
+	m_logo.draw(320, 150, 220, 250);
+
+	int xOffset = 0;
+	int yOffset = 0;
+	ofSetColor(20, 30, 50);
+	if (m_currentSongIndex != m_songSelectorToolIdx)
+	{
+		ofSetColor(180, 90, 25);
+		xOffset = 4;
+		yOffset = m_songSelectorToolIdx - 5;
+	}
+	else if (m_isPlaying)
+	{
+		ofSetColor(80, 90, 250);
+		int songTicks = m_songEvents[m_songEvents.size() - 1].tick;
+		float progressOffset = (metronome.getTickCount() - 0.5 * songTicks) / songTicks;
+		xOffset = int(progressOffset * 5);
+		yOffset = int(xOffset / 2.0);
+		if (yOffset < 0)
+		{
+			yOffset = -yOffset;
+		}
+		yOffset += 3;
+	}
+	ofDrawCircle(417 + xOffset, 220 + yOffset, 4);
+	ofDrawCircle(445 + xOffset, 220 + yOffset, 4);
+	ofSetColor(255);
+}
+
+//--------------------------------------------------------------
 void ofApp::draw() {
 	ofShowCursor();
+	ofSetColor(255);
+
+	// draw logo with eyes animation
+	if (!m_setupMappingMode)
+	{
+		drawAnimatedLogo();
+	}
 
 	m_fboMapping.begin();
 	ofClear(0, 0, 0, 255);
