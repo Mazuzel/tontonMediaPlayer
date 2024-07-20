@@ -320,7 +320,7 @@ void ofApp::update(){
 		if (m_setupMappingMode)
 		{
 			// on dessine un arrière plan au cas où il n'y ait pas de vidéo
-			ofBackground(128);
+			ofBackground(50);
 		}
 		if (m_isPlaying)
 		{
@@ -392,7 +392,7 @@ void ofApp::draw() {
     ofSetColor(255);
     
     // mini-view of the video window
-    m_fboSources[0].draw(20, 300, 180, 140);
+    m_fboSources[0].draw(20, 260, 300, 200);
     
     std::stringstream strmAudioOut;
     strmAudioOut << "Audio out: " << m_openedAudioDeviceName << "(" << toString(m_openedAudioDeviceApi) << ")";
@@ -482,7 +482,8 @@ void ofApp::drawSequencerPage()
 	ofSetColor(150);
 	ofDrawBitmapString("(<- | N | ->)", 60, ySeq);
 	ofSetColor(50);
-	ofDrawRectangle(15, ySeq + 25, 770, 50);
+	ofDrawRectangle(15, ySeq + 25, 770, 60);
+
 	int songTicks = m_songEvents[m_songEvents.size() - 1].tick;
 	for (int i = 0; i < m_songEvents.size()-1; i++)
 	{
@@ -491,17 +492,17 @@ void ofApp::drawSequencerPage()
 
 		ofSetColor(
 			15 * (m_songEvents[i].program % 16),
-			127 * (m_songEvents[i].program % 2),
-			255 - 15 * (m_songEvents[i].program % 16)
+			127 * ((m_songEvents[i].program + 7) % 2),
+			255 - 15 * (m_songEvents[i].program % 13)
 		);
-		ofDrawRectangle(x, ySeq + 30, w, 40);
+		ofDrawRectangle(x, ySeq + 30, w, 50);
 	}
 	ofSetColor(0, 0, 0);
 	for (int i = 0; i < m_songEvents.size() - 1; i++)
 	{
 		int x = 20 + 760 * (int)m_songEvents[i].tick / songTicks;
 		int w = 760 * ((int)m_songEvents[i + 1].tick - (int)m_songEvents[i].tick) / songTicks;
-		ofDrawBitmapString(m_songEvents[i].programName, x + 0.5 * w - 10, ySeq + 50);
+		ofDrawBitmapString(m_songEvents[i].programName, x + 0.5 * w - 10, ySeq + 60);
 	}
 	ofSetColor(255);
 
@@ -509,7 +510,7 @@ void ofApp::drawSequencerPage()
 	{
 		ofSetColor(200, 180, 120);
 	}
-	ofDrawRectangle(20 + 760 * metronome.getTickCount() / songTicks - 2, ySeq + 30, 4, 40);  // player cursor
+	ofDrawRectangle(20 + 760 * metronome.getTickCount() / songTicks - 2, ySeq + 30, 6, 50);  // player cursor
 	ofSetColor(255);
 
 	ofDrawBitmapString(metronome.getTickCount() + 1, 20, ySeq + 15);
