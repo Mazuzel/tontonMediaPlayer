@@ -101,7 +101,6 @@ private:
 	unsigned int m_bufferSize = 128;
 	unsigned int m_midiInputIdx = 0;
 	std::vector<unsigned int> m_midiOutPorts;
-	unsigned int m_audioOutputIdx = 0;
 	std::string m_songsRootDir = "songs/";  // path to directory containing songs
 	std::string m_mappingConfigFileOverride = "";
     std::string m_requestedAudioOutDevice = "";
