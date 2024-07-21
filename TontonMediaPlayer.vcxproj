@@ -192,6 +192,7 @@
     <ClCompile Include="src\shadersSource.cpp" />
     <ClCompile Include="src\Types\Vec2.cpp" />
     <ClCompile Include="src\Types\Vec3.cpp" />
+    <ClCompile Include="src\Utils\color.cpp" />
     <ClCompile Include="src\Utils\HomographyHelper.cpp" />
     <ClCompile Include="src\videoClipSource.cpp" />
     <ClCompile Include="..\..\..\addons\ofxAudioFile\src\ofxAudioFile.cpp" />
@@ -244,6 +245,7 @@
     <ClInclude Include="src\shadersSource.h" />
     <ClInclude Include="src\Types\Vec2.h" />
     <ClInclude Include="src\Types\Vec3.h" />
+    <ClInclude Include="src\Utils\color.h" />
     <ClInclude Include="src\Utils\HomographyHelper.h" />
     <ClInclude Include="src\videoClipSource.h" />
     <ClInclude Include="..\..\..\addons\ofxAudioFile\src\ofxAudioFile.h" />

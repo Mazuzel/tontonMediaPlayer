@@ -160,6 +160,9 @@
     <ClCompile Include="src\midiUtils.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\Utils\color.cpp">
+      <Filter>src\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -421,6 +424,9 @@
     </ClInclude>
     <ClInclude Include="src\midiUtils.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils\color.h">
+      <Filter>src\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,11 +1,15 @@
 #include "ofApp.h"
 
+#include <filesystem>
+#include <tuple>
+#include <utility>
+
+#include "color.h"
 #include "midiUtils.h"
 #include "volumesDb.h"
 
-#include <filesystem>
-#include <utility>
 namespace fs = std::filesystem;
+
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -531,21 +535,15 @@ void ofApp::drawSequencerPage()
 	int songTicks = m_songEvents[m_songEvents.size() - 1].tick;
 	for (int i = 0; i < m_songEvents.size()-1; i++)
 	{
-		int x = 20 + 760 * (int)m_songEvents[i].tick / songTicks;
-		int w = 760 * ((int)m_songEvents[i + 1].tick - (int)m_songEvents[i].tick) / songTicks;
+		int x = 20 + static_cast<int>(760 * m_songEvents[i].tick / songTicks);
+		int w = static_cast<int>(760 * (m_songEvents[i + 1].tick - m_songEvents[i].tick + 1) / songTicks);
 
-		ofSetColor(
-			15 * (m_songEvents[i].program % 16),
-			127 * ((m_songEvents[i].program + 7) % 2),
-			255 - 15 * (m_songEvents[i].program % 13)
-		);
+		float hue = ((2 * m_songEvents[i].program) % 16) * 300.0 / 16.0 + i * 60.0 / m_songEvents.size();
+		int R, G, B;
+		tie(R, G, B) = Tonton::Utils::HSVtoRGB(hue, 50, 95);
+		ofSetColor(R, G, B);
 		ofDrawRectangle(x, ySeq + 30, w, 50);
-	}
-	ofSetColor(0, 0, 0);
-	for (int i = 0; i < m_songEvents.size() - 1; i++)
-	{
-		int x = 20 + 760 * (int)m_songEvents[i].tick / songTicks;
-		int w = 760 * ((int)m_songEvents[i + 1].tick - (int)m_songEvents[i].tick) / songTicks;
+		ofSetColor(0, 0, 0);
 		ofDrawBitmapString(m_songEvents[i].programName, x + 0.5 * w - 10, ySeq + 60);
 	}
 	ofSetColor(255);
