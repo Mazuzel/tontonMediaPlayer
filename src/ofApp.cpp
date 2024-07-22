@@ -201,7 +201,7 @@ void ofApp::loadHwConfig() {
 
 int ofApp::openMidiOut() {
 
-	for each (auto midiPort in m_midiOutPorts)
+	for (auto midiPort: m_midiOutPorts)
 	{
 		ofxMidiOut midiOut;
 		midiOut.openPort(midiPort);
@@ -224,7 +224,7 @@ int ofApp::openAudioOut()
 	settings.setOutListener(this);
 	settings.sampleRate = m_sampleRate;
 	settings.numOutputChannels = 2;
-	settings.numInputChannels = 0;
+    settings.numInputChannels = 0;
 	settings.bufferSize = m_bufferSize;
 	settings.numBuffers = 1;
 
@@ -582,7 +582,7 @@ void ofApp::displayList(unsigned int x, unsigned int y, string title, vector<str
 void ofApp::exit() {
 
 	// stop external midi device
-	for each(auto midiOut in midiOuts)
+	for (auto midiOut: midiOuts)
 	{
 		if (midiOut.isOpen())
 		{
@@ -608,7 +608,7 @@ void ofApp::stopPlayback()
 {
     mixer.setMasterVolume(0);
 	metronome.setEnabled(false);
-	for each (auto midiOut in midiOuts)
+	for (auto midiOut: midiOuts)
 	{
 		if (midiOut.isOpen())
 		{
@@ -638,7 +638,7 @@ void ofApp::loadSong()
 
 	m_videoClipSource.closeVideo();
 
-	for each (auto midiOut in midiOuts)
+	for (auto midiOut: midiOuts)
 	{
 		if (midiOut.isOpen())
 		{
@@ -796,7 +796,7 @@ void ofApp::startPlayback()
 {
 	// force midi device to go to the first pattern
 	ofSleepMillis(2);
-	for each (auto midiOut in midiOuts)
+	for (auto midiOut: midiOuts)
 	{
 		if (midiOut.isOpen())
 		{
@@ -822,7 +822,7 @@ void ofApp::startPlayback()
 	float videoStartTime = (msTime + m_videoStartDelayMs) / 1000.0;  // m_videoStartDelayMs is an offset for latency compensation
 	m_videoClipSource.playVideo(videoStartTime);
 
-	for each (auto midiOut in midiOuts)
+	for (auto midiOut: midiOuts)
 	{
 		if (midiOut.isOpen())
 		{

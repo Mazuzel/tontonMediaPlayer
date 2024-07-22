@@ -98,7 +98,7 @@ void Metronome::setLoopMode(bool loop)
 }
 
 void Metronome::tick() {
-	for each (auto midiOut in m_midiOuts)
+	for (auto midiOut: m_midiOuts)
 	{
 		if (midiOut.isOpen())
 		{
@@ -109,7 +109,7 @@ void Metronome::tick() {
 }
 
 void Metronome::sendNextProgramChange() {
-	for each (auto midiOut in m_midiOuts)
+	for (auto midiOut: m_midiOuts)
 	{
 		if (midiOut.isOpen())
 		{
