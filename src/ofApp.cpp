@@ -235,7 +235,7 @@ int ofApp::openAudioOut()
 
     if (m_requestedAudioOutDevice.size() > 0)
     {
-        std::vector<ofSoundDevice> devices = soundStream.getMatchingDevices(m_requestedAudioOutDevice, UINT_MAX, 2, ofSoundDevice::MS_WASAPI);
+        std::vector<ofSoundDevice> devices = soundStream.getMatchingDevices(m_requestedAudioOutDevice, UINT_MAX, 2, m_requestedAudioOutApi);
         if (devices.size() == 0)
         {
             ofLogError() << "Audio out device not found: " << m_requestedAudioOutDevice;
