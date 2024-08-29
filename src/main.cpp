@@ -9,7 +9,7 @@ int main() {
 	ofGLFWWindowSettings settings;
 
 	ofxXmlSettings xmlSettings;
-	xmlSettings.loadFile("settings.xml");
+	xmlSettings.load("settings.xml");
 
 	// main window (daw)
 	settings.setSize(800, 600);
