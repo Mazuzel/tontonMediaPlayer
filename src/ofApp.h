@@ -12,7 +12,9 @@
 
 #include "metronome.h"
 
+#include "midiOutput.h"
 #include "shadersSource.h"
+#include "song.h"
 #include "videoClipSource.h"
 #include "QuadSurface.h"
 #include "Vec2.h"
@@ -52,7 +54,6 @@ public:
 
 	void displayList(unsigned int x, unsigned int y, string title, vector<string> elements, unsigned int activeElement, unsigned int selectedElement, bool showIndex);
 
-	void loadSong();
 	void stopPlayback();
 	void startPlayback();
 
@@ -60,6 +61,7 @@ public:
 	shared_ptr<ofAppBaseWindow> mappingWindow = nullptr;
 
 private:
+    void loadSong();
 	int openMidiOut();
 	int openAudioOut();
 	void loadHwConfig();
@@ -67,6 +69,7 @@ private:
 	void jumpToPreviousPart();
 	unsigned int m_startingSongPart = 1;
 	void drawMappingSetup();
+    void drawPatches();
 	void drawHelp();
 	void volumeUp();
 	void volumeDown();
@@ -75,6 +78,7 @@ private:
     void saveMappingNodes();
     void loadMappingNodes();
 	void loadPiMapperSurfaces();
+    void loadSetlist();
 
 	// internal sound and midi handlers
 	ofSoundStream soundStream;
@@ -83,8 +87,8 @@ private:
 	vector<unique_ptr<ofxSoundPlayerObject>> players;
 	vector<string> playersNames;
 	Metronome metronome;
-	std::vector<ofxMidiOut> midiOuts;
 	ofxMidiIn midiIn;
+    std::vector<std::shared_ptr<MidiOutput>> _midiOuts;
 	unsigned int m_sampleRate = 22050;
 
 	// internal video handlers
@@ -157,4 +161,7 @@ private:
 
 	// app logo
 	ofImage m_logo;
+    
+    // video preview
+    bool m_showVideoPreview;
 };

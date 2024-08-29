@@ -7,6 +7,7 @@
 #include "color.h"
 #include "midiUtils.h"
 #include "volumesDb.h"
+#include "stringUtils.h"
 
 namespace fs = std::filesystem;
 
@@ -18,15 +19,6 @@ void ofApp::setup(){
 	ofBackground(0);
 
 	loadHwConfig();
-	
-	{  // print midi out devices
-		ofLog() << "--------------------Midi out-------------------------";
-		map<int, string> midiOutDevices = getMidiOutDevices();
-		for (auto itr = midiOutDevices.begin(); itr != midiOutDevices.end(); ++itr) {
-			ofLog() << itr->second << " (port " << itr->first << ")";
-		}
-		ofLog() << "------------------------------------------------------";
-	}
 
 	// ----------------------------------------
 	// midi in (clock)
@@ -44,42 +36,17 @@ void ofApp::setup(){
 	// ----------------------------------------
 	openMidiOut();
 	// set metronome controls
-	metronome.setMidiOuts(midiOuts);
+	metronome.setMidiOuts(_midiOuts);
 	metronome.setLoopMode(m_loop);
 
-	ofLog() << "init midi out";
 	openAudioOut();
-	ofLog() << "init audio out";
 
 	// chargement setlist
-	ofDirectory dir;
-	dir.listDir(m_songsRootDir);
-
-	ofxXmlSettings settings;
-	string filePath = "setlist.xml";
-	if (settings.load(filePath)) {
-		settings.pushTag("setlist");
-		int numberOfSongs = settings.getNumTags("song");
-		for (int i = 0; i < numberOfSongs; i++) {
-			settings.pushTag("song", i);
-			std::string songName = settings.getValue("name", "");
-			// TODO vérifications
-			m_setlist.push_back(songName);
-			settings.popTag();
-		}
-	}
-	else {
-		ofLogError() << "setlist.xml not found, creating a default setlist";
-		for (int i = 0; i < dir.size(); i++) {
-			m_setlist.push_back(dir.getName(i));
-		}
-	}
-	ofLog() << "init setlist";
+    loadSetlist();
 
 	metronome.setSampleRate(m_sampleRate);
 
 	loadSong(); // chargement du premier morceau
-	ofLog() << "init first song";
 
 	m_quadSurfaces.push_back(QuadSurface());
 	if (m_mappingConfigFileOverride.size() > 0)
@@ -100,7 +67,6 @@ void ofApp::setup(){
 	m_fboMapping.allocate(1920, 1080, GL_RGBA);
 
 	m_isDefaultShaderLoaded = m_defaultShader.load("shaders/default.vert", "shaders/bad_tv.frag");
-	ofLog() << "init default shader";
     
     ofSetFrameRate(m_audioRefreshRate);
 
@@ -113,21 +79,7 @@ void ofApp::loadHwConfig() {
 	string filePath = "settings.xml";
 	if (settings.load(filePath)) {
 		settings.pushTag("settings");
-		if (settings.tagExists("midi_out_ports"))
-		{
-			settings.pushTag("midi_out_ports");
-			int nbMidiOut = settings.getNumTags("midi_out");
-			for (int i = 0; i < nbMidiOut; i++) {
-				settings.pushTag("midi_out", i);
-				unsigned int midiPort = settings.getValue("port", 0);
-				m_midiOutPorts.push_back(midiPort);
-				ofLog() << "Midi output port settings: " << midiPort;
-				settings.popTag();
-			}
-			settings.popTag();
-		}
-
-		m_midiInputIdx = settings.getValue("midi_input", 0);
+		m_midiInputIdx = settings.getValue("midi_in", 0);
 		m_bufferSize = settings.getValue("buffer_size", 128);
 		if (settings.tagExists("songs_root_dir"))
 		{
@@ -193,28 +145,148 @@ void ofApp::loadHwConfig() {
 			}
 			
 		}
+        if (settings.tagExists("show_video_preview"))
+        {
+            m_showVideoPreview = settings.getValue("show_video_preview", 0) == 1;
+        }
 	}
 	else {
 		ofLogError() << "settings.xml not found, using default hw config";
 	}
 }
 
-int ofApp::openMidiOut() {
+//--------------------------------------------------------------
+void ofApp::loadSetlist() {
+    ofDirectory dir;
+    dir.listDir(m_songsRootDir);
+    ofxXmlSettings settings;
+    string filePath = "setlist.xml";
+    if (settings.load(filePath)) {
+        settings.pushTag("setlist");
+        int numberOfSongs = settings.getNumTags("song");
+        for (int i = 0; i < numberOfSongs; i++) {
+            settings.pushTag("song", i);
+            std::string songName = settings.getValue("name", "");
+            // TODO vérifications
+            m_setlist.push_back(songName);
+            settings.popTag();
+        }
+    }
+    else {
+        ofLogError() << "setlist.xml not found, creating a default setlist";
+        for (int i = 0; i < dir.size(); i++) {
+            m_setlist.push_back(dir.getName(i));
+        }
+    }
+    ofLog() << "init setlist";
+}
 
-	for (auto midiPort: m_midiOutPorts)
-	{
-		ofxMidiOut midiOut;
-		midiOut.openPort(midiPort);
-		if (!midiOut.isOpen())
-		{
-			ofLogError() << "Could not open midi out on port " << midiPort;
-		}
-		else
-		{
-			midiOuts.push_back(midiOut);
-			ofLog() << "Midi out successfully opened on port " << midiPort;
-		}
-	}
+int ofApp::openMidiOut() {
+    _midiOuts.clear();
+
+    // print midi out devices
+    ofLog() << "[Midi out] Port / Device -----------------------------";
+    map<int, string> midiOutDevices = getMidiOutDevices();
+    for (auto itr = midiOutDevices.begin(); itr != midiOutDevices.end(); ++itr) {
+        ofLog() << itr->first << " / " << itr->second;
+    }
+    ofLog() << "------------------------------------------------------";
+
+
+    ofLog() << "--------------------Trying to open midi outputs-------------------------";
+    ofxXmlSettings settings;
+    string filePath = "settings.xml";
+    if (settings.load(filePath)) {
+        settings.pushTag("settings");
+        if (settings.tagExists("midi_outputs"))
+        {
+            settings.pushTag("midi_outputs");
+            int nbMidiOut = settings.getNumTags("output");
+            vector<int> attributedDevices;  // list devices already resolved to dispatch properly virtual devices with identical names
+            for (int i = 0; i < nbMidiOut; i++) {
+                settings.pushTag("output", i);
+                string name = settings.getValue("name", to_string(i));
+                string deviceId = settings.getValue("device_id", "default");
+                
+                // resolve port
+                int port = -1;
+                string deviceOsName = "not connected";
+                for (auto itr = midiOutDevices.begin(); itr != midiOutDevices.end(); ++itr) {
+                    if (itr->second.find(deviceId) != std::string::npos)
+                    {
+                        // found
+                        unsigned int index = std::distance(midiOutDevices.begin(), itr);
+                        if (std::count(attributedDevices.begin(), attributedDevices.end(), index)) {
+                            continue;
+                        }
+                        attributedDevices.push_back(index);
+                        port = itr->first;
+                        deviceOsName = itr->second;
+                        break;
+                    }
+                }
+                if (port < 0) {
+                    ofLogError() << "Midi output not found for " << name << ": " << deviceId;
+                }
+                else
+                {
+                    ofLog() << "Associating " << name << " with os device " << deviceOsName << " on port " << port;
+                }
+
+                auto midiOut = std::make_shared<MidiOutput>(port, name, i, deviceOsName);
+                
+                // add optional settings
+                if (settings.tagExists("send_ticks")) {
+                    bool sendTicks = settings.getValue("send_ticks", 0) == 1;
+                    midiOut->sendTicks = sendTicks;
+                }
+                if (settings.tagExists("send_timecodes")) {
+                    bool sendTimecodes = settings.getValue("send_timecodes", 0) == 1;
+                    midiOut->sendTimecodes = sendTimecodes;
+                }
+                if (settings.tagExists("channel")) {
+                    unsigned int defaultChannel = settings.getValue("channel", 1);
+                    midiOut->defaultChannel = defaultChannel;
+                }
+                if (settings.tagExists("input_format")) {
+                    string patchFormat = settings.getValue("input_format", "");
+                    transform(patchFormat.begin(), patchFormat.end(), patchFormat.begin(), ::tolower);
+                    if (patchFormat.find("patch_name") != string::npos)
+                    {
+                        midiOut->_patchFormat = PatchFormat::PATCH_NAME;
+                        
+                        // load patches
+                        if (settings.tagExists("patches"))
+                        {
+                            settings.pushTag("patches");
+                            
+                            int nbPatches = settings.getNumTags("patch");
+                            for (int i = 0; i < nbPatches; i++) {
+                                settings.pushTag("patch", i);
+                                string name = settings.getValue("name", "");
+                                unsigned int programNumber = settings.getValue("program", 0);
+                                midiOut->_patchesMap.insert({name, programNumber});
+                                settings.popTag();  // patch i
+                            }
+                            
+                            settings.popTag();  // patches
+                        }
+                    }
+                    else if (patchFormat.find("elektron_pattern") != string::npos)
+                    {
+                        midiOut->_patchFormat = PatchFormat::ELEKTRON_PATTERN;
+                    }
+                }
+                
+                _midiOuts.push_back(midiOut);
+
+                settings.popTag();
+            }
+            settings.popTag();
+        }
+    }
+    ofLog() << "--------------------------------------------------------------------------";
+
 	return 0;
 }
 
@@ -262,6 +334,9 @@ int ofApp::openAudioOut()
 			else
 				m_openedAudioDeviceName = fullDevName;
             m_openedAudioDeviceApi = soundStream.getSoundStream()->getOutDevice().api;
+            
+            // shorten name
+            shortenString(m_openedAudioDeviceName, 25, 8, 3);
         }
 	}
 
@@ -381,8 +456,13 @@ void ofApp::drawMappingSetup()
 //--------------------------------------------------------------
 void ofApp::drawAnimatedLogo()
 {
+    int centerX = 400;
+    int centerY = 300;
+    int baseWidth = 200;
+    int baseHeight = 220;
+
 	ofSetColor(200);
-	m_logo.draw(320, 150, 220, 250);
+	m_logo.draw(centerX - baseWidth / 2, centerY - baseHeight / 2, baseHeight, baseHeight);
 
 	int xOffset = 0;
 	int yOffset = 0;
@@ -390,24 +470,19 @@ void ofApp::drawAnimatedLogo()
 	if (m_currentSongIndex != m_songSelectorToolIdx)
 	{
 		ofSetColor(180, 90, 25);
-		xOffset = 4;
-		yOffset = m_songSelectorToolIdx - 5;
+		xOffset = static_cast<int>(3.2 * baseWidth / 220.0);
+		yOffset = static_cast<int>( (m_songSelectorToolIdx - 0.4 * m_setlist.size()) * baseHeight / 250.0);
 	}
 	else if (m_isPlaying)
 	{
 		ofSetColor(80, 90, 250);
 		int songTicks = m_songEvents[m_songEvents.size() - 1].tick;
 		float progressOffset = (metronome.getTickCount() - 0.5 * songTicks) / songTicks;
-		xOffset = int(progressOffset * 5);
-		yOffset = int(xOffset / 2.0);
-		if (yOffset < 0)
-		{
-			yOffset = -yOffset;
-		}
-		yOffset += 3;
+		xOffset = static_cast<int>(progressOffset * 5.2 * baseWidth / 220.0);
+        yOffset = static_cast<int>(5 * baseHeight / 250.0);
 	}
-	ofDrawCircle(417 + xOffset, 220 + yOffset, 4);
-	ofDrawCircle(445 + xOffset, 220 + yOffset, 4);
+    ofDrawCircle(centerX - 0.005 * baseWidth + xOffset, centerY - 0.22 * baseHeight + yOffset, 4);
+	ofDrawCircle(centerX + 0.125 * baseWidth + xOffset, centerY - 0.22 * baseHeight + yOffset, 4);
 	ofSetColor(255);
 }
 
@@ -439,10 +514,13 @@ void ofApp::draw() {
     ofSetColor(255);
     
     // mini-view of the video window
-    m_fboSources[0].draw(20, 260, 300, 200);
+    if (m_showVideoPreview)
+    {
+        m_fboSources[0].draw(20, 260, 300, 200);
+    }
     
     std::stringstream strmAudioOut;
-    strmAudioOut << "Audio out: " << m_openedAudioDeviceName << "(" << toString(m_openedAudioDeviceApi) << ")";
+    strmAudioOut << "Audio out: " << m_openedAudioDeviceName << " (" << toString(m_openedAudioDeviceApi) << ")";
     ofDrawBitmapString(strmAudioOut.str(), 20, 15);
     
     std::stringstream strmFps;
@@ -456,6 +534,7 @@ void ofApp::draw() {
 	}
 	else
 	{
+        drawPatches();
 		drawSequencerPage();
 	}
 	drawHelp();
@@ -468,6 +547,30 @@ void ofApp::drawHelp()
 		"f:fullscreen, m:mapping, s:store vols, Q:quit, p:launch next, l:loop",
 		10,
 		580);
+}
+
+void ofApp::drawPatches()
+{
+    ofSetColor(255);
+    int baseX = 20;
+    int baseY = 280;
+    ofDrawBitmapString("Midi outputs", baseX, baseY);
+    
+    int offsetY = 20;
+    int row = 0;
+    for (auto midiOut : _midiOuts)
+    {
+        ofSetColor(255);
+        if (!midiOut->isOpen())
+        {
+            ofSetColor(128);
+        }
+        string name = midiOut->_deviceName + " (" + midiOut->_deviceOsName + ")";
+        ofDrawBitmapString(midiOut->_deviceName, baseX, baseY + offsetY + row * 15);
+        row += 1;
+        
+        //offsetY += 5;
+    }
 }
 
 void ofApp::drawSequencerPage()
@@ -510,7 +613,11 @@ void ofApp::drawSequencerPage()
 		int volumeBars = round(volumeNorm * 40);
 		int barWidth = 2;
 		int barPeriod = 5;
-		ofSetColor(255 * volumeNorm, 128, 255 * (1.0 - volumeNorm));
+        int R, G, B;
+        float hue = 250 - 250 * volumeNorm;
+        // if (hue < 0) hue += 360;
+        tie(R, G, B) = Tonton::Utils::HSVtoRGB(hue, 50, 95);
+        ofSetColor(R, G, B);
 		ofDrawBitmapString(volume, 230, y + 15);
 		for (int j = 0; j < volumeBars; j++)
 		{
@@ -519,11 +626,11 @@ void ofApp::drawSequencerPage()
 		}
 	}
 
-	displayList(550, 50, "Setlist (up/down/return)", m_setlist, m_currentSongIndex, m_songSelectorToolIdx, true);
+	displayList(570, 50, "Setlist (up/down/return)", m_setlist, m_currentSongIndex, m_songSelectorToolIdx, true);
 
     int ySeq = 480;
-    ofDrawBitmapString("Measured video delay (ms):", 500, ySeq);
-    ofDrawBitmapString(m_measuredVideoDelayMs, 710, ySeq);
+    // ofDrawBitmapString("Measured video delay (ms):", 500, ySeq);
+    // ofDrawBitmapString(m_measuredVideoDelayMs, 710, ySeq);
     
 	ofDrawBitmapString("Song", 20, ySeq);
 	ofSetColor(150);
@@ -531,19 +638,36 @@ void ofApp::drawSequencerPage()
 	ofSetColor(50);
 	ofDrawRectangle(15, ySeq + 25, 770, 60);
 
-	int songTicks = m_songEvents[m_songEvents.size() - 1].tick;
+	float songTicks = static_cast<float>(m_songEvents[m_songEvents.size() - 1].tick);
 	for (int i = 0; i < m_songEvents.size()-1; i++)
 	{
 		int x = 20 + static_cast<int>(760 * m_songEvents[i].tick / songTicks);
-		int w = static_cast<int>(760 * (m_songEvents[i + 1].tick - m_songEvents[i].tick + 1) / songTicks);
+        int nbTicks = m_songEvents[i + 1].tick - m_songEvents[i].tick;
+		int w = round(760 * (m_songEvents[i + 1].tick - m_songEvents[i].tick + 0.5) / songTicks);
+        
+        if (w + x > 760 + 20)
+        {
+            w = 760 + 20 - x;
+        }
 
-		float hue = ((2 * m_songEvents[i].program) % 16) * 300.0 / 16.0 + i * 60.0 / m_songEvents.size();
+		float hue = ((2 * m_songEvents[i].program) % 16) * 20.0 + i * 60.0 / m_songEvents.size();
+        hue = fmod(hue, 360.0);
 		int R, G, B;
 		tie(R, G, B) = Tonton::Utils::HSVtoRGB(hue, 50, 95);
 		ofSetColor(R, G, B);
 		ofDrawRectangle(x, ySeq + 30, w, 50);
-		ofSetColor(0, 0, 0);
-		ofDrawBitmapString(m_songEvents[i].programName, x + 0.5 * w - 10, ySeq + 60);
+        if (nbTicks >= 8)  // draw part name only if part is big enough
+        {
+            ofSetColor(0, 0, 0);
+            int nameSize = m_songEvents[i].name.size();
+            float xName = x + 0.5 * w - 0.5 * static_cast<float>(nameSize * 6.5);  // making an hypothesis for character average width
+            if (xName < x) xName = x;
+            ofDrawBitmapString(m_songEvents[i].name, round(xName), ySeq + 60);
+        }
+        
+        // draw separation between song parts
+        ofSetColor(50);
+        ofDrawRectangle(x, ySeq + 30, 1, 50);
 	}
 	ofSetColor(255);
 
@@ -581,19 +705,6 @@ void ofApp::displayList(unsigned int x, unsigned int y, string title, vector<str
 //--------------------------------------------------------------
 void ofApp::exit() {
 
-	// stop external midi device
-	for (auto midiOut: midiOuts)
-	{
-		if (midiOut.isOpen())
-		{
-			midiOut << StartMidi() << 0xFC << FinishMidi(); // stop playback
-			midiOut.sendProgramChange(10, 95);  // back to sync F16 program
-
-			// clean up
-			midiOut.closePort();
-		}
-	}
-
 	// clean up
 	if (m_enableMidiIn)
 	{
@@ -608,11 +719,19 @@ void ofApp::stopPlayback()
 {
     mixer.setMasterVolume(0);
 	metronome.setEnabled(false);
-	for (auto midiOut: midiOuts)
+	for (auto midiOut: _midiOuts)
 	{
-		if (midiOut.isOpen())
+		if (midiOut->isOpen())
 		{
-			midiOut << StartMidi() << 0xFC << FinishMidi();  // stop
+            if (midiOut->sendTimecodes) // for tonton stage mapper. TODO use standard start & stop messages
+            {
+                // send stop control message to channel 15
+                midiOut->_midiOut.sendProgramChange(15, 2);
+            }
+            else
+            {
+                midiOut->_midiOut << StartMidi() << 0xFC << FinishMidi();  // stop
+            }
 		}
 	}
 
@@ -627,6 +746,7 @@ void ofApp::stopPlayback()
 
 void ofApp::loadSong()
 {
+    // then stop playback
 	m_songSelectorToolIdx = m_currentSongIndex;
 	for (int i = 0; i < players.size(); i++) {
 		players[i]->stop();
@@ -638,11 +758,21 @@ void ofApp::loadSong()
 
 	m_videoClipSource.closeVideo();
 
-	for (auto midiOut: midiOuts)
+	for (auto midiOut: _midiOuts)
 	{
-		if (midiOut.isOpen())
+		if (midiOut->isOpen())
 		{
-			midiOut << StartMidi() << 0xFC << FinishMidi(); // stop playback
+            if (midiOut->sendTimecodes) // for tonton stage mapper. TODO use standard start & stop messages
+            {
+                // send stop control message to channel 15
+                midiOut->_midiOut.sendProgramChange(15, 2);
+                // send program change to other apps via chanel 16
+                midiOut->_midiOut.sendProgramChange(16, m_currentSongIndex);
+            }
+            else
+            {
+                midiOut->_midiOut << StartMidi() << 0xFC << FinishMidi(); // stop playback
+            }
 		}
 	}
 
@@ -667,6 +797,7 @@ void ofApp::loadSong()
 	ofxXmlSettings settings;
 	string filePath = m_songsRootDir + songName + "/export/structure.xml";
 	if (settings.load(filePath)) {
+        vector<PatchEvent> defaultPatches;  // store previous patch values to redund them at every song part
 		settings.pushTag("structure");
 		settings.pushTag("songparts");
 		int numberOfParts = settings.getNumTags("songpart");
@@ -675,40 +806,72 @@ void ofApp::loadSong()
 			songEvent e;
 			e.bpm = settings.getValue("bpm", 0.0);
 			e.programName = settings.getValue("program", "F16");
-			char bankName = e.programName[0];
-			int bankOffset = 0;
-			switch (bankName) {
-			case 'A':
-				break;
-			case 'B':
-				bankOffset = 16;
-				break;
-			case 'C':
-				bankOffset = 32;
-				break;
-			case 'D':
-				bankOffset = 48;
-				break;
-			case 'E':
-				bankOffset = 64;
-				break;
-			case 'F':
-				bankOffset = 80;
-				break;
-			}
-
-			std::stringstream strm;
-			strm << e.programName.substr(1, 2);
-			int num = std::stoi(strm.str());
-			
-			e.program = bankOffset + num - 1;
+            e.program = getProgramNumberFromElektronPatternStr(e.programName);
 			e.tick = settings.getValue("tick", 0);
 			if (settings.tagExists("shader"))
 			{
 				e.shader = settings.getValue("shader", "");
 			}
-			m_songEvents.push_back(e);
+            e.name = settings.getValue("desc", "");
+            
+            if (settings.tagExists("patches")) {
+                settings.pushTag("patches");
+                for (auto midiOut : _midiOuts)
+                {
+                    if (settings.tagExists(midiOut->_deviceName))
+                    {
+                        PatchEvent patchEvent;
+                        patchEvent.programNumber = 0;
+                        patchEvent.midiOutputIndex = midiOut->_deviceIndex;
+                        if (midiOut->_patchFormat == PatchFormat::PROGRAM_NUMBER)
+                        {
+                            patchEvent.programNumber = settings.getValue(midiOut->_deviceName, 0);
+                            patchEvent.name = to_string(patchEvent.programNumber);
+                        }
+                        else if (midiOut->_patchFormat == PatchFormat::PATCH_NAME)
+                        {
+                            patchEvent.name = settings.getValue(midiOut->_deviceName, "");
+                            if (midiOut->_patchesMap.count(patchEvent.name))
+                            {
+                                patchEvent.programNumber = midiOut->_patchesMap[patchEvent.name];
+                            }
+                        }
+                        else if (midiOut->_patchFormat == PatchFormat::ELEKTRON_PATTERN)
+                        {
+                            patchEvent.name = settings.getValue(midiOut->_deviceName, "");
+                            patchEvent.programNumber = getProgramNumberFromElektronPatternStr(patchEvent.name);
+                        }
+                        
+                        e.patches.push_back(patchEvent);
+                    }
+                }
+                settings.popTag();
+            }
+            
+            // redund patches from previous iteration
+            for (auto prevPatch : defaultPatches)
+            {
+                bool shouldRedund = true;
+                for (auto patch : e.patches)
+                {
+                    if (prevPatch.midiOutputIndex == patch.midiOutputIndex)
+                    {
+                        shouldRedund = false;
+                        break;
+                    }
+                }
+                
+                if (shouldRedund)
+                {
+                    e.patches.push_back(prevPatch);
+                }
+            }
+            
+            // reset default patches
+            defaultPatches = e.patches;
+            
 			settings.popTag();
+            m_songEvents.push_back(e);
 		}
 	}
 	else {
@@ -796,13 +959,21 @@ void ofApp::startPlayback()
 {
 	// force midi device to go to the first pattern
 	ofSleepMillis(2);
-	for (auto midiOut: midiOuts)
+	for (auto midiOut: _midiOuts)
 	{
-		if (midiOut.isOpen())
+		if (midiOut->isOpen())
 		{
-			midiOut << StartMidi() << 0xFA << FinishMidi();  // start
-			midiOut << StartMidi() << 0xF8 << FinishMidi();  // tick
-			midiOut << StartMidi() << 0xFC << FinishMidi();  // stop
+            if (midiOut->sendTimecodes) // tonton stage mapper midi
+            {
+                // send start control message to channel 15
+                midiOut->_midiOut.sendProgramChange(15, 1);
+            }
+            else  // standard midi
+            {
+                midiOut->_midiOut << StartMidi() << 0xFA << FinishMidi();  // start
+                midiOut->_midiOut << StartMidi() << 0xF8 << FinishMidi();  // tick
+                midiOut->_midiOut << StartMidi() << 0xFC << FinishMidi();  // stop
+            }
 		}
 	}
 
@@ -822,11 +993,11 @@ void ofApp::startPlayback()
 	float videoStartTime = (msTime + m_videoStartDelayMs) / 1000.0;  // m_videoStartDelayMs is an offset for latency compensation
 	m_videoClipSource.playVideo(videoStartTime);
 
-	for (auto midiOut: midiOuts)
+	for (auto midiOut: _midiOuts)
 	{
-		if (midiOut.isOpen())
+		if (midiOut->isOpen())
 		{
-			midiOut << StartMidi() << 0xFA << FinishMidi(); // start playback
+			midiOut->_midiOut << StartMidi() << 0xFA << FinishMidi(); // start playback
 		}
 	}
 
@@ -860,6 +1031,20 @@ void ofApp::jumpToNextPart()
 		metronome.setCurrentSongPartIdx(currentSongPartIdx + 1);
 		metronome.sendNextProgramChange();
 	}
+    
+    for (auto midiOut : _midiOuts)
+    {
+        if (midiOut->sendTimecodes) // tonton stage mapper custom midi
+        {
+            // send tick command to channel 15 and tick value to channel 14
+            midiOut->_midiOut.sendProgramChange(15, 3);
+            unsigned int tickCount = metronome.getTickCount();
+            unsigned short tickCountHb = static_cast<unsigned short>(tickCount / 128);
+            unsigned short tickCountLb = tickCount - tickCountHb * 128;
+            midiOut->_midiOut.sendProgramChange(14, tickCountLb);
+            midiOut->_midiOut.sendProgramChange(14, tickCountHb);
+        }
+    }
 
 	if (playingBeforeAction)
 	{
@@ -882,6 +1067,20 @@ void ofApp::jumpToPreviousPart()
 		metronome.setCurrentSongPartIdx(currentSongPartIdx - 1);
 		metronome.sendNextProgramChange();
 	}
+    
+    for (auto midiOut : _midiOuts)
+    {
+        if (midiOut->sendTimecodes) // tonton stage mapper custom midi
+        {
+            // send tick command to channel 15 and tick value to channel 14
+            midiOut->_midiOut.sendProgramChange(15, 3);
+            unsigned int tickCount = metronome.getTickCount();
+            unsigned short tickCountHb = static_cast<unsigned short>(tickCount / 128);
+            unsigned short tickCountLb = tickCount - tickCountHb * 128;
+            midiOut->_midiOut.sendProgramChange(14, tickCountLb);
+            midiOut->_midiOut.sendProgramChange(14, tickCountHb);
+        }
+    }
 
 	if (playingBeforeAction)
 	{

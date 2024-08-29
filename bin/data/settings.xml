@@ -1,19 +1,77 @@
 <?xml version="1.0"?>
 <settings>
 	<midi_out_ports>
-		<midi_out><port>2</port></midi_out>
+		<midi_out><port>0</port></midi_out>
 		<midi_out><port>1</port></midi_out>
 	</midi_out_ports>
+	<midi_outputs>
+		<output>
+			<name>Sceno</name>
+			<device_id>IAC Driver Bus 1</device_id>
+			<send_ticks>1</send_ticks>
+			<send_timecodes>1</send_timecodes>
+		</output>
+		<output>
+			<name>MC</name>
+			<device_id>Elektron Model:Cycles</device_id>  <!--device_id: full or partial name as it appears in the OS-->
+			<channel>10</channel>  <!--channel: 0, 1, 2, ...-->
+			<!--input format options:-->
+			<!--elektron=Elektron format (eg B06)-->
+			<!--patch_name=resolves program from patch name in this config-->
+			<input_format>elektron_pattern</input_format>
+			<use_legacy_program>1</use_legacy_program>  <!--this device should use legacy 'program' field from song-->
+			<send_ticks>1</send_ticks>
+		</output>
+			<output>
+			<name>Digitakt</name>
+			<device_id>Elektron Digitakt</device_id>
+			<channel>10</channel>
+			<input_format>elektron_pattern</input_format>
+			<send_ticks>1</send_ticks>
+		</output>
+		<output>
+			<name>GTR</name>
+			<device_id>IAC Driver Bus 2</device_id>
+			<channel>10</channel>  <!-- channel can be overriden at song part level-->
+			<input_format>patch_name</input_format>
+			<patches>
+				<patch>
+					<name>clean</name>
+					<program>1</program>
+				</patch>
+				<patch>
+					<name>disto</name>
+					<program>2</program>
+				</patch>
+			</patches>
+		</output>
+		<output>
+			<name>ORGAN</name>
+			<device_id>IAC Driver Bus 3</device_id>
+			<channel>10</channel>  <!-- channel can be overriden at song part level-->
+			<input_format>patch_name</input_format>
+			<patches>
+				<patch>
+					<name>farfisa</name>
+					<program>1</program>
+				</patch>
+				<patch>
+					<name>vox_conti</name>
+					<program>2</program>
+				</patch>
+			</patches>
+		</output>
+	</midi_outputs>
 	<midi_in>0</midi_in>
 	<buffer_size>128</buffer_size>
 	<startup_config_check>0</startup_config_check>
-	<songs_root_dir>../../reaper/</songs_root_dir>
+	<songs_root_dir>./songs/</songs_root_dir>
 	<video_start_delay_ms>40</video_start_delay_ms>
 	<video_speed_change_delay_ms>20</video_speed_change_delay_ms>
 	<nb_ignored_startup_ticks>0</nb_ignored_startup_ticks>
 	<sample_rate>44100</sample_rate>
-	<requested_audio_out_api>MS WASAPI</requested_audio_out_api>
-	<requested_audio_out_device>Elektron Model:Cycles</requested_audio_out_device>
+	<requested_audio_out_api>OSX CORE</requested_audio_out_api>
+	<requested_audio_out_device>Apple Inc.: MacBook Pro Speakers</requested_audio_out_device>
 	<load_pi_mapper_config>../monsterize/bin/data/ofxpimapper.xml</load_pi_mapper_config>
 	<window_pos_x>100</window_pos_x>
 	<window_pos_y>200</window_pos_y>
@@ -24,4 +82,5 @@
 		<containing><value>test</value></containing>
 	</ignore_audio_files>
 	<show_video_window>0</show_video_window>
+    <show_video_preview>0</show_video_preview>
 </settings>

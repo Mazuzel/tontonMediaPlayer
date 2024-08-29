@@ -4,26 +4,23 @@
 #include "ofxSoundObject.h"
 #include "ofxMidi.h"
 
-struct songEvent {
-	long tick; // duration of the part, in terms of tick count
-	int program;
-	string programName;
-	float bpm;
-	string shader;
-};
+#include "midiOutput.h"
+
+#include "song.h"
+
 
 class Metronome : public ofxSoundObject {
 public:
 	Metronome();
 	virtual ~Metronome();
 
-	void setMidiOuts(std::vector<ofxMidiOut>& midiOuts);
+	void setMidiOuts(std::vector<std::shared_ptr<MidiOutput>>& midiOuts);
 
 	void setNewSong(std::vector<songEvent> songEvents);
 
 	void process(ofSoundBuffer& input, ofSoundBuffer& output);
 
-	std::vector<ofxMidiOut> m_midiOuts;
+	std::vector<std::shared_ptr<MidiOutput>> m_midiOuts;
 
 	void sendNextProgramChange();
 

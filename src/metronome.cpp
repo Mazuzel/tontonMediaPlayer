@@ -6,7 +6,7 @@ Metronome::Metronome():ofxSoundObject(OFX_SOUND_OBJECT_PROCESSOR) {
 	m_ticksPerBeat = 24;
 }
 
-void Metronome::setMidiOuts(std::vector<ofxMidiOut>& midiOuts) {
+void Metronome::setMidiOuts(std::vector<std::shared_ptr<MidiOutput>>& midiOuts) {
 	m_midiOuts = midiOuts;
 }
 
@@ -76,6 +76,7 @@ void Metronome::setNewSong(std::vector<songEvent> songEvents)
 	m_songEvents.clear();
 	for (auto event : songEvents) {
 		m_songEvents.push_back(event);
+        ofLog() << "event patches: " << event.patches.size();
 	}
 	m_totalTickCount = 0;
 	m_currentSongPartIndex = 0;
@@ -100,23 +101,28 @@ void Metronome::setLoopMode(bool loop)
 void Metronome::tick() {
 	for (auto midiOut: m_midiOuts)
 	{
-		if (midiOut.isOpen())
+		if (midiOut->isOpen())
 		{
-			midiOut << StartMidi() << 0xF8 << FinishMidi();
+			midiOut->_midiOut << StartMidi() << 0xF8 << FinishMidi();
 		}
 	}
 
 }
 
 void Metronome::sendNextProgramChange() {
-	for (auto midiOut: m_midiOuts)
-	{
-		if (midiOut.isOpen())
-		{
-			ofLog() << "sending PCh " << m_songEvents[m_currentSongPartIndex].program << " to external midi";
-			midiOut.sendProgramChange(10, m_songEvents[m_currentSongPartIndex].program);
-		}
-	}
+    for (auto midiOut: m_midiOuts)
+    {
+        for (auto patch : m_songEvents[m_currentSongPartIndex].patches)
+        {
+            if (patch.midiOutputIndex == midiOut->_deviceIndex)
+            {
+                ofLog() << "sending program change " << patch.programNumber << " to external midi device " << midiOut->_deviceOsName << " (" << midiOut->_deviceName << ")";
+                // midiOut._midiOut.sendControlChange(10, 0, 1);  // 0 = MSB = playlist (start at 1)  //(int channel, int control, int value);
+                // midiOut._midiOut.sendControlChange(10, 32, 2);  // 32 = LSB = song (start at 1)
+                midiOut->_midiOut.sendProgramChange(midiOut->defaultChannel, patch.programNumber);
+            }
+        }
+    }
 
 	m_samplesPerTick = (m_sampleRate * 60.0f) / m_songEvents[m_currentSongPartIndex].bpm / m_ticksPerBeat;
 }
