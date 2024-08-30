@@ -12,7 +12,7 @@ int main() {
 	xmlSettings.load("settings.xml");
 
 	// main window (daw)
-	settings.setSize(800, 600);
+	settings.setSize(760, 520);
 	settings.setPosition(glm::vec2(10, 30));
 	settings.resizable = false;
 	settings.windowMode = OF_WINDOW;

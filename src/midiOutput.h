@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "ofMain.h"
 #include "ofxMidi.h"
 
@@ -10,6 +12,9 @@ public:
     MidiOutput(int port, std::string deviceName, int deviceIndex, std::string deviceOsName);
     virtual ~MidiOutput();
     bool isOpen();
+    void incrementManualPatchSelection(int increment);
+    std::string getManualPatchName() const;
+    int getManualPatchProgram() const;
     
     bool sendTicks = false;
     bool sendTimecodes = false;
@@ -22,4 +27,8 @@ public:
     std::map<std::string, unsigned int> _patchesMap;
     bool _automaticMode = true;  // follow automatically song patches
     bool _useLegacyProgram = false;  // use default program setting in song (inherits from first software versions with only 1 midi output)
+private:
+    int _manualPatchSelection = 0;
+    int _manualPatchProgram = 0;
+    std::string _manualPatchName = "";
 };

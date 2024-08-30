@@ -112,16 +112,30 @@ void Metronome::tick() {
 void Metronome::sendNextProgramChange() {
     for (auto midiOut: m_midiOuts)
     {
-        for (auto patch : m_songEvents[m_currentSongPartIndex].patches)
+        int programNumber = -1;
+        if (midiOut->_automaticMode)
         {
-            if (patch.midiOutputIndex == midiOut->_deviceIndex)
+            for (auto patch : m_songEvents[m_currentSongPartIndex].patches)
             {
-                ofLog() << "sending program change " << patch.programNumber << " to external midi device " << midiOut->_deviceOsName << " (" << midiOut->_deviceName << ")";
-                // midiOut._midiOut.sendControlChange(10, 0, 1);  // 0 = MSB = playlist (start at 1)  //(int channel, int control, int value);
-                // midiOut._midiOut.sendControlChange(10, 32, 2);  // 32 = LSB = song (start at 1)
-                midiOut->_midiOut.sendProgramChange(midiOut->defaultChannel, patch.programNumber);
+                if (patch.midiOutputIndex == midiOut->_deviceIndex)
+                {
+                    programNumber = patch.programNumber;
+                }
             }
         }
+        else
+        {
+            programNumber = midiOut->getManualPatchProgram();
+        }
+
+        if (programNumber >= 0)
+        {
+            ofLog() << "sending Pch " << programNumber << " to midi device " << midiOut->_deviceOsName << " (" << midiOut->_deviceName << ")";
+            // midiOut._midiOut.sendControlChange(10, 0, 1);  // 0 = MSB = playlist (start at 1)  //(int channel, int control, int value);
+            // midiOut._midiOut.sendControlChange(10, 32, 2);  // 32 = LSB = song (start at 1)
+            midiOut->_midiOut.sendProgramChange(midiOut->defaultChannel, programNumber);
+        }
+
     }
 
 	m_samplesPerTick = (m_sampleRate * 60.0f) / m_songEvents[m_currentSongPartIndex].bpm / m_ticksPerBeat;

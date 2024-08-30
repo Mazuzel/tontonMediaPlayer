@@ -184,4 +184,5 @@ private:
     ofColor m_colorFocused = ofColor(242, 182, 17);
     ofColor m_colorNotFocused = ofColor(26, 97, 138);
     std::string m_helper;
+    unsigned int m_selectedMidiOutput = 0;
 };

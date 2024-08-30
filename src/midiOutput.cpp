@@ -37,3 +37,44 @@ bool MidiOutput::isOpen()
 {
     return _midiOut.isOpen();
 }
+
+void MidiOutput::incrementManualPatchSelection(int increment)
+{
+    if (_automaticMode)
+    {
+        _automaticMode = false;
+        _manualPatchSelection = 0;
+    }
+    else
+    {
+        int newManualPatch = _manualPatchSelection + increment;
+        if (newManualPatch < 0 || newManualPatch >= _patchesMap.size())
+        {
+            _automaticMode = true;
+            _manualPatchSelection = 0;
+        }
+        else
+        {
+            _manualPatchSelection = newManualPatch;
+            _automaticMode = false;
+        }
+    }
+    
+    if (!_automaticMode)
+    {
+        map<string, unsigned int>::iterator itr(_patchesMap.begin());
+        std::advance(itr, _manualPatchSelection);
+        _manualPatchName = itr->first;
+        _manualPatchProgram = itr->second;
+    }
+}
+
+std::string MidiOutput::getManualPatchName() const
+{
+    return _manualPatchName;
+}
+
+int MidiOutput::getManualPatchProgram() const
+{
+    return _manualPatchProgram;
+}

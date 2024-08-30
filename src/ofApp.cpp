@@ -43,7 +43,7 @@ void ofApp::setup(){
 
 	// chargement setlist
     loadSetlist();
-    m_setlistView.setup(30, 50, 210, 380, "Setlist", m_setlist, 0, 0, false, m_colorFocused, m_colorNotFocused);
+    m_setlistView.setup(30, 50, 190, 380, "Setlist", m_setlist, 0, 0, false, m_colorFocused, m_colorNotFocused);
     changeSelectedUiElement(MAIN_UI_ELEMENT::SETLIST);
 
 	metronome.setSampleRate(m_sampleRate);
@@ -212,7 +212,7 @@ int ofApp::openMidiOut() {
                 
                 // resolve port
                 int port = -1;
-                string deviceOsName = "not connected";
+                string deviceOsName = "";
                 for (auto itr = midiOutDevices.begin(); itr != midiOutDevices.end(); ++itr) {
                     if (itr->second.find(deviceId) != std::string::npos)
                     {
@@ -565,8 +565,8 @@ void ofApp::drawHelp()
 {
     if (m_helper.size() > 0)
     {
-        ofSetColor(150);
-        ofDrawBitmapString(m_helper, 10, 580);
+        ofSetColor(128);
+        ofDrawBitmapString(m_helper, 10, ofGetHeight() - 5);
     }
 
 }
@@ -574,7 +574,7 @@ void ofApp::drawHelp()
 void ofApp::drawPatches()
 {
     ofSetColor(255);
-    unsigned int baseX = 260;
+    unsigned int baseX = 240;
     unsigned int baseY = 280;
     unsigned int width = 510;
     unsigned int height = 150;
@@ -609,55 +609,85 @@ void ofApp::drawPatches()
         {
             ofSetColor(128);
         }
-        string name = midiOut->_deviceName + " (" + midiOut->_deviceOsName + ")";
+        if (m_mainUiElementSelected == MAIN_UI_ELEMENT::MIDI_OUTPUTS && m_selectedMidiOutput == midiOut->_deviceIndex)
+        {
+            ofSetColor(m_colorFocused);
+        }
         ofDrawBitmapString(midiOut->_deviceName, baseX, baseY + offsetY + row * 15);
         
-        for (auto patch : m_songEvents[metronome.getCurrentSongPartIdx()].patches)
+        if (midiOut->_patchFormat == PatchFormat::PATCH_NAME && !midiOut->_automaticMode)
         {
-            if (midiOut->_deviceIndex == patch.midiOutputIndex)
+            string programName = midiOut->getManualPatchName();
+            int programNumber = midiOut->getManualPatchProgram();
+            float hue = 1313 * programNumber / 128.0 + 100.0 * midiOut->_deviceIndex;
+            hue = fmod(hue, 360.0);
+            tie(R, G, B) = Tonton::Utils::HSVtoRGB(hue, 50, 96);
+            ofSetColor(R, G, B);
+            ofDrawRectRounded(baseX + 78, baseY + offsetY + row * 15 - 10, 60, 13, 3.0);
+            ofSetColor(0);
+            ofDrawBitmapString(programName, baseX + 80, baseY + offsetY + row * 15);
+        }
+        else
+        {
+            for (auto patch : m_songEvents[metronome.getCurrentSongPartIdx()].patches)
             {
-                ofSetColor(30);
-                if (midiOut->_patchFormat == PatchFormat::PROGRAM_NUMBER)
+                if (midiOut->_deviceIndex == patch.midiOutputIndex)
                 {
-                    float hue = 200;
-                    hue = fmod(hue, 360.0);
-                    tie(R, G, B) = Tonton::Utils::HSVtoRGB(hue, 50, 96);
-                    ofSetColor(R, G, B);
+                    ofSetColor(30);
+                    if (midiOut->_patchFormat == PatchFormat::PROGRAM_NUMBER)
+                    {
+                        float hue = 200;
+                        hue = fmod(hue, 360.0);
+                        tie(R, G, B) = Tonton::Utils::HSVtoRGB(hue, 50, 96);
+                        ofSetColor(R, G, B);
+                    }
+                    else if (midiOut->_patchFormat == PatchFormat::ELEKTRON_PATTERN)
+                    {
+                        float hue = 500 * patch.programNumber / 128.0;
+                        hue = fmod(hue, 360.0);
+                        tie(R, G, B) = Tonton::Utils::HSVtoRGB(hue, 50, 96);
+                        ofSetColor(R, G, B);
+                    }
+                    else if (midiOut->_patchFormat == PatchFormat::PATCH_NAME)
+                    {
+                        float hue = 1313 * patch.programNumber / 128.0 + 100.0 * midiOut->_deviceIndex;
+                        hue = fmod(hue, 360.0);
+                        tie(R, G, B) = Tonton::Utils::HSVtoRGB(hue, 50, 96);
+                        ofSetColor(R, G, B);
+                    }
+                    ofDrawRectRounded(baseX + 78, baseY + offsetY + row * 15 - 10, 60, 13, 3.0);
+                    ofSetColor(0);
+                    ofDrawBitmapString(patch.name, baseX + 80, baseY + offsetY + row * 15);
                 }
-                else if (midiOut->_patchFormat == PatchFormat::ELEKTRON_PATTERN)
-                {
-                    float hue = 500 * patch.programNumber / 128.0;
-                    hue = fmod(hue, 360.0);
-                    tie(R, G, B) = Tonton::Utils::HSVtoRGB(hue, 50, 96);
-                    ofSetColor(R, G, B);
-                }
-                else if (midiOut->_patchFormat == PatchFormat::PATCH_NAME)
-                {
-                    float hue = 1313 * patch.programNumber / 128.0 + 100.0 * midiOut->_deviceIndex;
-                    hue = fmod(hue, 360.0);
-                    tie(R, G, B) = Tonton::Utils::HSVtoRGB(hue, 50, 96);
-                    ofSetColor(R, G, B);
-                }
-                ofDrawRectRounded(baseX + 78, baseY + offsetY + row * 15 - 10, 60, 13, 3.0);
-                ofSetColor(0);
-                ofDrawBitmapString(patch.name, baseX + 80, baseY + offsetY + row * 15);
             }
         }
+
         // allow to switch manually between patches
-        if (midiOut->_patchFormat == PatchFormat::PATCH_NAME && midiOut->_automaticMode)
+        if (midiOut->_patchFormat == PatchFormat::PATCH_NAME)
         {
             ofSetColor(128);
-            ofDrawBitmapString("auto", baseX + 160, baseY + offsetY + row * 15);
+            string mode = "patch";
+            if (midiOut->_automaticMode)
+            {
+                mode = "auto";
+            }
+            ofDrawBitmapString(mode, baseX + 160, baseY + offsetY + row * 15);
         }
-        row += 1;
         
-        //offsetY += 5;
+        // print os device name
+        if (midiOut->_deviceOsName.size() > 0)
+        {
+            ofSetColor(128);
+            ofDrawBitmapString(midiOut->_deviceOsName, baseX + 230, baseY + offsetY + row * 15);
+        }
+
+        row += 1;
     }
 }
 
 void ofApp::drawMixer()
 {
-    unsigned int baseX = 260;
+    unsigned int baseX = 240;
     unsigned int baseY = 50;
     unsigned int width = 510;
     unsigned int height = 210;
@@ -685,10 +715,10 @@ void ofApp::drawMixer()
     {
         float volume = mixer.getConnectionVolume(i);
         int y = baseY + TEXT_LIST_SPACING * (i + 1);
-        ofSetColor(180);
-        if (i == m_selectedVolumeSetting)
+        ofSetColor(128);
+        if (m_mainUiElementSelected == MAIN_UI_ELEMENT::MIXER && i == m_selectedVolumeSetting)
         {
-            ofSetColor(255);
+            ofSetColor(m_colorFocused);
         }
         ofDrawBitmapString(playersNames[i], baseX + 260, y + 15);
         ofSetColor(255);
@@ -711,22 +741,31 @@ void ofApp::drawMixer()
 
 void ofApp::drawPlayer()
 {
-    unsigned int baseY = 480;
+    unsigned int baseY = 440;
+    
+    unsigned int timelinePosY = 10;
+    unsigned int timelineHeight = 38;
+    unsigned int timelineWidth = ofGetWidth() - 40;
+    unsigned int timelinePosX = (ofGetWidth() - timelineWidth) / 2;
     
     ofDrawBitmapString("Player", 20, baseY);
+    ofDrawBitmapString(metronome.getTickCount() + 1, 100, baseY);
+
     ofSetColor(50);
-    ofDrawRectangle(15, baseY + 25, 770, 60);
+    if (m_mainUiElementSelected == MAIN_UI_ELEMENT::SETLIST) ofSetColor(194, 155, 83);
+    else if (m_isPlaying) ofSetColor(48, 72, 140);
+    ofDrawRectangle(timelinePosX, baseY + timelinePosY, timelineWidth, timelineHeight);
 
     float songTicks = static_cast<float>(m_songEvents[m_songEvents.size() - 1].tick);
     for (int i = 0; i < m_songEvents.size()-1; i++)
     {
-        int x = 20 + static_cast<int>(760 * m_songEvents[i].tick / songTicks);
+        int x = timelinePosX + static_cast<int>((timelineWidth - 4) * m_songEvents[i].tick / songTicks);
         int nbTicks = m_songEvents[i + 1].tick - m_songEvents[i].tick;
-        int w = round(760 * (m_songEvents[i + 1].tick - m_songEvents[i].tick + 0.5) / songTicks);
+        int w = round((timelineWidth - 4) * (m_songEvents[i + 1].tick - m_songEvents[i].tick + 0.5) / songTicks);
         
-        if (w + x > 760 + 20)
+        if (w + x > timelinePosX + timelineWidth)
         {
-            w = 760 + 20 - x;
+            w = timelinePosX + timelineWidth - x;
         }
 
         float hue = ((2 * m_songEvents[i].program) % 16) * 20.0 + i * 60.0 / m_songEvents.size();
@@ -734,7 +773,7 @@ void ofApp::drawPlayer()
         int R, G, B;
         tie(R, G, B) = Tonton::Utils::HSVtoRGB(hue, 50, 95);
         ofSetColor(R, G, B);
-        ofDrawRectangle(x, baseY + 30, w, 50);
+        ofDrawRectangle(x, baseY + timelinePosY + 2, w, timelineHeight - 4);
         if (nbTicks >= 8)  // draw part name only if part is big enough
         {
             ofSetColor(0, 0, 0);
@@ -743,14 +782,14 @@ void ofApp::drawPlayer()
             auto strSize = estimateStringSize(songPartDisplay);
             float xName = x + 0.5 * w - 0.5 * strSize.x;
             if (xName < x) xName = x;
-            float yName = baseY + 60 - 0.5 * strSize.y;
-            if (yName < baseY) yName = baseY;
+            float yName = baseY + timelinePosY + 0.5 * timelineHeight - 0.5 * strSize.y + 6;
+            if (yName < baseY + timelinePosY) yName = baseY + timelinePosY;
             ofDrawBitmapString(songPartDisplay, round(xName), round(yName));
         }
         
         // draw separation between song parts
         ofSetColor(50);
-        ofDrawRectangle(x, baseY + 30, 1, 50);
+        ofDrawRectangle(x, baseY + timelinePosY + 2, 1, timelineHeight - 4);
     }
     ofSetColor(255);
 
@@ -758,23 +797,21 @@ void ofApp::drawPlayer()
     {
         ofSetColor(200, 180, 120);
     }
-    ofDrawRectangle(20 + 760 * metronome.getTickCount() / songTicks - 2, baseY + 30, 6, 50);  // player cursor
+    ofDrawRectangle(timelinePosX + 2 + (timelineWidth - 4) * metronome.getTickCount() / songTicks - 2, baseY + timelinePosY, 4, timelineHeight);  // player cursor
     ofSetColor(255);
-
-    ofDrawBitmapString(metronome.getTickCount() + 1, 20, baseY + 15);
 }
 
 void ofApp::drawSequencerPage()
 {
 	ofSetColor(255);
 
-	ofDrawBitmapString("Auto play (w)", 680, 15);
+	ofDrawBitmapString("Auto play (w)", 640, 15);
 	ofSetColor(128);
 	if (m_autoPlayNext)
 	{
 		ofSetColor(50, 255, 25);
 	}
-	ofDrawRectangle(660, 5, 10, 10);
+	ofDrawRectangle(620, 5, 10, 10);
 
 //	ofSetColor(255);
 //
@@ -1368,6 +1405,33 @@ void ofApp::keyPressed(int key){
             {
                 volumeUp();
             }
+            else if (m_mainUiElementSelected == MAIN_UI_ELEMENT::MIDI_OUTPUTS)
+            {
+                if (_midiOuts[m_selectedMidiOutput]->_patchFormat == PatchFormat::PATCH_NAME)
+                {
+//                    if (_midiOuts[m_selectedMidiOutput]->_automaticMode)
+//                    {
+//                        _midiOuts[m_selectedMidiOutput]->_automaticMode = false;
+//                        _midiOuts[m_selectedMidiOutput]->_manualPatchSelection = 0;
+//                    }
+//                    else
+//                    {
+//                        int newManualPatch = _midiOuts[m_selectedMidiOutput]->_manualPatchSelection + 1;
+//                        if (newManualPatch >= _midiOuts[m_selectedMidiOutput]->_patchesMap.size())
+//                        {
+//                            _midiOuts[m_selectedMidiOutput]->_automaticMode = true;
+//                            _midiOuts[m_selectedMidiOutput]->_manualPatchSelection = 0;
+//                        }
+//                        else
+//                        {
+//                            _midiOuts[m_selectedMidiOutput]->_manualPatchSelection = newManualPatch;
+//                            _midiOuts[m_selectedMidiOutput]->_automaticMode = false;
+//                        }
+//                    }
+                    _midiOuts[m_selectedMidiOutput]->incrementManualPatchSelection(1);
+                    metronome.sendNextProgramChange();
+                }
+            }
             break;
         case OF_KEY_LEFT:
             if (m_keyShiftPressed)
@@ -1386,6 +1450,33 @@ void ofApp::keyPressed(int key){
             {
                 volumeDown();
             }
+            else if (m_mainUiElementSelected == MAIN_UI_ELEMENT::MIDI_OUTPUTS)
+            {
+                if (_midiOuts[m_selectedMidiOutput]->_patchFormat == PatchFormat::PATCH_NAME)
+                {
+//                    if (_midiOuts[m_selectedMidiOutput]->_automaticMode)
+//                    {
+//                        _midiOuts[m_selectedMidiOutput]->_automaticMode = false;
+//                        _midiOuts[m_selectedMidiOutput]->_manualPatchSelection = _midiOuts[m_selectedMidiOutput]->_patchesMap.size() - 1;
+//                    }
+//                    else
+//                    {
+//                        int newManualPatch = _midiOuts[m_selectedMidiOutput]->_manualPatchSelection - 1;
+//                        if (newManualPatch < 0)
+//                        {
+//                            _midiOuts[m_selectedMidiOutput]->_automaticMode = true;
+//                            _midiOuts[m_selectedMidiOutput]->_manualPatchSelection = 0;
+//                        }
+//                        else
+//                        {
+//                            _midiOuts[m_selectedMidiOutput]->_manualPatchSelection = newManualPatch;
+//                            _midiOuts[m_selectedMidiOutput]->_automaticMode = false;
+//                        }
+//                    }
+                    _midiOuts[m_selectedMidiOutput]->incrementManualPatchSelection(-1);
+                    metronome.sendNextProgramChange();
+                }
+            }
             break;
         case OF_KEY_UP:
             if (m_keyShiftPressed && m_mainUiElementSelected == MAIN_UI_ELEMENT::MIDI_OUTPUTS)
@@ -1402,6 +1493,10 @@ void ofApp::keyPressed(int key){
             else if (m_mainUiElementSelected == MAIN_UI_ELEMENT::MIXER)
             {
                 m_selectedVolumeSetting = (m_selectedVolumeSetting - 1) % players.size();
+            }
+            else if (m_mainUiElementSelected == MAIN_UI_ELEMENT::MIDI_OUTPUTS)
+            {
+                m_selectedMidiOutput = (m_selectedMidiOutput - 1) % _midiOuts.size();
             }
             break;
         case OF_KEY_RETURN:
@@ -1432,6 +1527,10 @@ void ofApp::keyPressed(int key){
             else if (m_mainUiElementSelected == MAIN_UI_ELEMENT::MIXER)
             {
                 m_selectedVolumeSetting = (m_selectedVolumeSetting + 1) % players.size();
+            }
+            else if (m_mainUiElementSelected == MAIN_UI_ELEMENT::MIDI_OUTPUTS)
+            {
+                m_selectedMidiOutput = (m_selectedMidiOutput + 1) % _midiOuts.size();
             }
             break;
         case 'p':
