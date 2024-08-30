@@ -12,6 +12,7 @@
 
 #include "metronome.h"
 
+#include "list.h"
 #include "midiOutput.h"
 #include "shadersSource.h"
 #include "song.h"
@@ -23,6 +24,12 @@
 #define QUAD_CORNER_HWIDTH 12
 #define TEXT_LIST_SPACING 15
 #define VOLUME_MAX 2.0
+
+enum MAIN_UI_ELEMENT {
+    SETLIST,
+    MIXER,
+    MIDI_OUTPUTS
+};
 
 class ofApp : public ofBaseApp, public ofxMidiListener {
 
@@ -70,7 +77,9 @@ private:
 	unsigned int m_startingSongPart = 1;
 	void drawMappingSetup();
     void drawPatches();
+    void drawMixer();
 	void drawHelp();
+    void drawPlayer();
 	void volumeUp();
 	void volumeDown();
 	double getCurrentSongTimeMs();
@@ -79,6 +88,7 @@ private:
     void loadMappingNodes();
 	void loadPiMapperSurfaces();
     void loadSetlist();
+    void changeSelectedUiElement(MAIN_UI_ELEMENT uiElement);
 
 	// internal sound and midi handlers
 	ofSoundStream soundStream;
@@ -164,4 +174,14 @@ private:
     
     // video preview
     bool m_showVideoPreview;
+    
+    // keys and controls
+    bool m_keyShiftPressed = false;
+    
+    // UI elements
+    MAIN_UI_ELEMENT m_mainUiElementSelected = MAIN_UI_ELEMENT::SETLIST;
+    Tonton::Utils::ListView m_setlistView;
+    ofColor m_colorFocused = ofColor(242, 182, 17);
+    ofColor m_colorNotFocused = ofColor(26, 97, 138);
+    std::string m_helper;
 };

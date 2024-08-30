@@ -43,6 +43,8 @@ void ofApp::setup(){
 
 	// chargement setlist
     loadSetlist();
+    m_setlistView.setup(30, 50, 210, 380, "Setlist", m_setlist, 0, 0, false, m_colorFocused, m_colorNotFocused);
+    changeSelectedUiElement(MAIN_UI_ELEMENT::SETLIST);
 
 	metronome.setSampleRate(m_sampleRate);
 
@@ -237,16 +239,16 @@ int ofApp::openMidiOut() {
                 
                 // add optional settings
                 if (settings.tagExists("send_ticks")) {
-                    bool sendTicks = settings.getValue("send_ticks", 0) == 1;
-                    midiOut->sendTicks = sendTicks;
+                    midiOut->sendTicks = (settings.getValue("send_ticks", 0) == 1);
                 }
                 if (settings.tagExists("send_timecodes")) {
-                    bool sendTimecodes = settings.getValue("send_timecodes", 0) == 1;
-                    midiOut->sendTimecodes = sendTimecodes;
+                    midiOut->sendTimecodes = (settings.getValue("send_timecodes", 0) == 1);
                 }
                 if (settings.tagExists("channel")) {
-                    unsigned int defaultChannel = settings.getValue("channel", 1);
-                    midiOut->defaultChannel = defaultChannel;
+                    midiOut->defaultChannel = settings.getValue("channel", 1);
+                }
+                if (settings.tagExists("use_legacy_program")) {
+                    midiOut->_useLegacyProgram = (settings.getValue("use_legacy_program", 0) == 1);
                 }
                 if (settings.tagExists("input_format")) {
                     string patchFormat = settings.getValue("input_format", "");
@@ -357,6 +359,7 @@ void ofApp::update(){
 			if (m_currentSongIndex < m_setlist.size() - 1)
 			{
 				m_currentSongIndex += 1;
+                m_setlistView.setActiveElement(m_currentSongIndex);
 				loadSong();
 				startPlayback();
 			}
@@ -424,6 +427,24 @@ void ofApp::update(){
 	}
 }
 
+void ofApp::changeSelectedUiElement(MAIN_UI_ELEMENT uiElement)
+{
+    m_setlistView.setFocus(uiElement == MAIN_UI_ELEMENT::SETLIST);
+    m_mainUiElementSelected = uiElement;
+    if (uiElement == MAIN_UI_ELEMENT::SETLIST)
+    {
+        m_helper = "Enter: Load song, >: Play song, <: Stop song, N: Go to next part";
+    }
+    else if (uiElement == MAIN_UI_ELEMENT::MIXER)
+    {
+        m_helper = "</>: Change volume";
+    }
+    else if (uiElement == MAIN_UI_ELEMENT::MIDI_OUTPUTS)
+    {
+        m_helper = "</>: Change patch manually";
+    }
+}
+
 //--------------------------------------------------------------
 void ofApp::drawMapping(ofEventArgs& args){
 	m_fboMapping.draw(0, 0, ofGetWidth(), ofGetHeight());
@@ -456,8 +477,8 @@ void ofApp::drawMappingSetup()
 //--------------------------------------------------------------
 void ofApp::drawAnimatedLogo()
 {
-    int centerX = 400;
-    int centerY = 300;
+    int centerX = 300;
+    int centerY = 200;
     int baseWidth = 200;
     int baseHeight = 220;
 
@@ -470,7 +491,7 @@ void ofApp::drawAnimatedLogo()
 	if (m_currentSongIndex != m_songSelectorToolIdx)
 	{
 		ofSetColor(180, 90, 25);
-		xOffset = static_cast<int>(3.2 * baseWidth / 220.0);
+		xOffset = static_cast<int>(-3.2 * baseWidth / 220.0);
 		yOffset = static_cast<int>( (m_songSelectorToolIdx - 0.4 * m_setlist.size()) * baseHeight / 250.0);
 	}
 	else if (m_isPlaying)
@@ -492,10 +513,10 @@ void ofApp::draw() {
 	ofSetColor(255);
 
 	// draw logo with eyes animation
-	if (!m_setupMappingMode)
-	{
-		drawAnimatedLogo();
-	}
+//	if (!m_setupMappingMode)
+//	{
+//		drawAnimatedLogo();
+//	}
 
 	m_fboMapping.begin();
 	ofClear(0, 0, 0, 255);
@@ -542,22 +563,45 @@ void ofApp::draw() {
 
 void ofApp::drawHelp()
 {
-	ofSetColor(150);
-	ofDrawBitmapString(
-		"f:fullscreen, m:mapping, s:store vols, Q:quit, p:launch next, l:loop",
-		10,
-		580);
+    if (m_helper.size() > 0)
+    {
+        ofSetColor(150);
+        ofDrawBitmapString(m_helper, 10, 580);
+    }
+
 }
 
 void ofApp::drawPatches()
 {
     ofSetColor(255);
-    int baseX = 20;
-    int baseY = 280;
+    unsigned int baseX = 260;
+    unsigned int baseY = 280;
+    unsigned int width = 510;
+    unsigned int height = 150;
+    
+    ofPath border;
+    if (m_mainUiElementSelected == MAIN_UI_ELEMENT::MIDI_OUTPUTS)
+    {
+        border.setStrokeColor(m_colorFocused);
+    }
+    else
+    {
+        border.setStrokeColor(m_colorNotFocused);
+    }
+    border.setStrokeWidth(2);
+    border.setFilled(false);
+    border.moveTo(baseX - 10, baseY - 15);
+    border.lineTo(baseX - 10 + width, baseY - 15);
+    border.lineTo(baseX - 10 + width, baseY + height - 15);
+    border.lineTo(baseX - 10, baseY + height - 15);
+    border.lineTo(baseX - 10, baseY - 15);
+    border.draw();
+    
     ofDrawBitmapString("Midi outputs", baseX, baseY);
     
-    int offsetY = 20;
-    int row = 0;
+    int offsetY = 15;
+    int row = 1;
+    int R, G, B;
     for (auto midiOut : _midiOuts)
     {
         ofSetColor(255);
@@ -567,10 +611,157 @@ void ofApp::drawPatches()
         }
         string name = midiOut->_deviceName + " (" + midiOut->_deviceOsName + ")";
         ofDrawBitmapString(midiOut->_deviceName, baseX, baseY + offsetY + row * 15);
+        
+        for (auto patch : m_songEvents[metronome.getCurrentSongPartIdx()].patches)
+        {
+            if (midiOut->_deviceIndex == patch.midiOutputIndex)
+            {
+                ofSetColor(30);
+                if (midiOut->_patchFormat == PatchFormat::PROGRAM_NUMBER)
+                {
+                    float hue = 200;
+                    hue = fmod(hue, 360.0);
+                    tie(R, G, B) = Tonton::Utils::HSVtoRGB(hue, 50, 96);
+                    ofSetColor(R, G, B);
+                }
+                else if (midiOut->_patchFormat == PatchFormat::ELEKTRON_PATTERN)
+                {
+                    float hue = 500 * patch.programNumber / 128.0;
+                    hue = fmod(hue, 360.0);
+                    tie(R, G, B) = Tonton::Utils::HSVtoRGB(hue, 50, 96);
+                    ofSetColor(R, G, B);
+                }
+                else if (midiOut->_patchFormat == PatchFormat::PATCH_NAME)
+                {
+                    float hue = 1313 * patch.programNumber / 128.0 + 100.0 * midiOut->_deviceIndex;
+                    hue = fmod(hue, 360.0);
+                    tie(R, G, B) = Tonton::Utils::HSVtoRGB(hue, 50, 96);
+                    ofSetColor(R, G, B);
+                }
+                ofDrawRectRounded(baseX + 78, baseY + offsetY + row * 15 - 10, 60, 13, 3.0);
+                ofSetColor(0);
+                ofDrawBitmapString(patch.name, baseX + 80, baseY + offsetY + row * 15);
+            }
+        }
+        // allow to switch manually between patches
+        if (midiOut->_patchFormat == PatchFormat::PATCH_NAME && midiOut->_automaticMode)
+        {
+            ofSetColor(128);
+            ofDrawBitmapString("auto", baseX + 160, baseY + offsetY + row * 15);
+        }
         row += 1;
         
         //offsetY += 5;
     }
+}
+
+void ofApp::drawMixer()
+{
+    unsigned int baseX = 260;
+    unsigned int baseY = 50;
+    unsigned int width = 510;
+    unsigned int height = 210;
+    
+    ofPath border;
+    if (m_mainUiElementSelected == MAIN_UI_ELEMENT::MIXER)
+    {
+        border.setStrokeColor(m_colorFocused);
+    }
+    else
+    {
+        border.setStrokeColor(m_colorNotFocused);
+    }
+    border.setStrokeWidth(2);
+    border.setFilled(false);
+    border.moveTo(baseX - 10, baseY - 15);
+    border.lineTo(baseX - 10 + width, baseY - 15);
+    border.lineTo(baseX - 10 + width, baseY + height - 15);
+    border.lineTo(baseX - 10, baseY + height - 15);
+    border.lineTo(baseX - 10, baseY - 15);
+    border.draw();
+    
+    ofDrawBitmapString("Mixer", baseX, baseY);
+    for (int i = 0; i < players.size(); i++)
+    {
+        float volume = mixer.getConnectionVolume(i);
+        int y = baseY + TEXT_LIST_SPACING * (i + 1);
+        ofSetColor(180);
+        if (i == m_selectedVolumeSetting)
+        {
+            ofSetColor(255);
+        }
+        ofDrawBitmapString(playersNames[i], baseX + 260, y + 15);
+        ofSetColor(255);
+        float volumeNorm = volume / VOLUME_MAX;
+        int volumeBars = round(volumeNorm * 40);
+        int barWidth = 2;
+        int barPeriod = 5;
+        int R, G, B;
+        float hue = 250 - 250 * volumeNorm;
+        tie(R, G, B) = Tonton::Utils::HSVtoRGB(hue, 50, 95);
+        ofSetColor(R, G, B);
+        ofDrawBitmapString(volume, baseX + 210, y + 15);
+        for (int j = 0; j < volumeBars; j++)
+        {
+            int xBar = baseX + j * barPeriod;
+            ofDrawRectangle(xBar, y, barWidth, TEXT_LIST_SPACING - 2);
+        }
+    }
+}
+
+void ofApp::drawPlayer()
+{
+    unsigned int baseY = 480;
+    
+    ofDrawBitmapString("Player", 20, baseY);
+    ofSetColor(50);
+    ofDrawRectangle(15, baseY + 25, 770, 60);
+
+    float songTicks = static_cast<float>(m_songEvents[m_songEvents.size() - 1].tick);
+    for (int i = 0; i < m_songEvents.size()-1; i++)
+    {
+        int x = 20 + static_cast<int>(760 * m_songEvents[i].tick / songTicks);
+        int nbTicks = m_songEvents[i + 1].tick - m_songEvents[i].tick;
+        int w = round(760 * (m_songEvents[i + 1].tick - m_songEvents[i].tick + 0.5) / songTicks);
+        
+        if (w + x > 760 + 20)
+        {
+            w = 760 + 20 - x;
+        }
+
+        float hue = ((2 * m_songEvents[i].program) % 16) * 20.0 + i * 60.0 / m_songEvents.size();
+        hue = fmod(hue, 360.0);
+        int R, G, B;
+        tie(R, G, B) = Tonton::Utils::HSVtoRGB(hue, 50, 95);
+        ofSetColor(R, G, B);
+        ofDrawRectangle(x, baseY + 30, w, 50);
+        if (nbTicks >= 8)  // draw part name only if part is big enough
+        {
+            ofSetColor(0, 0, 0);
+            int nameSize = m_songEvents[i].name.size();
+            string songPartDisplay = replaceSpacesWithNewline(m_songEvents[i].name);
+            auto strSize = estimateStringSize(songPartDisplay);
+            float xName = x + 0.5 * w - 0.5 * strSize.x;
+            if (xName < x) xName = x;
+            float yName = baseY + 60 - 0.5 * strSize.y;
+            if (yName < baseY) yName = baseY;
+            ofDrawBitmapString(songPartDisplay, round(xName), round(yName));
+        }
+        
+        // draw separation between song parts
+        ofSetColor(50);
+        ofDrawRectangle(x, baseY + 30, 1, 50);
+    }
+    ofSetColor(255);
+
+    if (m_loop)
+    {
+        ofSetColor(200, 180, 120);
+    }
+    ofDrawRectangle(20 + 760 * metronome.getTickCount() / songTicks - 2, baseY + 30, 6, 50);  // player cursor
+    ofSetColor(255);
+
+    ofDrawBitmapString(metronome.getTickCount() + 1, 20, baseY + 15);
 }
 
 void ofApp::drawSequencerPage()
@@ -585,100 +776,23 @@ void ofApp::drawSequencerPage()
 	}
 	ofDrawRectangle(660, 5, 10, 10);
 
+//	ofSetColor(255);
+//
+//	ofDrawBitmapString("Video resync (x)", 520, 15);
+//	ofSetColor(128);
+//	if (m_videoResync)
+//	{
+//		ofSetColor(50, 255, 25);
+//	}
+//	ofDrawRectangle(500, 5, 10, 10);
+
 	ofSetColor(255);
 
-	ofDrawBitmapString("Video resync (x)", 520, 15);
-	ofSetColor(128);
-	if (m_videoResync)
-	{
-		ofSetColor(50, 255, 25);
-	}
-	ofDrawRectangle(500, 5, 10, 10);
+    drawMixer();
 
-	ofSetColor(255);
+    m_setlistView.draw();
 
-	ofDrawBitmapString("Mixer (v: scroll, b: increase, n: decrease", 20, 50);
-	for (int i = 0; i < players.size(); i++)
-	{
-		float volume = mixer.getConnectionVolume(i);
-		int y = 50 + TEXT_LIST_SPACING * (i + 1);
-		ofSetColor(180);
-		if (i == m_selectedVolumeSetting)
-		{
-			ofSetColor(255);
-		}
-		ofDrawBitmapString(playersNames[i], 280, y + 15);
-		ofSetColor(255);
-		float volumeNorm = volume / VOLUME_MAX;
-		int volumeBars = round(volumeNorm * 40);
-		int barWidth = 2;
-		int barPeriod = 5;
-        int R, G, B;
-        float hue = 250 - 250 * volumeNorm;
-        // if (hue < 0) hue += 360;
-        tie(R, G, B) = Tonton::Utils::HSVtoRGB(hue, 50, 95);
-        ofSetColor(R, G, B);
-		ofDrawBitmapString(volume, 230, y + 15);
-		for (int j = 0; j < volumeBars; j++)
-		{
-			int xBar = 20 + j * barPeriod;
-			ofDrawRectangle(xBar, y, barWidth, TEXT_LIST_SPACING - 2);
-		}
-	}
-
-	displayList(570, 50, "Setlist (up/down/return)", m_setlist, m_currentSongIndex, m_songSelectorToolIdx, true);
-
-    int ySeq = 480;
-    // ofDrawBitmapString("Measured video delay (ms):", 500, ySeq);
-    // ofDrawBitmapString(m_measuredVideoDelayMs, 710, ySeq);
-    
-	ofDrawBitmapString("Song", 20, ySeq);
-	ofSetColor(150);
-	ofDrawBitmapString("(<- | N | ->)", 60, ySeq);
-	ofSetColor(50);
-	ofDrawRectangle(15, ySeq + 25, 770, 60);
-
-	float songTicks = static_cast<float>(m_songEvents[m_songEvents.size() - 1].tick);
-	for (int i = 0; i < m_songEvents.size()-1; i++)
-	{
-		int x = 20 + static_cast<int>(760 * m_songEvents[i].tick / songTicks);
-        int nbTicks = m_songEvents[i + 1].tick - m_songEvents[i].tick;
-		int w = round(760 * (m_songEvents[i + 1].tick - m_songEvents[i].tick + 0.5) / songTicks);
-        
-        if (w + x > 760 + 20)
-        {
-            w = 760 + 20 - x;
-        }
-
-		float hue = ((2 * m_songEvents[i].program) % 16) * 20.0 + i * 60.0 / m_songEvents.size();
-        hue = fmod(hue, 360.0);
-		int R, G, B;
-		tie(R, G, B) = Tonton::Utils::HSVtoRGB(hue, 50, 95);
-		ofSetColor(R, G, B);
-		ofDrawRectangle(x, ySeq + 30, w, 50);
-        if (nbTicks >= 8)  // draw part name only if part is big enough
-        {
-            ofSetColor(0, 0, 0);
-            int nameSize = m_songEvents[i].name.size();
-            float xName = x + 0.5 * w - 0.5 * static_cast<float>(nameSize * 6.5);  // making an hypothesis for character average width
-            if (xName < x) xName = x;
-            ofDrawBitmapString(m_songEvents[i].name, round(xName), ySeq + 60);
-        }
-        
-        // draw separation between song parts
-        ofSetColor(50);
-        ofDrawRectangle(x, ySeq + 30, 1, 50);
-	}
-	ofSetColor(255);
-
-	if (m_loop)
-	{
-		ofSetColor(200, 180, 120);
-	}
-	ofDrawRectangle(20 + 760 * metronome.getTickCount() / songTicks - 2, ySeq + 30, 6, 50);  // player cursor
-	ofSetColor(255);
-
-	ofDrawBitmapString(metronome.getTickCount() + 1, 20, ySeq + 15);
+    drawPlayer();
 }
 
 void ofApp::displayList(unsigned int x, unsigned int y, string title, vector<string> elements, unsigned int activeElement, unsigned int selectedElement, bool showIndex)
@@ -748,6 +862,7 @@ void ofApp::loadSong()
 {
     // then stop playback
 	m_songSelectorToolIdx = m_currentSongIndex;
+    m_setlistView.setSelectedElement(m_songSelectorToolIdx);
 	for (int i = 0; i < players.size(); i++) {
 		players[i]->stop();
 		players[i]->unload();
@@ -814,37 +929,51 @@ void ofApp::loadSong()
 			}
             e.name = settings.getValue("desc", "");
             
-            if (settings.tagExists("patches")) {
+            bool patchesTag = settings.tagExists("patches");
+            if (patchesTag) {
                 settings.pushTag("patches");
-                for (auto midiOut : _midiOuts)
+            }
+
+            for (auto midiOut : _midiOuts)
+            {
+                if (patchesTag && settings.tagExists(midiOut->_deviceName))
                 {
-                    if (settings.tagExists(midiOut->_deviceName))
+                    PatchEvent patchEvent;
+                    patchEvent.programNumber = 0;
+                    patchEvent.midiOutputIndex = midiOut->_deviceIndex;
+                    if (midiOut->_patchFormat == PatchFormat::PROGRAM_NUMBER)
                     {
-                        PatchEvent patchEvent;
-                        patchEvent.programNumber = 0;
-                        patchEvent.midiOutputIndex = midiOut->_deviceIndex;
-                        if (midiOut->_patchFormat == PatchFormat::PROGRAM_NUMBER)
-                        {
-                            patchEvent.programNumber = settings.getValue(midiOut->_deviceName, 0);
-                            patchEvent.name = to_string(patchEvent.programNumber);
-                        }
-                        else if (midiOut->_patchFormat == PatchFormat::PATCH_NAME)
-                        {
-                            patchEvent.name = settings.getValue(midiOut->_deviceName, "");
-                            if (midiOut->_patchesMap.count(patchEvent.name))
-                            {
-                                patchEvent.programNumber = midiOut->_patchesMap[patchEvent.name];
-                            }
-                        }
-                        else if (midiOut->_patchFormat == PatchFormat::ELEKTRON_PATTERN)
-                        {
-                            patchEvent.name = settings.getValue(midiOut->_deviceName, "");
-                            patchEvent.programNumber = getProgramNumberFromElektronPatternStr(patchEvent.name);
-                        }
-                        
-                        e.patches.push_back(patchEvent);
+                        patchEvent.programNumber = settings.getValue(midiOut->_deviceName, 0);
+                        patchEvent.name = to_string(patchEvent.programNumber);
                     }
+                    else if (midiOut->_patchFormat == PatchFormat::PATCH_NAME)
+                    {
+                        patchEvent.name = settings.getValue(midiOut->_deviceName, "");
+                        if (midiOut->_patchesMap.count(patchEvent.name))
+                        {
+                            patchEvent.programNumber = midiOut->_patchesMap[patchEvent.name];
+                        }
+                    }
+                    else if (midiOut->_patchFormat == PatchFormat::ELEKTRON_PATTERN)
+                    {
+                        patchEvent.name = settings.getValue(midiOut->_deviceName, "");
+                        patchEvent.programNumber = getProgramNumberFromElektronPatternStr(patchEvent.name);
+                    }
+                    
+                    e.patches.push_back(patchEvent);
                 }
+                else if (midiOut->_useLegacyProgram)
+                {
+                    // store default program value from song (legacy from 1st software versions with only 1 midi output)
+                    PatchEvent patchEvent;
+                    patchEvent.programNumber = e.program;
+                    patchEvent.name = e.programName;
+                    patchEvent.midiOutputIndex = midiOut->_deviceIndex;
+                    e.patches.push_back(patchEvent);
+                }
+            }
+
+            if (patchesTag) {
                 settings.popTag();
             }
             
@@ -1223,98 +1352,146 @@ void ofApp::loadMappingNodes()
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
 	switch (key) {
-	case 'Q':
-		OF_EXIT_APP(0);
-		break;
-	case OF_KEY_RIGHT:
-		startPlayback();
-		break;
-	case OF_KEY_LEFT:
-        if (!m_isPlaying && (ofGetElapsedTimef() - m_lastSongReloadTime < 1.0))
+        case 'Q':
+            OF_EXIT_APP(0);
             break;
-		stopPlayback();
-		loadSong();
-        m_lastSongReloadTime = ofGetElapsedTimef();
-		break;
-	case OF_KEY_UP:
-		if (m_songSelectorToolIdx > 0){
-			m_songSelectorToolIdx -= 1;
-		}
-		break;
-	case OF_KEY_RETURN:
-		if (ofGetElapsedTimef() - m_lastSongChangeTime < 0.1)
-			break;
-		stopPlayback();
-		m_currentSongIndex = m_songSelectorToolIdx;
-		loadSong();
-		m_lastSongChangeTime = ofGetElapsedTimef();
-		break;
-	case 'N':  // next song part
-		jumpToNextPart();
-		break;
-	case OF_KEY_DOWN:
-		if (m_songSelectorToolIdx < m_setlist.size() - 1) {
-			m_songSelectorToolIdx += 1;
-		}
-		break;
-	case 'p':
-        if (ofGetElapsedTimef() - m_lastSongChangeTime < 0.1)
+        case OF_KEY_RIGHT:
+            if (m_keyShiftPressed)
+            {
+                changeSelectedUiElement(MAIN_UI_ELEMENT::MIXER);
+            }
+            else if (m_mainUiElementSelected == MAIN_UI_ELEMENT::SETLIST)
+            {
+                startPlayback();
+            }
+            else if (m_mainUiElementSelected == MAIN_UI_ELEMENT::MIXER)
+            {
+                volumeUp();
+            }
             break;
-		stopPlayback();
-		if (m_currentSongIndex < m_setlist.size() - 1)
-		{
-			m_currentSongIndex += 1;
-			loadSong();
-			startPlayback();
-		}
-        m_lastSongChangeTime = ofGetElapsedTimef();
-		break;
-	case 'm':
-        if (m_setupMappingMode)
+        case OF_KEY_LEFT:
+            if (m_keyShiftPressed)
+            {
+                changeSelectedUiElement(MAIN_UI_ELEMENT::SETLIST);
+            }
+            else if (m_mainUiElementSelected == MAIN_UI_ELEMENT::SETLIST)
+            {
+                if (!m_isPlaying && (ofGetElapsedTimef() - m_lastSongReloadTime < 1.0))
+                    break;
+                stopPlayback();
+                loadSong();
+                m_lastSongReloadTime = ofGetElapsedTimef();
+            }
+            else if (m_mainUiElementSelected == MAIN_UI_ELEMENT::MIXER)
+            {
+                volumeDown();
+            }
+            break;
+        case OF_KEY_UP:
+            if (m_keyShiftPressed && m_mainUiElementSelected == MAIN_UI_ELEMENT::MIDI_OUTPUTS)
+            {
+                changeSelectedUiElement(MAIN_UI_ELEMENT::MIXER);
+            }
+            else if (m_mainUiElementSelected == MAIN_UI_ELEMENT::SETLIST)
+            {
+                if (m_songSelectorToolIdx > 0){
+                    m_songSelectorToolIdx -= 1;
+                    m_setlistView.setSelectedElement(m_songSelectorToolIdx);
+                }
+            }
+            else if (m_mainUiElementSelected == MAIN_UI_ELEMENT::MIXER)
+            {
+                m_selectedVolumeSetting = (m_selectedVolumeSetting - 1) % players.size();
+            }
+            break;
+        case OF_KEY_RETURN:
+            if (ofGetElapsedTimef() - m_lastSongChangeTime < 0.1)
+                break;
+            stopPlayback();
+            m_currentSongIndex = m_songSelectorToolIdx;
+            m_setlistView.setActiveElement(m_currentSongIndex);
+            loadSong();
+            m_lastSongChangeTime = ofGetElapsedTimef();
+            break;
+        case 'N':  // next song part
+            jumpToNextPart();
+            break;
+        case OF_KEY_DOWN:
+            if (m_keyShiftPressed && m_mainUiElementSelected == MAIN_UI_ELEMENT::MIXER)
+            {
+                changeSelectedUiElement(MAIN_UI_ELEMENT::MIDI_OUTPUTS);
+                break;
+            }
+            else if (m_mainUiElementSelected == MAIN_UI_ELEMENT::SETLIST)
+            {
+                if (m_songSelectorToolIdx < m_setlist.size() - 1) {
+                    m_songSelectorToolIdx += 1;
+                    m_setlistView.setSelectedElement(m_songSelectorToolIdx);
+                }
+            }
+            else if (m_mainUiElementSelected == MAIN_UI_ELEMENT::MIXER)
+            {
+                m_selectedVolumeSetting = (m_selectedVolumeSetting + 1) % players.size();
+            }
+            break;
+        case 'p':
+            if (ofGetElapsedTimef() - m_lastSongChangeTime < 0.1)
+                break;
+            stopPlayback();
+            if (m_currentSongIndex < m_setlist.size() - 1)
+            {
+                m_currentSongIndex += 1;
+                m_setlistView.setActiveElement(m_currentSongIndex);
+                loadSong();
+                startPlayback();
+            }
+            m_lastSongChangeTime = ofGetElapsedTimef();
+            break;
+        case 'm':
+            if (m_setupMappingMode)
+            {
+                saveMappingNodes();
+            }
+            m_setupMappingMode = !m_setupMappingMode;
+            break;
+        case 'f':
+            if (mappingWindow != nullptr)
+            {
+                mappingWindow->toggleFullscreen();
+            }
+            break;
+        case 'v':
+            m_selectedVolumeSetting = (m_selectedVolumeSetting + 1) % players.size();
+            break;
+        case 'w':
+            m_autoPlayNext = !m_autoPlayNext;
+            break;
+//        case 'x':
+//            m_videoResync = !m_videoResync;
+//            break;
+        case 's':
         {
-            saveMappingNodes();
+            // store volumes
+            vector<pair<string, float>> volumes;
+            for (int i = 0; i < players.size(); i++)
+            {
+                float volume = mixer.getConnectionVolume(i);
+                string stem = playersNames[i];
+                volumes.push_back(make_pair(stem, volume));
+            }
+            VolumesDb::setStoredSongVolumes(m_setlist[m_currentSongIndex], volumes);
+            break;
         }
-		m_setupMappingMode = !m_setupMappingMode;
-		break;
-	case 'f':
-		if (mappingWindow != nullptr)
-		{
-			mappingWindow->toggleFullscreen();
-		}
-		break;
-	case 'v':
-		m_selectedVolumeSetting = (m_selectedVolumeSetting + 1) % players.size();
-		break;
-	case 'n':
-		volumeUp();
-		break;
-	case 'b':
-		volumeDown();
-		break;
-	case 'w':
-		m_autoPlayNext = !m_autoPlayNext;
-		break;
-	case 'x':
-		m_videoResync = !m_videoResync;
-		break;
-	case 's':
-	{
-		// store volumes
-		vector<pair<string, float>> volumes;
-		for (int i = 0; i < players.size(); i++)
-		{
-			float volume = mixer.getConnectionVolume(i);
-			string stem = playersNames[i];
-			volumes.push_back(make_pair(stem, volume));
-		}
-		VolumesDb::setStoredSongVolumes(m_setlist[m_currentSongIndex], volumes);
-		break;
-	}
-	case 'l':
-		m_loop = !m_loop;
-		metronome.setLoopMode(m_loop);
-		break;
-	}
+        case 'l':
+            m_loop = !m_loop;
+            metronome.setLoopMode(m_loop);
+            break;
+        case 'h':
+            m_helper = "f:fullscreen, m:mapping, s:store vols, Q:quit, p:launch next, l:loop";
+            break;
+        case OF_KEY_SHIFT:  // needs to be checked after every upper case letter check
+            m_keyShiftPressed = true;
+    }
 }
 
 //--------------------------------------------------------------
@@ -1324,7 +1501,11 @@ void ofApp::newMidiMessage(ofxMidiMessage& message) {
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
-
+    switch (key) {
+        case OF_KEY_SHIFT:
+            m_keyShiftPressed = false;
+            break;
+    }
 }
 
 //--------------------------------------------------------------

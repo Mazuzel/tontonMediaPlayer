@@ -37,11 +37,11 @@
 			<patches>
 				<patch>
 					<name>clean</name>
-					<program>1</program>
+					<program>0</program>
 				</patch>
 				<patch>
 					<name>disto</name>
-					<program>2</program>
+					<program>1</program>
 				</patch>
 			</patches>
 		</output>

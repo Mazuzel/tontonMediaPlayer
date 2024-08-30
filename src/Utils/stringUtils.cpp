@@ -77,6 +77,50 @@ void shortenString(std::string& str, unsigned int len, int maxWordLen, unsigned 
     }
 }
 
+string replaceSpacesWithNewline(string& str)
+{
+    auto words = split_sentence(str);
+    // recombine string
+    std::stringstream ss;
+    for (unsigned int i = 0; i < words.size(); i++)
+    {
+        ss << words[i];
+        if (i < words.size() - 1)
+        {
+            ss << "\n";
+        }
+    }
+    return ss.str();
+}
+
+ofVec2f estimateStringSize(std::string& str)
+{
+    unsigned int maxWidth = 0;
+    
+    std::vector<string> lines;
+    std::stringstream ss(str);
+
+    if (str.size() > 0)
+    {
+        std::string to;
+        while(std::getline(ss, to, '\n')){
+            lines.push_back(to);
+        }
+    }
+    
+    // making hypothesis for character average width and height
+    for (auto line : lines)
+    {
+        unsigned int width = 6.7 * line.size();
+        if (width > maxWidth) maxWidth = width;
+    }
+    
+    unsigned int height = 7 * lines.size();
+    if (lines.size() == 1) height = 5;
+    
+    return ofVec2f(maxWidth, height);
+}
+
 unsigned int getProgramNumberFromElektronPatternStr(std::string elektronPatternStr)
 {
     if (elektronPatternStr.size() != 3)

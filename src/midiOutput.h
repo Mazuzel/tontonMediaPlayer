@@ -20,4 +20,6 @@ public:
     std::string _deviceOsName;
     PatchFormat _patchFormat = PatchFormat::PROGRAM_NUMBER;
     std::map<std::string, unsigned int> _patchesMap;
+    bool _automaticMode = true;  // follow automatically song patches
+    bool _useLegacyProgram = false;  // use default program setting in song (inherits from first software versions with only 1 midi output)
 };
