@@ -108,12 +108,15 @@ void ofApp::loadHwConfig() {
         if (settings.tagExists("requested_audio_out_api"))
         {
             string value = settings.getValue("requested_audio_out_api", "");
-			ofLog() << "Requested audio out API value from settings: " << value;
 			for (int i = ofSoundDevice::ALSA; i < ofSoundDevice::NUM_APIS; i++)
 			{
-				if (value == to_string((ofSoundDevice::Api)i))
+                transform(value.begin(), value.end(), value.begin(), ::tolower);
+                string apiStr = toString((ofSoundDevice::Api)i);
+                transform(apiStr.begin(), apiStr.end(), apiStr.begin(), ::tolower);
+				if (apiStr.find(value) != std::string::npos)
 				{
 					m_requestedAudioOutApi = (ofSoundDevice::Api)i;
+                    ofLog() << "Requested audio out api: " << m_requestedAudioOutApi;
 				}
 			}
         }
@@ -151,6 +154,7 @@ void ofApp::loadHwConfig() {
         {
             m_showVideoPreview = settings.getValue("show_video_preview", 0) == 1;
         }
+        m_enableVisuals = settings.getValue("enable_visuals", 0) == 1;
 	}
 	else {
 		ofLogError() << "settings.xml not found, using default hw config";
@@ -381,50 +385,53 @@ void ofApp::update(){
 	}
 
 	// VIDEO UPDATE
-	auto time = ofGetElapsedTimef();
-	if ((time - m_lastVideoRefreshTime) < (1.0 / m_videoRefreshRate))
-	{
-		// no video update
-		return;
-	}
-	m_lastVideoRefreshTime = time;
+    if (m_enableVisuals)
+    {
+        auto time = ofGetElapsedTimef();
+        if ((time - m_lastVideoRefreshTime) < (1.0 / m_videoRefreshRate))
+        {
+            // no video update
+            return;
+        }
+        m_lastVideoRefreshTime = time;
 
-	if (m_videoLoaded && m_isPlaying)
-	{
-		float currentSongTimeMs = getCurrentSongTimeMs();
-		m_videoClipSource.update(m_videoResync, currentSongTimeMs, m_measuredVideoDelayMs);
-	}
-    
-    // drawing into fbo
-	for (uint32_t i = 0; i < m_fboSources.size(); i++)
-	{
-		m_fboSources[i].begin();
-		ofClear(0);
-		ofSetColor(255);
-		if (m_setupMappingMode)
-		{
-			// on dessine un arrière plan au cas où il n'y ait pas de vidéo
-			ofBackground(50);
-		}
-		if (m_isPlaying)
-		{
-			if (m_videoLoaded)
-			{
-				m_videoClipSource.draw(m_fboSources[i].getWidth(), m_fboSources[i].getHeight());
-			}
-			m_shadersSource.draw(m_fboSources[i].getWidth(), m_fboSources[i].getHeight(), metronome.getTickCount(), metronome.getPlaybackPositionMs() / 1000.0, i);
-		}
-		else if (m_isDefaultShaderLoaded)
-		{
-			m_defaultShader.begin();
-			m_defaultShader.setUniform1f("time", ofGetElapsedTimef());
-			m_defaultShader.setUniform1f("bpm", 60.0);
-			m_defaultShader.setUniform2f("resolution", m_fboSources[i].getWidth(), m_fboSources[i].getHeight());
-			ofDrawRectangle(0, 0, m_fboSources[i].getWidth(), m_fboSources[i].getHeight());
-			m_defaultShader.end();
-		}
-		m_fboSources[i].end();
-	}
+        if (m_videoLoaded && m_isPlaying)
+        {
+            float currentSongTimeMs = getCurrentSongTimeMs();
+            m_videoClipSource.update(m_videoResync, currentSongTimeMs, m_measuredVideoDelayMs);
+        }
+        
+        // drawing into fbo
+        for (uint32_t i = 0; i < m_fboSources.size(); i++)
+        {
+            m_fboSources[i].begin();
+            ofClear(0);
+            ofSetColor(255);
+            if (m_setupMappingMode)
+            {
+                // on dessine un arrière plan au cas où il n'y ait pas de vidéo
+                ofBackground(50);
+            }
+            if (m_isPlaying)
+            {
+                if (m_videoLoaded)
+                {
+                    m_videoClipSource.draw(m_fboSources[i].getWidth(), m_fboSources[i].getHeight());
+                }
+                m_shadersSource.draw(m_fboSources[i].getWidth(), m_fboSources[i].getHeight(), metronome.getTickCount(), metronome.getPlaybackPositionMs() / 1000.0, i);
+            }
+            else if (m_isDefaultShaderLoaded)
+            {
+                m_defaultShader.begin();
+                m_defaultShader.setUniform1f("time", ofGetElapsedTimef());
+                m_defaultShader.setUniform1f("bpm", 60.0);
+                m_defaultShader.setUniform2f("resolution", m_fboSources[i].getWidth(), m_fboSources[i].getHeight());
+                ofDrawRectangle(0, 0, m_fboSources[i].getWidth(), m_fboSources[i].getHeight());
+                m_defaultShader.end();
+            }
+            m_fboSources[i].end();
+        }
+    }
 }
 
 void ofApp::changeSelectedUiElement(MAIN_UI_ELEMENT uiElement)

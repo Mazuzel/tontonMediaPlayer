@@ -102,6 +102,7 @@ private:
 	unsigned int m_sampleRate = 22050;
 
 	// internal video handlers
+    bool m_enableVisuals = false;
 	VideoClipSource m_videoClipSource;
 	std::vector<QuadSurface> m_quadSurfaces;
 	std::vector<ofFbo> m_fboSources;
