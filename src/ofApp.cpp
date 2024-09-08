@@ -553,7 +553,7 @@ void ofApp::draw() {
     
     std::stringstream strmFps;
     strmFps << round(ofGetFrameRate()) << " fps";
-    ofDrawBitmapString(strmFps.str(), 420, 15);
+    ofDrawBitmapString(strmFps.str(), 460, 15);
 
 	ofSetColor(255);
 	if (m_setupMappingMode)
@@ -1156,7 +1156,7 @@ void ofApp::startPlayback()
 	mixer.connectTo(metronome).connectTo(output);
 
 	unsigned int currentSongPartIdx = metronome.getCurrentSongPartIdx();
-	int msTime = 0.0;
+	double msTime = 0.0;
 	for (int i = 1; i <= currentSongPartIdx; i++)
 	{
 		int ticks = m_songEvents[i].tick - m_songEvents[i - 1].tick;
@@ -1178,7 +1178,7 @@ void ofApp::startPlayback()
 		players[i]->play();
 		if (currentSongPartIdx > 0)
 		{
-			players[i]->setPositionMS(msTime, 0);
+			players[i]->setPositionMS(round(msTime), 0);
 		}
 		
 	}

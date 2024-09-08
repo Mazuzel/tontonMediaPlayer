@@ -24,7 +24,7 @@ void Metronome::setNbIgnoredStartupsTicks(int nbIgnoredStartupTicks)
 
 void Metronome::setSampleRate(unsigned int sampleRate)
 {
-	m_sampleRate = sampleRate;
+    m_sampleRate = sampleRate;
 }
 
 const unsigned int Metronome::getTickCount() const
@@ -101,7 +101,7 @@ void Metronome::setLoopMode(bool loop)
 void Metronome::tick() {
 	for (auto midiOut: m_midiOuts)
 	{
-		if (midiOut->isOpen())
+		if (midiOut->sendTicks && midiOut->isOpen())
 		{
 			midiOut->_midiOut << StartMidi() << 0xF8 << FinishMidi();
 		}
@@ -138,7 +138,7 @@ void Metronome::sendNextProgramChange() {
 
     }
 
-	m_samplesPerTick = (m_sampleRate * 60.0f) / m_songEvents[m_currentSongPartIndex].bpm / m_ticksPerBeat;
+	m_samplesPerTick = round((m_sampleRate * 60.0f) / m_songEvents[m_currentSongPartIndex].bpm / m_ticksPerBeat);
 }
 
 bool Metronome::isSongEnded()
@@ -157,8 +157,8 @@ void Metronome::correctTicksToPlaybackPosition(double realPlaybackPositionMs)
 	{
 		double metronomePositionMs = getPlaybackPositionMs();
 		double timeLate = realPlaybackPositionMs - metronomePositionMs;
-		m_ticksLate = timeLate * m_songEvents[m_currentSongPartIndex].bpm / 60.0 / m_ticksPerBeat;
-		ofLog() << "metronome is late " << timeLate << " ms, " << m_ticksLate << " ticks";
+		m_ticksLate = timeLate * m_songEvents[m_currentSongPartIndex].bpm / 60000.0 * m_ticksPerBeat;
+		ofLog() << "metronome is late " << timeLate << " ms, " << m_ticksLate << " subticks (running at " << m_ticksPerBeat << ")";
 	}
 }
 
@@ -204,6 +204,7 @@ void Metronome::process(ofSoundBuffer& input, ofSoundBuffer& output) {
 			}
 			else // correct only if two tick of advance measured (error of 1 could be noise and lead to excessive correction)
 			{
+                ofLog() << "-1 subtick to compensate sequencer in advance (subticks late=" << m_ticksLate << "), samples count=" << m_samples;
 				// metronome is running in advance compared to playback
 				// so now we skip one tick
 				m_ticksLate += 1;
@@ -212,6 +213,7 @@ void Metronome::process(ofSoundBuffer& input, ofSoundBuffer& output) {
 		}
 		else if (m_ticksLate > 1 && m_samples == int(m_samplesPerTick / 2))  // correct only if two tick late measured (error of 1 could be noise and lead to excessive correction)
 		{
+            ofLog() << "+1 subtick to compensate late sequencer (subticks late=" << m_ticksLate << "), samples count=" << m_samples;
 			// metronome is running late compared to playback
 			// so now we add one tick at half tick time
 			m_totalTickCount += 1;

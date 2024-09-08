@@ -50,7 +50,7 @@ private:
 
 	bool m_enabled = false;
 
-	int m_samplesPerTick;
+	unsigned long m_samplesPerTick;
 	int m_ticksPerBeat;
 	int m_samples = 0;
 	std::vector<songEvent> m_songEvents;
