@@ -51,13 +51,15 @@ private:
 	bool m_enabled = false;
 
 	unsigned long m_samplesPerTick;
+    int m_samplesPerTickCorrection = 0;  // correction to re-align with audio
+    int m_futureSamplesPerTickCorrection = 0;
 	int m_ticksPerBeat;
 	int m_samples = 0;
 	std::vector<songEvent> m_songEvents;
 	long m_totalTickCount;
 	int m_currentSongPartIndex;
 	int m_tickCountStartThreshold;
-	int m_ticksLate = 0;
+    int m_currentTickCountStartThreshold;
 
 	unsigned int m_sampleRate;
 };

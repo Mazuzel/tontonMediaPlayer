@@ -378,10 +378,11 @@ void ofApp::update(){
 	// update the sound playing system:
 	ofSoundUpdate();
 
-	if (m_isPlaying && players.size() > 0 && metronome.getTickCount() % 4 == 0)
+	if (m_isPlaying && players.size() > 0 && (players[0]->getPositionMS() - m_lastAudioMidiSyncPositionMs) > 1000)
 	{
-		double realPlaybackPositionMs = players[0]->getPositionMS();
-		metronome.correctTicksToPlaybackPosition(realPlaybackPositionMs);
+        // do not check at playback beginning: measurement lacks precison and overcorrects, causing lags
+        m_lastAudioMidiSyncPositionMs = players[0]->getPositionMS();
+		metronome.correctTicksToPlaybackPosition(m_lastAudioMidiSyncPositionMs);
 	}
 
 	// VIDEO UPDATE
@@ -1162,6 +1163,8 @@ void ofApp::startPlayback()
 		int ticks = m_songEvents[i].tick - m_songEvents[i - 1].tick;
 		msTime += ticks * 1000.0 / m_songEvents[i - 1].bpm * 60.0;
 	}
+    
+    m_lastAudioMidiSyncPositionMs = round(msTime);
 
 	float videoStartTime = (msTime + m_videoStartDelayMs) / 1000.0;  // m_videoStartDelayMs is an offset for latency compensation
 	m_videoClipSource.playVideo(videoStartTime);
@@ -1174,6 +1177,7 @@ void ofApp::startPlayback()
 		}
 	}
 
+    metronome.setEnabled(true);
 	for (int i = 0; i < players.size(); i++) {
 		players[i]->play();
 		if (currentSongPartIdx > 0)
@@ -1182,7 +1186,6 @@ void ofApp::startPlayback()
 		}
 		
 	}
-	metronome.setEnabled(true);
 
 	mixer.setMasterVolume(1.0); // TODO config
 

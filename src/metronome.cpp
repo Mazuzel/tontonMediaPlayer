@@ -46,7 +46,7 @@ void Metronome::setCurrentSongPartIdx(unsigned int newSongPartIdx)
 {
 	m_currentSongPartIndex = newSongPartIdx;
 	m_totalTickCount = m_songEvents[m_currentSongPartIndex].tick;
-	m_tickCountStartThreshold = m_totalTickCount + 4;
+    m_currentTickCountStartThreshold = m_totalTickCount + m_tickCountStartThreshold;
 	m_loopEndReached = false;
 }
 
@@ -81,7 +81,8 @@ void Metronome::setNewSong(std::vector<songEvent> songEvents)
 	m_totalTickCount = 0;
 	m_currentSongPartIndex = 0;
 	m_samples = 0;
-	m_tickCountStartThreshold = 4;
+    m_samplesPerTickCorrection = 0;
+    m_currentTickCountStartThreshold = m_tickCountStartThreshold;
 
 	for (int i = 0; i < m_songEvents.size(); i++) {
 		m_songEvents[i].tick *= m_ticksPerBeat;  // on adapte la valeur au nombre de coups réels transmis par pulsation
@@ -138,7 +139,7 @@ void Metronome::sendNextProgramChange() {
 
     }
 
-	m_samplesPerTick = round((m_sampleRate * 60.0f) / m_songEvents[m_currentSongPartIndex].bpm / m_ticksPerBeat);
+	m_samplesPerTick = round((m_sampleRate * 60.0) / m_songEvents[m_currentSongPartIndex].bpm / m_ticksPerBeat);
 }
 
 bool Metronome::isSongEnded()
@@ -152,25 +153,22 @@ bool Metronome::isSongEnded()
 
 void Metronome::correctTicksToPlaybackPosition(double realPlaybackPositionMs)
 {
-	// do not check at playback beginning: measurement lacks precison and overcorrects, causing lags
-	if ((m_totalTickCount > 8 * m_ticksPerBeat) && m_totalTickCount % (m_ticksPerBeat * 8) == 0)
-	{
-		double metronomePositionMs = getPlaybackPositionMs();
-		double timeLate = realPlaybackPositionMs - metronomePositionMs;
-		m_ticksLate = timeLate * m_songEvents[m_currentSongPartIndex].bpm / 60000.0 * m_ticksPerBeat;
-		ofLog() << "metronome is late " << timeLate << " ms, " << m_ticksLate << " subticks (running at " << m_ticksPerBeat << ")";
-	}
+    double metronomePositionMs = getPlaybackPositionMs();
+    double timeLate = realPlaybackPositionMs - metronomePositionMs;
+    double ticksLate = timeLate * m_songEvents[m_currentSongPartIndex].bpm / 60000.0 * m_ticksPerBeat;
+    
+    if (ticksLate >= 1.0) m_futureSamplesPerTickCorrection = -2;
+    else if (ticksLate > 0.5) m_futureSamplesPerTickCorrection = -1;
+    else if (ticksLate <= -1.0) m_futureSamplesPerTickCorrection = 2;
+    else if (ticksLate < -0.5) m_futureSamplesPerTickCorrection = 1;
+    
+    //m_samplesPerTickCorrection = round((m_sampleRate * 60.0f) / m_songEvents[m_currentSongPartIndex].bpm / m_ticksPerBeat);
+    ofLog() << "metronome is late " << timeLate << " ms, " << ticksLate << " subticks (m_futureSamplesPerTickCorrection = " << m_futureSamplesPerTickCorrection << ")";
 }
 
 void Metronome::process(ofSoundBuffer& input, ofSoundBuffer& output) {
 
 	output = input;
-
-	//if (m_totalTickCount == 0)  // premier coup
-	//{
-	//	tick();
-	//	m_totalTickCount += 1;
-	//}
 
 	if (!m_enabled)
 	{
@@ -179,8 +177,11 @@ void Metronome::process(ofSoundBuffer& input, ofSoundBuffer& output) {
 
 	for (size_t i = 0; i < output.getNumFrames(); i++)
 	{
-		if (++m_samples == m_samplesPerTick)
+		if (++m_samples == (m_samplesPerTick + m_samplesPerTickCorrection))
 		{
+            tick();
+            m_totalTickCount += 1;
+            
 			m_samples = 0;
 
 			if ((m_currentSongPartIndex < m_songEvents.size() - 1) && (m_totalTickCount >= m_songEvents[m_currentSongPartIndex + 1].tick - 20))
@@ -192,33 +193,8 @@ void Metronome::process(ofSoundBuffer& input, ofSoundBuffer& output) {
 					m_loopEndReached = true;
 				}
 			}
-
-			if (m_ticksLate >= -1)
-			{
-				// metronome is accurate with playback or late, we can send a new tick
-				m_totalTickCount += 1;
-				if (m_totalTickCount > m_tickCountStartThreshold)
-				{
-					tick();
-				}
-			}
-			else // correct only if two tick of advance measured (error of 1 could be noise and lead to excessive correction)
-			{
-                ofLog() << "-1 subtick to compensate sequencer in advance (subticks late=" << m_ticksLate << "), samples count=" << m_samples;
-				// metronome is running in advance compared to playback
-				// so now we skip one tick
-				m_ticksLate += 1;
-			}
-
-		}
-		else if (m_ticksLate > 1 && m_samples == int(m_samplesPerTick / 2))  // correct only if two tick late measured (error of 1 could be noise and lead to excessive correction)
-		{
-            ofLog() << "+1 subtick to compensate late sequencer (subticks late=" << m_ticksLate << "), samples count=" << m_samples;
-			// metronome is running late compared to playback
-			// so now we add one tick at half tick time
-			m_totalTickCount += 1;
-			tick();
-			m_ticksLate -= 1;
+            
+            m_samplesPerTickCorrection = m_futureSamplesPerTickCorrection;
 		}
 	}
 }

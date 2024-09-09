@@ -100,6 +100,7 @@ private:
 	ofxMidiIn midiIn;
     std::vector<std::shared_ptr<MidiOutput>> _midiOuts;
 	unsigned int m_sampleRate = 22050;
+    int m_lastAudioMidiSyncPositionMs = 0;
 
 	// internal video handlers
     bool m_enableVisuals = false;
