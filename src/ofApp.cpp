@@ -961,13 +961,26 @@ void ofApp::loadSong()
 		settings.pushTag("structure");
 		settings.pushTag("songparts");
 		int numberOfParts = settings.getNumTags("songpart");
+        uint32_t nextTick = 0;
+        bool tickLenDesc = false;
+        bool tickValDesc = false;
+        // TODO check if tick mode is consistent
+        
 		for (int i = 0; i < numberOfParts; i++) {
 			settings.pushTag("songpart", i);
 			songEvent e;
 			e.bpm = settings.getValue("bpm", 0.0);
 			e.programName = settings.getValue("program", "F16");
             e.program = getProgramNumberFromElektronPatternStr(e.programName);
-			e.tick = settings.getValue("tick", 0);
+            if (settings.tagExists("tick_len", 0))
+            {
+                e.tick = nextTick;
+                nextTick += settings.getValue("tick_len", 0);
+            }
+            else
+            {
+                e.tick = settings.getValue("tick", 0);
+            }
 			if (settings.tagExists("shader"))
 			{
 				e.shader = settings.getValue("shader", "");
