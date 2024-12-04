@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <setlist>
-	<song><name>Intro_Concert</name></song>
-	<song><name>Megaman</name></song>
-	<song><name>Legume</name></song>
-	<song><name>AgeIdiot</name></song>
+    <song><name>THS_v2</name></song>
+    <song><name>Charo</name></song>
+    <song><name>Elon</name></song>
+    <song><name>Legume</name></song>
+    <song><name>DPALST_v2</name></song>
+    <song><name>AgeIdiot</name></song>
+    <song><name>Fuministe_v2</name></song>
 	<song><name>UltraGigaVers_v2</name></song>
-	<song><name>Charo</name></song>
-	<song><name>FeteForaine</name></song>
-	<song><name>Consanguins</name></song>
-	<song><name>Fuministe_v2</name></song>
-	<song><name>Madem</name></song>
-	<song><name>DPALST</name></song>
-	<song><name>PoupiPou</name></song>
-	<song><name>Halloween_interlude</name></song>
-	<song><name>THS</name></song>
+    <song><name>FeteForaine</name></song>
 	<song><name>Pakela_avec_break</name></song>
-	<song><name>Pakefini</name></song>
+    <song><name>Pakefini</name></song>
+    <song><name>Bardino</name></song>
+    <song><name>PoupiPou</name></song>
 	<song><name>Creve</name></song>
+    <song><name>Halloween_interlude</name></song>
+    <song><name>Madem</name></song>
+    <song><name>Consanguins</name></song>
+    <song><name>Intro_Concert</name></song>
+    <song><name>Megaman</name></song>
+    <song><name>New</name></song>
 </setlist>
