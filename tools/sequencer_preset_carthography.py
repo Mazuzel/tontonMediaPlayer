@@ -89,7 +89,7 @@ if __name__ == "__main__":
 
 
     # display carthography
-    print(f"     {'   '.join([str(i).zfill(3) for i in range(presets_per_bank)])}")
+    print(f"     {'   '.join([str(i + 1).zfill(3) for i in range(presets_per_bank)])}")
     for idx, bank_name in enumerate(banks_names):
         print(f"{bank_name}:   {'   '.join(carthography[idx])}")
 
