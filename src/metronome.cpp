@@ -123,6 +123,21 @@ void Metronome::sendNextProgramChange() {
                     programNumber = patch.programNumber;
                 }
             }
+            
+            if (m_currentSongPartIndex > 0)
+            {
+                for (auto patch : m_songEvents[m_currentSongPartIndex - 1].patches)
+                {
+                    if (patch.midiOutputIndex == midiOut->_deviceIndex)
+                    {
+                        if (programNumber == patch.programNumber)
+                        {
+                            programNumber = -1;  // don't re-send the same program, it will cause an unwanted VST interruption
+                        }
+                    }
+                }
+
+            }
         }
         else
         {
