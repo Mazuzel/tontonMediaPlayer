@@ -95,9 +95,11 @@
         <BEATS_90s_Science_Fiction_Action.wav>1</BEATS_90s_Science_Fiction_Action.wav>
         <KEYBOARD_Aftertouch_Lift.wav>1</KEYBOARD_Aftertouch_Lift.wav>
         <bardino.wav>1</bardino.wav>
+        <voix_bardino.wav>165</voix_bardino.wav>
     </Bardino>
     <Elon>
         <maquette.flac>1</maquette.flac>
+        <voix_hey_hey.wav>140</voix_hey_hey.wav>
     </Elon>
     <Bardino_back>
         <DRUMS.wav>25</DRUMS.wav>
@@ -116,6 +118,6 @@
         <intro.flac>1</intro.flac>
     </DPALST_v2>
     <THS_v2>
-        <samples.wav>125</samples.wav>
+        <samples.wav>165</samples.wav>
     </THS_v2>
 </settings>
