@@ -166,7 +166,7 @@
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;src\Types;src\Utils;..\..\..\addons\ofxAudioFile\libs;..\..\..\addons\ofxAudioFile\src;..\..\..\addons\ofxGui\src;..\..\..\addons\ofxMidi\libs;..\..\..\addons\ofxMidi\libs\pgmidi;..\..\..\addons\ofxMidi\libs\rtmidi;..\..\..\addons\ofxMidi\src;..\..\..\addons\ofxMidi\src\desktop;..\..\..\addons\ofxMidi\src\ios;..\..\..\addons\ofxSoundObjects\src;..\..\..\addons\ofxSoundObjects\src\SoundObjects;..\..\..\addons\ofxSoundObjects\src\Renderers;..\..\..\addons\ofxXmlSettings\libs;..\..\..\addons\ofxXmlSettings\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;src\Types;src\UI;src\Utils;..\..\..\addons\ofxAudioFile\libs;..\..\..\addons\ofxAudioFile\src;..\..\..\addons\ofxGui\src;..\..\..\addons\ofxMidi\libs;..\..\..\addons\ofxMidi\libs\pgmidi;..\..\..\addons\ofxMidi\libs\rtmidi;..\..\..\addons\ofxMidi\src;..\..\..\addons\ofxMidi\src\desktop;..\..\..\addons\ofxMidi\src\ios;..\..\..\addons\ofxSoundObjects\src;..\..\..\addons\ofxSoundObjects\src\SoundObjects;..\..\..\addons\ofxSoundObjects\src\Renderers;..\..\..\addons\ofxXmlSettings\libs;..\..\..\addons\ofxXmlSettings\src</AdditionalIncludeDirectories>
       <CompileAs>CompileAsCpp</CompileAs>
       <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
       <PreprocessorDefinitions>USING_OFX_SOUND_OBJECTS</PreprocessorDefinitions>
@@ -185,15 +185,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\midiOutput.cpp" />
     <ClCompile Include="src\midiUtils.cpp" />
     <ClCompile Include="src\ofApp.cpp" />
     <ClCompile Include="src\metronome.cpp" />
     <ClCompile Include="src\QuadSurface.cpp" />
     <ClCompile Include="src\shadersSource.cpp" />
+    <ClCompile Include="src\song.cpp" />
     <ClCompile Include="src\Types\Vec2.cpp" />
     <ClCompile Include="src\Types\Vec3.cpp" />
+    <ClCompile Include="src\UI\list.cpp" />
     <ClCompile Include="src\Utils\color.cpp" />
     <ClCompile Include="src\Utils\HomographyHelper.cpp" />
+    <ClCompile Include="src\Utils\stringUtils.cpp" />
     <ClCompile Include="src\videoClipSource.cpp" />
     <ClCompile Include="..\..\..\addons\ofxAudioFile\src\ofxAudioFile.cpp" />
     <ClCompile Include="..\..\..\addons\ofxGui\src\ofxBaseGui.cpp" />
@@ -238,15 +242,19 @@
     <ClCompile Include="src\volumesDb.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\midiOutput.h" />
     <ClInclude Include="src\midiUtils.h" />
     <ClInclude Include="src\ofApp.h" />
     <ClInclude Include="src\metronome.h" />
     <ClInclude Include="src\QuadSurface.h" />
     <ClInclude Include="src\shadersSource.h" />
+    <ClInclude Include="src\song.h" />
     <ClInclude Include="src\Types\Vec2.h" />
     <ClInclude Include="src\Types\Vec3.h" />
+    <ClInclude Include="src\UI\list.h" />
     <ClInclude Include="src\Utils\color.h" />
     <ClInclude Include="src\Utils\HomographyHelper.h" />
+    <ClInclude Include="src\Utils\stringUtils.h" />
     <ClInclude Include="src\videoClipSource.h" />
     <ClInclude Include="..\..\..\addons\ofxAudioFile\src\ofxAudioFile.h" />
     <ClInclude Include="..\..\..\addons\ofxAudioFile\libs\dr_flac.h" />

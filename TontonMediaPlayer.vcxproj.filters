@@ -163,6 +163,18 @@
     <ClCompile Include="src\Utils\color.cpp">
       <Filter>src\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="src\UI\list.cpp">
+      <Filter>src\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\midiOutput.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\song.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utils\stringUtils.cpp">
+      <Filter>src\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -227,6 +239,9 @@
     </Filter>
     <Filter Include="addons\ofxXmlSettings\libs">
       <UniqueIdentifier>{687714A8-1662-FA1C-261F-50F0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\UI">
+      <UniqueIdentifier>{205065cf-ae72-40a6-9f17-b45a01b9e175}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -426,6 +441,18 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\Utils\color.h">
+      <Filter>src\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UI\list.h">
+      <Filter>src\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\midiOutput.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\song.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils\stringUtils.h">
       <Filter>src\Utils</Filter>
     </ClInclude>
   </ItemGroup>
