@@ -1,36 +1,28 @@
 # Tonton Media Player
 
-DIY software for commanding live audio, groove machines, and video!
-![](demo/main.jpg)
-Main screen
+Audio - midi - video control for live music
+![](demo/main.png)
 
 ## Features
-### Playing backing tracks and driving groove machines in sync
-Software to play backing tracks and drive several groove machines in sync.
-Tonton Media Player behaves as a master clock for the groove machines.
-The clock is based on audio samples count, to keep the drums machines perfectly in sync with backing track audio.
-Tonton Media Player is able to drive the groove machines even if no backing track.
+### Groove machines control
+Define and play songs for your Elektron Digitakt, Elektron Model:Cycles, or any groove machine.
+Tonton Media Player handles the master clock, and sends program changes when it needs to.
 
-### Mixer
-Tonton Media Player can handle several backing tracks in parallel. Audio level can be adjusted and saved for each one.
+### Backing tracks
+Backing tracks are played in sync with your groove machines.
 
 ### Video player
-Playing videos (almost) in sync with audio.
-Also able to use shaders to provide generative content synchronized with the clock.
+Video player with video mapping capability, playing your clips in sync with your song.
 
-### Video mapping
-Several video surfaces can be set and modified, to map content on surfaces.
-Pressing 'm' enters mapping mode where you can drag and drop the mapping nodes.
+![](demo/mapping.png)
 
-![](demo/mapping_mode.jpg)
-
-### Setlist
-Songs structures are defined into xml files. A setlist definition file can also be provided to sort properly the songs for a live set.
+### Configuration
+Almost everything has to be configured manually through xml files (setlist, hardware config, songs). This provides a very low risk of mishandling when using the software.
 
 ## Development
-Tonton Media Player is based on Openframeworks (our favorite creative coding framework): https://openframeworks.cc/
+Tonton Media Player uses Openframeworks: https://openframeworks.cc/
 
-It needs the following addons to build:
+Addons required:
 * ofxGui
 * ofxXmlSettings
 * ofxAudioFile [download here: https://github.com/npisanti/ofxAudioFile]
@@ -38,4 +30,6 @@ It needs the following addons to build:
 * ofxSoundObjects [download here: https://github.com/Mazuzel/ofxSoundObjects.git] (forked from https://github.com/roymacdonald/ofxSoundObjects)
 
 ## Note
-Tonton Media Player is a DIY software from and for **Maman ! J'ai Peur** band (https://mamanjaipeur.bandcamp.com). Development is still ongoing. Want to chat about it ? Don't hesitate to reach us at maaamanjaipeuuur@gmail.com or on social media (instagram: @mamangpeur). We would be happy to share our software and our knowledge to help the music community.
+Tonton Media Player is the DIY software created and used by **Maman ! J'ai Peur** since 2023.
+Follow us on instagram -> https://www.instagram.com/mamangpeur. 
+Or chat with us at maaamanjaipeuuur@gmail.com
