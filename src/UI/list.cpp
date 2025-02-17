@@ -96,6 +96,12 @@ void ListView::draw()
             ofSetColor(_colorFocused);
         }
         unsigned int xOffset = 0;
+        
+        if ( (15 + _lineSpacing * (i + 1)) > _h )
+        {
+            break;
+        }
+        
         if (_showIndex)
         {
             ofDrawBitmapString(to_string(i), _x, _y + 15 + _lineSpacing * (i + 1));
