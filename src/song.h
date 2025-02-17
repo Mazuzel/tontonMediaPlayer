@@ -23,4 +23,5 @@ struct songEvent {
     string shader;
     string name;
     std::vector<PatchEvent> patches;
+    ofColor color;
 };
