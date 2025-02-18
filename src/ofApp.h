@@ -112,7 +112,7 @@ private:
     int m_lastAudioMidiSyncPositionMs = 0;
 
 	// internal video handlers
-    bool m_enableVisuals = false;
+    bool m_enableVisuals = true;
 	VideoClipSource m_videoClipSource;
 	std::vector<QuadSurface> m_quadSurfaces;
 	std::vector<ofFbo> m_fboSources;

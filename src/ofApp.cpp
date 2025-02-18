@@ -136,7 +136,7 @@ void ofApp::loadHwConfig() {
 			
 		}
 
-        m_enableVisuals = settings.getValue("enable_visuals", 0) == 1;
+        m_enableVisuals = settings.getValue("enable_visuals", 1) == 1;
 	}
 	else {
 		ofLogError() << "settings.xml not found, using default hw config";
