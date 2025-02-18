@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<settings>
+    <!-- MIDI OUTPUT -->
+	<midi_outputs>
+		<output>
+            <!-- Example of a midi output to control an Elektron machine -->
+			<name>ModelCycles</name>
+			<device_id>Elektron Model:Cycles</device_id>
+			<channel>10</channel> <!-- Channel used by the device to receive program changes -->
+			<input_format>elektron_pattern</input_format> <!--Using Elektron pattern format (eg A06)-->
+            <!-- Don't specify any input_format option if you want to use the actual midi program number -->
+			<send_ticks>1</send_ticks> <!-- Send clock to this device -->
+		</output>
+        <output>
+            <!-- Example of a midi output to control a VST software -->
+            <name>VST</name>
+            <device_id>IAC Driver Bus 1</device_id>
+            <channel>10</channel> <!-- Channel used by the device to receive program changes -->
+            <input_format>patch_name</input_format> <!--Using patches names defined below-->
+            <patches>
+                <patch>
+                    <name>clean</name>
+                    <program>0</program>
+                </patch>
+                <patch>
+                    <name>autotune</name>
+                    <program>1</program>
+                </patch>
+                <patch>
+                    <name>reverb</name>
+                    <program>2</program>
+                </patch>
+            </patches>
+        </output>
+	</midi_outputs>
+
+    <!-- AUDIO OUTPUT -->
+	<!-- requested_audio_out_api: for MacOS, use 'OSX Core Audio' api at 48000Hz with buffer size=256 -->
+	<!-- requested_audio_out_api: for Windows, use 'MS WASAPI' api at 44100Hz with buffer size=128 -->
+	<requested_audio_out_api>OSX Core Audio</requested_audio_out_api>
+	<sample_rate>48000</sample_rate>
+	<buffer_size>256</buffer_size>
+	<requested_audio_out_device>Model:Cycles</requested_audio_out_device>
+    
+    <!-- VIDEO WINDOW -->
+	<window_pos_x>100</window_pos_x> <!-- Video window position: x -->
+	<window_pos_y>200</window_pos_y> <!-- Video window position: y -->
+	<window_pos_w>1500</window_pos_w> <!-- Video window size: width -->
+	<window_pos_h>800</window_pos_h> <!-- Video window size: height -->
+	<show_video_window>1</show_video_window>
+</settings>
