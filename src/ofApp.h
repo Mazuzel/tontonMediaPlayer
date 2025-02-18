@@ -125,7 +125,6 @@ private:
 
 	// settings.xml
 	unsigned int m_bufferSize = 128;
-	unsigned int m_midiInputIdx = 0;
 	std::vector<unsigned int> m_midiOutPorts;
 	std::string m_songsRootDir = "songs/";  // path to directory containing songs
 	std::string m_mappingConfigFileOverride = "";

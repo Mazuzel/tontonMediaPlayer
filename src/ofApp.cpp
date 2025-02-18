@@ -81,7 +81,6 @@ void ofApp::loadHwConfig() {
 	string filePath = "settings.xml";
 	if (settings.load(filePath)) {
 		settings.pushTag("settings");
-		m_midiInputIdx = settings.getValue("midi_in", 0);
 		m_bufferSize = settings.getValue("buffer_size", 128);
 		if (settings.tagExists("songs_root_dir"))
 		{
