@@ -1062,6 +1062,11 @@ void ofApp::loadSong()
                 e.tick = nextTick;
                 nextTick += settings.getValue("tick_len", 0);
             }
+            else if (settings.tagExists("length", 0))
+            {
+                e.tick = nextTick;
+                nextTick += settings.getValue("length", 0);
+            }
             else
             {
                 e.tick = settings.getValue("tick", 0);
