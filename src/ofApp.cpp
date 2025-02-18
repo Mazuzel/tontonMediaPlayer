@@ -1028,19 +1028,19 @@ void ofApp::loadSong()
 
 	string songName = m_setlist[m_currentSongIndex];
 
-	dir.listDir(m_songsRootDir + songName + "/export/audio");
+	dir.listDir(m_songsRootDir + songName + "/audio");
 
 	m_videoLoaded = false;
-	if (ofFile(m_songsRootDir + songName + "/export/clip/clip.mp4").exists())
+	if (ofFile(m_songsRootDir + songName + "/clip/clip.mp4").exists())
 	{
-		m_videoClipSource.loadVideo(m_songsRootDir + songName + "/export/clip/clip.mp4");
+		m_videoClipSource.loadVideo(m_songsRootDir + songName + "/clip/clip.mp4");
 		m_videoLoaded = true;
 	}
 
 	m_songEvents.clear();
 
 	ofxXmlSettings settings;
-	string filePath = m_songsRootDir + songName + "/export/structure.xml";
+	string filePath = m_songsRootDir + songName + "/structure.xml";
 	if (settings.load(filePath)) {
         vector<PatchEvent> defaultPatches;  // store previous patch values to redund them at every song part
 		settings.pushTag("structure");
