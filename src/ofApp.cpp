@@ -1024,6 +1024,7 @@ void ofApp::loadSong()
 	ofDirectory dir;
 	dir.allowExt("wav");
 	dir.allowExt("flac");
+    dir.allowExt("mp3");
 
 	string songName = m_setlist[m_currentSongIndex];
 
