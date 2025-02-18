@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 <settings>
+    <!-- MIDI OUTPUT -->
+    <nb_ignored_startup_ticks>0</nb_ignored_startup_ticks>
 	<midi_outputs>
 		<output>
 			<name>Sceno</name>
@@ -119,10 +121,11 @@
             </patches>
         </output>
 	</midi_outputs>
+
+    <!-- SETLIST -->
 	<songs_root_dir>./songs/</songs_root_dir>
-	<video_start_delay_ms>40</video_start_delay_ms>
-	<video_speed_change_delay_ms>20</video_speed_change_delay_ms>
-	<nb_ignored_startup_ticks>0</nb_ignored_startup_ticks>
+    
+    <!-- AUDIO OUTPUT -->
 	<!-- for MacOS: use 'OSX Core Audio' api at 48000Hz with buffer size=256 -->
 	<!-- for Windows: use 'MS WASAPI' api at 44100Hz with buffer size=128 -->
 	<requested_audio_out_api>OSX Core Audio</requested_audio_out_api>
@@ -131,14 +134,22 @@
 	<requested_audio_out_device>Model:Cycles</requested_audio_out_device>
 	<!-- <requested_audio_out_device>Apple Inc.: MacBook Pro Speakers</requested_audio_out_device> -->
 	<!-- <requested_audio_out_device>Scarlett</requested_audio_out_device> -->
+    
+    <!-- BACKING TRACKS -->
+    <ignore_audio_files>
+        <containing><value>backup</value></containing>
+        <containing><value>test</value></containing>
+    </ignore_audio_files>
+    
+    <!-- VIDEO CONTROL  -->
+    <video_start_delay_ms>40</video_start_delay_ms>
+    <video_speed_change_delay_ms>20</video_speed_change_delay_ms>
+    
+    <!-- VIDEO WINDOW -->
 	<window_pos_x>100</window_pos_x>
 	<window_pos_y>200</window_pos_y>
 	<window_pos_w>1500</window_pos_w>
 	<window_pos_h>800</window_pos_h>
-	<ignore_audio_files>
-		<containing><value>backup</value></containing>
-		<containing><value>test</value></containing>
-	</ignore_audio_files>
 	<show_video_window>1</show_video_window>
 	<enable_visuals>1</enable_visuals>
 </settings>
