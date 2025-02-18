@@ -1053,7 +1053,7 @@ void ofApp::loadSong()
 		for (int i = 0; i < numberOfParts; i++) {
 			settings.pushTag("songpart", i);
 			songEvent e;
-			e.bpm = settings.getValue("bpm", 0.0);
+			e.bpm = settings.getValue("bpm", 120);
 			e.programName = settings.getValue("program", "F16");
             e.program = getProgramNumberFromElektronPatternStr(e.programName);
             if (settings.tagExists("tick_len", 0))
