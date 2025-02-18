@@ -184,9 +184,6 @@ private:
 	// app logo
 	ofImage m_logo;
     
-    // video preview
-    bool m_showVideoPreview;
-    
     // keys and controls
     bool m_keyShiftPressed = false;
     

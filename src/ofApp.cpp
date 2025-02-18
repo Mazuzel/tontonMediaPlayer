@@ -150,10 +150,7 @@ void ofApp::loadHwConfig() {
 			}
 			
 		}
-        if (settings.tagExists("show_video_preview"))
-        {
-            m_showVideoPreview = settings.getValue("show_video_preview", 0) == 1;
-        }
+
         m_enableVisuals = settings.getValue("enable_visuals", 0) == 1;
 	}
 	else {
@@ -541,12 +538,6 @@ void ofApp::draw() {
 	m_fboMapping.end();
     
     ofSetColor(255);
-    
-    // mini-view of the video window
-    if (m_showVideoPreview)
-    {
-        m_fboSources[0].draw(20, 260, 300, 200);
-    }
     
     std::stringstream strmAudioOut;
     strmAudioOut << "Audio out: " << m_openedAudioDeviceName << " (" << toString(m_openedAudioDeviceApi) << ")";

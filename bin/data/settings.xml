@@ -1,9 +1,5 @@
 <?xml version="1.0"?>
 <settings>
-	<midi_out_ports>
-		<midi_out><port>0</port></midi_out>
-		<midi_out><port>1</port></midi_out>
-	</midi_out_ports>
 	<midi_outputs>
 		<output>
 			<name>Sceno</name>
@@ -22,7 +18,7 @@
 			<use_legacy_program>1</use_legacy_program>  <!--this device should use legacy 'program' field from song-->
 			<send_ticks>1</send_ticks>
 		</output>
-			<output>
+        <output>
 			<name>Digitakt</name>
 			<device_id>Elektron Digitakt</device_id>
 			<channel>10</channel>
@@ -146,7 +142,6 @@
 		<containing><value>backup</value></containing>
 		<containing><value>test</value></containing>
 	</ignore_audio_files>
-	<show_video_window>0</show_video_window>
-    <show_video_preview>0</show_video_preview>
-	<enable_visuals>0</enable_visuals>
+	<show_video_window>1</show_video_window>
+	<enable_visuals>1</enable_visuals>
 </settings>
