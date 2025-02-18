@@ -51,14 +51,7 @@ void ofApp::setup(){
 	loadSong(); // chargement du premier morceau
 
 	m_quadSurfaces.push_back(QuadSurface());
-	if (m_mappingConfigFileOverride.size() > 0)
-	{
-		loadPiMapperSurfaces();
-	}
-	else
-	{
-		loadMappingNodes();
-	}
+	loadMappingNodes();
 
 	for (uint32_t i = 0; i < m_quadSurfaces.size(); i++)
 	{
@@ -119,14 +112,7 @@ void ofApp::loadHwConfig() {
 				}
 			}
         }
-		if (settings.tagExists("load_pi_mapper_config"))
-		{
-			string value = settings.getValue("load_pi_mapper_config", "");
-			if (value.size() > 0)
-			{
-				m_mappingConfigFileOverride = value;
-			}
-		}
+
 		if (settings.tagExists("ignore_audio_files"))
 		{
 			settings.pushTag("ignore_audio_files");
@@ -1447,42 +1433,6 @@ void ofApp::saveMappingNodes()
     }
     settings.popTag();
     settings.save("mapping.xml");
-}
-
-void ofApp::loadPiMapperSurfaces()
-{
-	ofxXmlSettings settings;
-	if (!settings.load(m_mappingConfigFileOverride))
-	{
-		ofLogError() << "Failed to load ofx::piMapper file (xml)";
-		return;
-	}
-	settings.pushTag("surfaces");
-	int numberOfSurfaces = settings.getNumTags("surface");
-	m_quadSurfaces.clear();
-	for (int i = 0; i < numberOfSurfaces; i++)
-	{
-		m_quadSurfaces.push_back(QuadSurface());
-		settings.pushTag("surface", i);
-		settings.pushTag("vertices");
-		int numberOfVertices = settings.getNumTags("vertex");
-		if (numberOfVertices != 4)
-		{
-			ofLogError() << "unexpected surface in mapping.xml, with nb vertices = " << numberOfVertices;
-			break;
-		}
-		vector<Vec3> vertices = m_quadSurfaces[i].getVertices();
-		for (int j = 0; j < numberOfVertices; j++)
-		{
-			settings.pushTag("vertex", j);
-			vertices[j].x = settings.getValue("x", 0);
-			vertices[j].y = settings.getValue("y", 0);
-			settings.popTag();
-		}
-		m_quadSurfaces[i].setVertices(vertices);
-		settings.popTag();
-		settings.popTag();
-	}
 }
 
 void ofApp::loadMappingNodes()

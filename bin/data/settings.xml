@@ -119,8 +119,6 @@
             </patches>
         </output>
 	</midi_outputs>
-	<midi_in>0</midi_in>
-	<startup_config_check>0</startup_config_check>
 	<songs_root_dir>./songs/</songs_root_dir>
 	<video_start_delay_ms>40</video_start_delay_ms>
 	<video_speed_change_delay_ms>20</video_speed_change_delay_ms>
@@ -133,7 +131,6 @@
 	<requested_audio_out_device>Model:Cycles</requested_audio_out_device>
 	<!-- <requested_audio_out_device>Apple Inc.: MacBook Pro Speakers</requested_audio_out_device> -->
 	<!-- <requested_audio_out_device>Scarlett</requested_audio_out_device> -->
-	<load_pi_mapper_config>../monsterize/bin/data/ofxpimapper.xml</load_pi_mapper_config>
 	<window_pos_x>100</window_pos_x>
 	<window_pos_y>200</window_pos_y>
 	<window_pos_w>1500</window_pos_w>

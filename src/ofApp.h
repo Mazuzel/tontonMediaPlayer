@@ -95,7 +95,6 @@ private:
 	void loadSongByIndex(unsigned int index);
     void saveMappingNodes();
     void loadMappingNodes();
-	void loadPiMapperSurfaces();
     void loadSetlist();
     void changeSelectedUiElement(MAIN_UI_ELEMENT uiElement);
     void saveAudioMixerVolumes();
@@ -127,7 +126,6 @@ private:
 	unsigned int m_bufferSize = 128;
 	std::vector<unsigned int> m_midiOutPorts;
 	std::string m_songsRootDir = "songs/";  // path to directory containing songs
-	std::string m_mappingConfigFileOverride = "";
     std::string m_requestedAudioOutDevice = "";
     ofSoundDevice::Api m_requestedAudioOutApi = ofSoundDevice::Api::DEFAULT;
 
