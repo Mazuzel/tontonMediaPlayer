@@ -622,9 +622,9 @@ void ofApp::drawPatches()
             hue = fmod(hue, 360.0);
             tie(R, G, B) = Tonton::Utils::HSVtoRGB(hue, 50, 96);
             ofSetColor(R, G, B);
-            ofDrawRectRounded(baseX + 78, baseY + offsetY + row * 15 - 10, 60, 13, 3.0);
+            ofDrawRectRounded(baseX + 90, baseY + offsetY + row * 15 - 10, 60, 13, 3.0);
             ofSetColor(0);
-            ofDrawBitmapString(programName, baseX + 80, baseY + offsetY + row * 15);
+            ofDrawBitmapString(programName, baseX + 92, baseY + offsetY + row * 15);
         }
         else
         {
@@ -654,9 +654,9 @@ void ofApp::drawPatches()
                         tie(R, G, B) = Tonton::Utils::HSVtoRGB(hue, 50, 96);
                         ofSetColor(R, G, B);
                     }
-                    ofDrawRectRounded(baseX + 78, baseY + offsetY + row * 15 - 10, 60, 13, 3.0);
+                    ofDrawRectRounded(baseX + 90, baseY + offsetY + row * 15 - 10, 60, 13, 3.0);
                     ofSetColor(0);
-                    ofDrawBitmapString(patch.name, baseX + 80, baseY + offsetY + row * 15);
+                    ofDrawBitmapString(patch.name, baseX + 92, baseY + offsetY + row * 15);
                 }
             }
         }
@@ -670,14 +670,14 @@ void ofApp::drawPatches()
             {
                 mode = "auto";
             }
-            ofDrawBitmapString(mode, baseX + 160, baseY + offsetY + row * 15);
+            ofDrawBitmapString(mode, baseX + 172, baseY + offsetY + row * 15);
         }
         
         // print os device name
         if (midiOut->_deviceOsName.size() > 0)
         {
             ofSetColor(128);
-            ofDrawBitmapString(midiOut->_deviceOsName, baseX + 230, baseY + offsetY + row * 15);
+            ofDrawBitmapString(midiOut->_deviceOsName, baseX + 242, baseY + offsetY + row * 15);
         }
 
         row += 1;
