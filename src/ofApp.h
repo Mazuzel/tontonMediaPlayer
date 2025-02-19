@@ -31,15 +31,6 @@ enum MAIN_UI_ELEMENT {
     MIDI_OUTPUTS
 };
 
-bool isMouseInRect(ofRectangle rect, int x, int y)
-{
-    if (x >= rect.x && x <= rect.x + rect.width && y >= rect.y && y <= rect.y + rect.height)
-    {
-        return true;
-    }
-    return false;
-}
-
 class ofApp : public ofBaseApp, public ofxMidiListener {
 
 public:

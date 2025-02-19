@@ -11,6 +11,16 @@
 
 namespace fs = std::filesystem;
 
+namespace {
+    bool isMouseInRect(ofRectangle rect, int x, int y)
+    {
+        if (x >= rect.x && x <= rect.x + rect.width && y >= rect.y && y <= rect.y + rect.height)
+        {
+            return true;
+        }
+        return false;
+    }
+} // unnamed namespace
 
 //--------------------------------------------------------------
 void ofApp::setup(){
