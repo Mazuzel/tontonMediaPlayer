@@ -17,7 +17,7 @@ int main() {
 	settings.resizable = false;
 	settings.windowMode = OF_WINDOW;
 	settings.monitor = 1;
-	settings.title = "Tonton Media Player - DAW";
+	settings.title = "Tonton Media Player - DAW - Version 1.0 ";
 	shared_ptr<ofAppBaseWindow> dawWindow = ofCreateWindow(settings);
 
 	shared_ptr<ofApp> mainApp(new ofApp);
