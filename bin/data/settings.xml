@@ -134,6 +134,7 @@
 	<requested_audio_out_device>Model:Cycles</requested_audio_out_device>
 	<!-- <requested_audio_out_device>Apple Inc.: MacBook Pro Speakers</requested_audio_out_device> -->
 	<!-- <requested_audio_out_device>Scarlett</requested_audio_out_device> -->
+    <auto_play_delay_seconds>4</auto_play_delay_seconds>
     
     <!-- BACKING TRACKS -->
     <ignore_audio_files>

@@ -142,6 +142,7 @@ private:
     ofSoundDevice::Api m_openedAudioDeviceApi;
 	unsigned int m_selectedVolumeSetting = 0;
 	bool m_autoPlayNext = false;
+    unsigned int m_autoPlayDelaySeconds = 2;
 
 	// loop mode
 	bool m_loop = false;

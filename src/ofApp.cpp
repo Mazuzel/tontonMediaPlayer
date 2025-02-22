@@ -122,6 +122,11 @@ void ofApp::loadHwConfig() {
 				}
 			}
         }
+        
+        if (settings.tagExists("auto_play_delay_seconds"))
+        {
+            m_autoPlayDelaySeconds = settings.getValue("auto_play_delay_seconds", 0);
+        }
 
 		if (settings.tagExists("ignore_audio_files"))
 		{
@@ -354,6 +359,7 @@ void ofApp::update(){
 		{
 			if (m_currentSongIndex < m_setlist.size() - 1)
 			{
+                sleep(m_autoPlayDelaySeconds);
 				m_currentSongIndex += 1;
                 m_setlistView.setActiveElement(m_currentSongIndex);
 				loadSong();
