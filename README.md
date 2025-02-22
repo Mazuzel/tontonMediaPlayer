@@ -14,8 +14,6 @@ Backing tracks are played in sync with your groove machines.
 ### Video player
 Video player with video mapping capability, playing your clips in sync with your song.
 
-![](demo/mapping.png)
-
 ### Configuration
 Almost everything has to be configured manually through xml files (setlist, hardware config, songs). This provides a very low risk of mishandling when using the software.
 
