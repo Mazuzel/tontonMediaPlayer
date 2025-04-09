@@ -120,4 +120,16 @@
     <THS_v2>
         <samples.wav>165</samples.wav>
     </THS_v2>
+    <MoinsDeMecsCis>
+        <CHANT.mp3>100</CHANT.mp3>
+        <GTR.mp3>79</GTR.mp3>
+        <ATHOM_BLAST.mp3>79</ATHOM_BLAST.mp3>
+        <DRUMS.mp3>79</DRUMS.mp3>
+        <KEYBOARD.mp3>79</KEYBOARD.mp3>
+        <CHANT.flac>29</CHANT.flac>
+        <KEYBOARD.flac>54</KEYBOARD.flac>
+        <GTR.flac>39</GTR.flac>
+        <ATHOM_BLAST.flac>1</ATHOM_BLAST.flac>
+        <DRUMS.flac>1</DRUMS.flac>
+    </MoinsDeMecsCis>
 </settings>
