@@ -1,5 +1,5 @@
-import xml.etree.ElementTree as ET
 import os
+import xml.etree.ElementTree as ET
 
 
 def parse_xml_structure(xmlfile, sequencer_name, read_default_presets):
@@ -12,19 +12,19 @@ def parse_xml_structure(xmlfile, sequencer_name, read_default_presets):
     preset_list = []
 
     # iterate news items
-    for item in root.findall('songparts'):
+    for item in root.findall("songparts"):
 
         # iterate child elements of item
         for child in item:
             # child.tag = songpart
 
-            desc = child.find('desc')
+            desc = child.find("desc")
 
             preset = None
 
             # scan for default program
             if read_default_presets:
-                program = child.find('program')
+                program = child.find("program")
                 if program is not None:
                     preset = program.text
 
@@ -43,6 +43,9 @@ def parse_xml_structure(xmlfile, sequencer_name, read_default_presets):
     return preset_list
 
 
+DEFAULT_ENTRY = "....."
+IGNORED_DOUBLONS = ["F15", "F16"]
+
 if __name__ == "__main__":
     # input configuration: MC
     banks = 6
@@ -56,8 +59,10 @@ if __name__ == "__main__":
     # sequencer_name = "Digitakt"
     # read_default_presets = True
 
-    banks_names = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'][:banks]
-    carthography = [["..." for _ in range(presets_per_bank)] for _ in banks_names]
+    banks_names = ["A", "B", "C", "D", "E", "F", "G", "H"][:banks]
+    carthography = [
+        [DEFAULT_ENTRY for _ in range(presets_per_bank)] for _ in banks_names
+    ]
 
     songs_dir = "../bin/data/songs"
     for song_name in os.listdir(songs_dir):
@@ -66,13 +71,18 @@ if __name__ == "__main__":
         path = os.path.join(songs_dir, song_name)
         if not os.path.isdir(path):
             continue
-        song_first_letters = song_name[:3]
-        xml_path = os.path.join(path, "export/structure.xml")
+        song_first_letters = song_name[:5]
+        if len(song_first_letters) < 5:
+            for _ in range(5 - len(song_first_letters)):
+                song_first_letters += " "
+        xml_path = os.path.join(path, "structure.xml")
         if not os.path.exists(xml_path):
             continue
         preset_used = None
         try:
-            preset_used = parse_xml_structure(xml_path, sequencer_name, read_default_presets)
+            preset_used = parse_xml_structure(
+                xml_path, sequencer_name, read_default_presets
+            )
             print(preset_used)
         except Exception as e:
             print(e)
@@ -85,11 +95,19 @@ if __name__ == "__main__":
             bank_char = preset[0]
             bank_number = banks_names.index(bank_char)
             preset_number = int(preset[1:])
+            current_entry = carthography[bank_number][preset_number - 1]
+            if current_entry != DEFAULT_ENTRY and current_entry != song_first_letters:
+                preset_str = f"{banks_names[bank_number]}{preset_number}"
+                if preset_str not in IGNORED_DOUBLONS:
+                    print(
+                        f"doublon detected for {preset_str}: {song_first_letters} and {current_entry}"
+                    )
             carthography[bank_number][preset_number - 1] = song_first_letters
 
-
     # display carthography
-    print(f"     {'   '.join([str(i + 1).zfill(3) for i in range(presets_per_bank)])}")
+    print("")
+    print(
+        f"     {'     '.join([str(i + 1).zfill(5) for i in range(presets_per_bank)])}"
+    )
     for idx, bank_name in enumerate(banks_names):
-        print(f"{bank_name}:   {'   '.join(carthography[idx])}")
-
+        print(f"{bank_name}:   {'     '.join(carthography[idx])}")
