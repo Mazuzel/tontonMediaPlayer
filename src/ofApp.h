@@ -203,6 +203,8 @@ private:
     
     ofRectangle m_areaMuteBackings {698, 37, 38, 15};
     
+    bool m_muteBackings = false;
+    
     int m_mixerNbElementsPerPage = 1;
     int m_mixerPageOffset = 0;
     

@@ -999,10 +999,10 @@ void ofApp::drawPlayer()
     }
     
     // mute backings
-    ofSetColor(100);
+    ofSetColor(128);
     if (m_muteBackings)
     {
-        ofSetColor(m_colorFocused);
+        ofSetColor(255, 100, 90);
         ofDrawRectangle(m_areaMuteBackings.x, m_areaMuteBackings.y, m_areaMuteBackings.width, m_areaMuteBackings.height);
         ofSetColor(255);
     }
@@ -2018,6 +2018,10 @@ void ofApp::mousePressed(int x, int y, int button){
         else if (isMouseInRect(m_areaAutoPlay, x, y))
         {
             m_autoPlayNext = !m_autoPlayNext;
+        }
+        else if (isMouseInRect(m_areaMuteBackings, x, y))
+        {
+            m_muteBackings = !m_muteBackings;
         }
         else if (isMouseInRect(m_areaMixer, x, y))
         {
