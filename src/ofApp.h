@@ -89,6 +89,9 @@ private:
     void loadSetlist();
     void changeSelectedUiElement(MAIN_UI_ELEMENT uiElement);
     void saveAudioMixerVolumes();
+    void drawLicenseInfo();
+    void initializeLayout();
+    void drawMixerLine(int i,  int x, int y, int w, int h);
 
 	// internal sound and midi handlers
 	ofSoundStream soundStream;
@@ -183,6 +186,7 @@ private:
     ofColor m_colorNotFocused = ofColor(26, 97, 138);
     std::string m_helper;
     unsigned int m_selectedMidiOutput = 0;
+    Tonton::Utils::ListView m_mixerListView;
     
     // clickable areas
     ofRectangle m_areaStop {20, 430, 12, 12};
@@ -190,12 +194,25 @@ private:
     ofRectangle m_areaPreviousSongPart {62, 430, 12, 12};
     ofRectangle m_areaNextSongPart {84, 430, 12, 12};
     ofRectangle m_areaAutoPlay {725, 430, 12, 12};
+    ofRectangle m_setlistArea {30, 50, 190, 380};
     
     ofRectangle m_areaMixer {230, 35, 510, 210};
     ofRectangle m_areaSetlist {20, 35, 190, 380};
     ofRectangle m_areaPatches {230, 265, 510, 150};
+    ofRectangle m_areaFreeVersionPanel {0, 0, 760, 56};
     
-    // max elements (no scrollbar implemented yet)
-    unsigned int m_maxElementsMixer = 11;
-    unsigned int m_maxElementsPatches = 7;
+    ofRectangle m_areaMuteBackings {698, 37, 38, 15};
+    
+    int m_mixerNbElementsPerPage = 1;
+    int m_mixerPageOffset = 0;
+    
+    int m_patchesNbElementsPerPage = 1;
+    int m_patchesPageOffset = 0;
+    
+    void setPatchesPageOffset();
+    void setMixerPageOffset();
+        
+    bool m_testVersion = false;
+    
+    ofTrueTypeFont m_font;
 };
