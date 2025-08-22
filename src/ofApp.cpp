@@ -664,6 +664,14 @@ void ofApp::drawHelp()
 
 }
 
+void ofApp::drawWarningSign(unsigned int x, unsigned int y)
+{
+    ofSetColor(m_colorWarning);
+    ofDrawRectRounded(x, y - 11, 9, 13, 3.0);
+    ofSetColor(255);
+    ofDrawBitmapString("!", x + 1, y);
+}
+
 void ofApp::drawPatches()
 {
     unsigned int baseX = m_areaPatches.x;
@@ -747,15 +755,30 @@ void ofApp::drawPatches()
         
         auto midiOut = _midiOuts[i];
         
+        bool isWarning = false;
         if (!midiOut->isOpen())
         {
+            isWarning = true;
+
+            /*ofSetColor(m_colorWarning);
+            ofDrawRectRounded(baseX, baseY + offsetY + (row + 1) * TEXT_LIST_SPACING - 11, 9, 13, 3.0);
+            ofSetColor(255);
+            ofDrawBitmapString("!", baseX + 1, baseY + offsetY + (row + 1) * TEXT_LIST_SPACING);*/
+            drawWarningSign(baseX, baseY + offsetY + (row + 1) * TEXT_LIST_SPACING);
+
             ofSetColor(128);
         }
         if (m_mainUiElementSelected == MAIN_UI_ELEMENT::MIDI_OUTPUTS && m_selectedMidiOutput == midiOut->_deviceIndex)
         {
             ofSetColor(m_colorFocused);
         }
-        ofDrawBitmapString(midiOut->_deviceName, baseX, baseY + offsetY + (row + 1) * 15);
+        unsigned int deviceNameXOffset = 0;
+        if (isWarning)
+        {
+            deviceNameXOffset = 15;
+            // TODO cut length
+        }
+        ofDrawBitmapString(midiOut->_deviceName, baseX + deviceNameXOffset, baseY + offsetY + (row + 1) * 15);
         
         if (midiOut->_patchFormat == PatchFormat::PATCH_NAME && !midiOut->_automaticMode)
         {
@@ -1002,7 +1025,7 @@ void ofApp::drawPlayer()
     ofSetColor(128);
     if (m_muteBackings)
     {
-        ofSetColor(255, 100, 90);
+        ofSetColor(m_colorWarning);
         ofDrawRectangle(m_areaMuteBackings.x, m_areaMuteBackings.y, m_areaMuteBackings.width, m_areaMuteBackings.height);
         ofSetColor(255);
     }

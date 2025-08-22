@@ -92,6 +92,7 @@ private:
     void drawLicenseInfo();
     void initializeLayout();
     void drawMixerLine(int i,  int x, int y, int w, int h);
+    void drawWarningSign(unsigned int x, unsigned int y);
 
 	// internal sound and midi handlers
 	ofSoundStream soundStream;
@@ -184,6 +185,7 @@ private:
     Tonton::Utils::ListView m_setlistView;
     ofColor m_colorFocused = ofColor(242, 182, 17);
     ofColor m_colorNotFocused = ofColor(26, 97, 138);
+    ofColor m_colorWarning = ofColor(255, 100, 90);
     std::string m_helper;
     unsigned int m_selectedMidiOutput = 0;
     Tonton::Utils::ListView m_mixerListView;
