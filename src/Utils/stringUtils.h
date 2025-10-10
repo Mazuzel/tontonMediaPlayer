@@ -6,7 +6,7 @@
 
 std::vector<std::string> split_sentence(std::string sen);
 
-void shortenString(std::string& str, unsigned int len, int maxWordLen = -1, unsigned int maxWordCount = -1);
+void shortenString(std::string& str, unsigned int len, int maxWordLen = -1, unsigned int maxWordCount = 0);
 
 std::string replaceSpacesWithNewline(std::string& str);
 

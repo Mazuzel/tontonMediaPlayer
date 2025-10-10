@@ -3,11 +3,12 @@
 
 using namespace std;
 
-MidiOutput::MidiOutput(int port, string deviceName, int deviceIndex, string deviceOsName) {
+MidiOutput::MidiOutput(int port, string deviceName, int deviceIndex, string deviceOsName, std::string shortName) {
     _deviceName = deviceName;
     shortenString(_deviceName, 30, 8, 3);
     _deviceIndex = deviceIndex;
     _deviceOsName = deviceOsName;
+    _shortName = shortName;
     
     if (deviceOsName.size() > 0)
     {

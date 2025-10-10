@@ -9,7 +9,7 @@
 
 class MidiOutput {
 public:
-    MidiOutput(int port, std::string deviceName, int deviceIndex, std::string deviceOsName);
+    MidiOutput(int port, std::string deviceName, int deviceIndex, std::string deviceOsName, std::string shortName);
     virtual ~MidiOutput();
     bool isOpen();
     void incrementManualPatchSelection(int increment);
@@ -22,6 +22,7 @@ public:
     ofxMidiOut _midiOut;  // not a good practice of encapsulation here, but avoids writing a wrapper class :)
     int _deviceIndex;  // internal device index, for routing
     std::string _deviceName;
+    std::string _shortName = "";
     std::string _deviceOsName;
     PatchFormat _patchFormat = PatchFormat::PROGRAM_NUMBER;
     std::map<std::string, unsigned int> _patchesMap;

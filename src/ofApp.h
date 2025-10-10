@@ -24,6 +24,10 @@
 #define QUAD_CORNER_HWIDTH 12
 #define TEXT_LIST_SPACING 15
 #define VOLUME_MAX 2.0
+#define TEXT_LEN_MIXER_ENTRY 30
+#define TEXT_LEN_MIDI_OUTPUT_NAME 10
+#define TEXT_LEN_PATCH_NAME 9
+#define TEXT_LEN_MIDI_OUTPUT_DEVICE 20
 
 enum MAIN_UI_ELEMENT {
     SETLIST,
@@ -99,7 +103,7 @@ private:
 	ofxSoundOutput output;
 	ofxSoundMixer mixer;
 	vector<unique_ptr<ofxSoundPlayerObject>> players;
-	vector<string> playersNames;
+	vector<std::pair<string, string>> playersNames;
 	Metronome metronome;
 	ofxMidiIn midiIn;
     std::vector<std::shared_ptr<MidiOutput>> _midiOuts;
@@ -219,4 +223,6 @@ private:
     bool m_testVersion = false;
     
     ofTrueTypeFont m_font;
+    
+    bool m_isWarningStateAudioOut = false;
 };

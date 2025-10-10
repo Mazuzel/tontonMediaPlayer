@@ -70,7 +70,7 @@ void shortenString(std::string& str, unsigned int len, int maxWordLen, unsigned 
     // check final len again and cut if necessary
     strLen = str.length();
     offset = strLen - len;
-    if (offset > 0)
+    if (offset > 0 && strLen - offset - 3 > 0)
     {
         str.resize(strLen - offset - 3);
         str += "...";

@@ -247,6 +247,7 @@ void ofApp::loadSetlist() {
             settings.pushTag("song", i);
             std::string songName = settings.getValue("name", "");
             // TODO v�rifications
+            shortenString(songName, 20, -1, 0);
             m_setlist.push_back(songName);
             settings.popTag();
         }
@@ -312,7 +313,9 @@ int ofApp::openMidiOut() {
                     ofLog() << "Associating " << name << " with os device " << deviceOsName << " on port " << port;
                 }
 
-                auto midiOut = std::make_shared<MidiOutput>(port, name, i, deviceOsName);
+                string deviceShortenName = deviceOsName;
+                // shortenString(deviceShortenName, TEXT_LEN_MIDI_OUTPUT_DEVICE, -1, -1);
+                auto midiOut = std::make_shared<MidiOutput>(port, name, i, deviceOsName, deviceShortenName);
                 
                 // add optional settings
                 if (settings.tagExists("send_ticks")) {
@@ -391,6 +394,7 @@ int ofApp::openAudioOut()
         {
             ofLogError() << "Audio out device not found: " << m_requestedAudioOutDevice;
             ofLog() << "Trying to connect to default audio device";
+            m_isWarningStateAudioOut = true;
         }
         else
         {
@@ -416,6 +420,10 @@ int ofApp::openAudioOut()
             
             // shorten name
             shortenString(m_openedAudioDeviceName, 25, 8, 3);
+        }
+        else
+        {
+            m_isWarningStateAudioOut = true;
         }
 	}
 
@@ -623,7 +631,13 @@ void ofApp::draw() {
     {
         textAudioOutY += m_areaFreeVersionPanel.height;
     }
-    ofDrawBitmapString(strmAudioOut.str(), 20, textAudioOutY);
+    unsigned int audioOutStrXOffset = 0;
+    if (m_isWarningStateAudioOut)
+    {
+        drawWarningSign(20, textAudioOutY);
+        audioOutStrXOffset = 15;
+    }
+    ofDrawBitmapString(strmAudioOut.str(), 20 + audioOutStrXOffset, textAudioOutY);
     
 //    std::stringstream strmFps;
 //    strmFps << round(ofGetFrameRate()) << " fps";
@@ -669,7 +683,8 @@ void ofApp::drawWarningSign(unsigned int x, unsigned int y)
     ofSetColor(m_colorWarning);
     ofDrawRectRounded(x, y - 11, 9, 13, 3.0);
     ofSetColor(255);
-    ofDrawBitmapString("!", x + 1, y);
+    ofDrawRectangle(x + 3, y - 10, 3, 6);
+    ofDrawRectangle(x + 3, y - 1, 3, 2);
 }
 
 void ofApp::drawPatches()
@@ -759,11 +774,6 @@ void ofApp::drawPatches()
         if (!midiOut->isOpen())
         {
             isWarning = true;
-
-            /*ofSetColor(m_colorWarning);
-            ofDrawRectRounded(baseX, baseY + offsetY + (row + 1) * TEXT_LIST_SPACING - 11, 9, 13, 3.0);
-            ofSetColor(255);
-            ofDrawBitmapString("!", baseX + 1, baseY + offsetY + (row + 1) * TEXT_LIST_SPACING);*/
             drawWarningSign(baseX, baseY + offsetY + (row + 1) * TEXT_LIST_SPACING);
 
             ofSetColor(128);
@@ -784,9 +794,13 @@ void ofApp::drawPatches()
         {
             string programName = midiOut->getManualPatchName();
             ofSetColor(m_colorFocused);
-            ofDrawRectRounded(baseX + 90, baseY + offsetY + (row + 1) * 15 - 10, 80, 13, 3.0);
+            if (isWarning)
+            {
+                ofSetColor(128);
+            }
+            ofDrawRectRounded(baseX + 100, baseY + offsetY + (row + 1) * 15 - 10, 80, 13, 3.0);
             ofSetColor(0);
-            ofDrawBitmapString(programName, baseX + 100, baseY + offsetY + (row + 1) * 15);
+            ofDrawBitmapString(programName, baseX + 104, baseY + offsetY + (row + 1) * 15);
         }
         else
         {
@@ -795,9 +809,13 @@ void ofApp::drawPatches()
                 if (midiOut->_deviceIndex == patch.midiOutputIndex)
                 {
                     ofSetColor(m_colorNotFocused);
-                    ofDrawRectRounded(baseX + 90, baseY + offsetY + (row + 1) * 15 - 10, 80, 13, 3.0);
+                    if (isWarning)
+                    {
+                        ofSetColor(128);
+                    }
+                    ofDrawRectRounded(baseX + 100, baseY + offsetY + (row + 1) * 15 - 10, 80, 13, 3.0);
                     ofSetColor(0);
-                    ofDrawBitmapString(patch.name, baseX + 92, baseY + offsetY + (row + 1) * 15);
+                    ofDrawBitmapString(patch.name, baseX + 104, baseY + offsetY + (row + 1) * 15);
                 }
             }
         }
@@ -818,7 +836,7 @@ void ofApp::drawPatches()
         if (midiOut->_deviceOsName.size() > 0)
         {
             ofSetColor(128);
-            ofDrawBitmapString(midiOut->_deviceOsName, baseX + 240, baseY + offsetY + (row + 1) * 15);
+            ofDrawBitmapString(midiOut->_shortName, baseX + 240, baseY + offsetY + (row + 1) * 15);
         }
 
         //row += 1;
@@ -849,7 +867,7 @@ void ofApp::drawMixerLine(int i, int x, int y, int w, int h)
     {
         ofSetColor(m_colorFocused);
     }
-    ofDrawBitmapString(playersNames[i], x + 260, lineY + 15);
+    ofDrawBitmapString(playersNames[i].second, x + 260, lineY + 15);
 
     float volumeNorm = volume / VOLUME_MAX;
     int volumeBars = round(volumeNorm * 40);
@@ -1334,6 +1352,7 @@ void ofApp::loadSong()
                         patchEvent.name = settings.getValue(midiOut->_deviceName, "");
                         patchEvent.programNumber = getProgramNumberFromElektronPatternStr(patchEvent.name);
                     }
+                    shortenString(patchEvent.name, TEXT_LEN_PATCH_NAME, -1, 0);
                     
                     e.patches.push_back(patchEvent);
                 }
@@ -1344,6 +1363,7 @@ void ofApp::loadSong()
                     patchEvent.programNumber = e.program;
                     patchEvent.name = e.programName;
                     patchEvent.midiOutputIndex = midiOut->_deviceIndex;
+                    shortenString(patchEvent.name, TEXT_LEN_PATCH_NAME, -1, 0);
                     e.patches.push_back(patchEvent);
                 }
             }
@@ -1413,7 +1433,9 @@ void ofApp::loadSong()
 	for (int i = 0; i < trackFilesToLoad.size(); i++)
 	{
 		string trackName = fs::path(trackFilesToLoad[i]).filename().string();
-		playersNames.push_back(trackName);
+        string shortTrackName = trackName;
+        shortenString(shortTrackName, TEXT_LEN_MIXER_ENTRY, 0, 0);
+        playersNames.push_back(std::make_pair(trackName, shortTrackName));
 		players[i] = make_unique<ofxSoundPlayerObject>();
 		players[i]->setLoop(false);
 		players[i]->load(ofToDataPath(trackFilesToLoad[i]));
@@ -1429,7 +1451,7 @@ void ofApp::loadSong()
 		vector<pair<string, float>> storedVolumes;
 		for (int i = 0; i < playersNames.size(); i++)
 		{
-			storedVolumes.push_back(make_pair(playersNames[i], 1.0));
+			storedVolumes.push_back(make_pair(playersNames[i].first, 1.0));
 		}
 		VolumesDb::getStoredSongVolumes(songName, storedVolumes);
 
@@ -1439,7 +1461,7 @@ void ofApp::loadSong()
 			float volume = storedVolumes[i].second;
 			for (int j = 0; j < playersNames.size(); j++)
 			{
-				if (stem == playersNames[j] && j < players.size())
+				if (stem == playersNames[j].first && j < players.size())
 				{
 					mixer.setConnectionVolume(j, volume);
 				}
@@ -1707,7 +1729,7 @@ void ofApp::saveAudioMixerVolumes()
     for (int i = 0; i < players.size(); i++)
     {
         float volume = mixer.getConnectionVolume(i);
-        string stem = playersNames[i];
+        string stem = playersNames[i].first;
         volumes.push_back(make_pair(stem, volume));
     }
     VolumesDb::setStoredSongVolumes(m_setlist[m_currentSongIndex], volumes);
@@ -1935,7 +1957,7 @@ void ofApp::keyPressed(int key){
 //            for (int i = 0; i < players.size(); i++)
 //            {
 //                float volume = mixer.getConnectionVolume(i);
-//                string stem = playersNames[i];
+//                string stem = playersNames[i].first;
 //                volumes.push_back(make_pair(stem, volume));
 //            }
 //            VolumesDb::setStoredSongVolumes(m_setlist[m_currentSongIndex], volumes);
