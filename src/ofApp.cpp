@@ -443,7 +443,10 @@ void ofApp::update(){
 		{
 			if (m_currentSongIndex < m_setlist.size() - 1)
 			{
-                sleep(m_autoPlayDelaySeconds);
+                if (m_autoPlayDelaySeconds > 0)
+                {
+                    sleep(m_autoPlayDelaySeconds);
+                }
 				m_currentSongIndex += 1;
                 m_setlistView.setActiveElement(m_currentSongIndex);
 				loadSong();
