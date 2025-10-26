@@ -18,7 +18,8 @@ public:
         unsigned int selectedElement,
         bool showIndex,
         ofColor colorFocused,
-        ofColor colorNotFocused);
+        ofColor colorNotFocused,
+        bool drawBackground = false);
     void setFocus(bool focus);
     void setTitleColor(ofColor color);
     void setSelectedElement(unsigned int index);
@@ -33,6 +34,7 @@ protected:
     unsigned int _w = 100;
     unsigned int _h = 100;
     bool _isFocused = false;
+    bool _drawBackground = false;
     std::string _title;
     std::vector<std::string> _elements;
     ofColor _titleColor;

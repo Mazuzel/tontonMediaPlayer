@@ -19,7 +19,8 @@ void ListView::setup(
      unsigned int selectedElement,
      bool showIndex,
      ofColor colorFocused,
-     ofColor colorNotFocused)
+     ofColor colorNotFocused,
+     bool drawBackground)
 {
     _title = title;
     _elements = elements;
@@ -28,6 +29,7 @@ void ListView::setup(
     _showIndex = showIndex;
     _colorFocused = colorFocused;
     _colorNotFocused = colorNotFocused;
+    _drawBackground = drawBackground;
     generateDraw();
 }
 
@@ -101,6 +103,11 @@ void ListView::generateDraw()
 
 void ListView::draw()
 {
+    if (_drawBackground)
+    {
+        ofSetColor(0);
+        ofDrawRectangle(_x - 10, _y - 15, _w, _h);
+    }
     ofSetColor(255);
     _border.draw();
     if (_isFocused)

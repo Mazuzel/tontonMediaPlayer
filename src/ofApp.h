@@ -76,6 +76,8 @@ private:
 	int openMidiOut();
 	int openAudioOut();
 	void loadHwConfig();
+    void loadAudioOutConfig();
+    void saveAudioOutConfig();
 	void jumpToNextPart();
 	void jumpToPreviousPart();
 	unsigned int m_startingSongPart = 1;
@@ -190,6 +192,7 @@ private:
     ofColor m_colorFocused = ofColor(242, 182, 17);
     ofColor m_colorNotFocused = ofColor(26, 97, 138);
     ofColor m_colorWarning = ofColor(255, 100, 90);
+    ofColor m_colorSetting = ofColor(177, 71, 204);
     std::string m_helper;
     unsigned int m_selectedMidiOutput = 0;
     Tonton::Utils::ListView m_mixerListView;
@@ -207,7 +210,11 @@ private:
     ofRectangle m_areaPatches {230, 265, 510, 150};
     ofRectangle m_areaFreeVersionPanel {0, 0, 760, 56};
     
+    ofRectangle m_areaAudioOutPanelOpener{20, 0, 30, 10};
+    
     ofRectangle m_areaMuteBackings {698, 37, 38, 15};
+    
+    ofRectangle m_areaSampleRate {580, 0, 140, 18};
     
     bool m_muteBackings = false;
     
@@ -219,6 +226,19 @@ private:
     
     void setPatchesPageOffset();
     void setMixerPageOffset();
+    
+    // Audio output panel
+    void openAudioOutPanel();
+    void closeAudioOutPanel();
+    bool m_audioOutPanelOpened = false;
+    std::vector<ofSoundDevice> m_audioDeviceList;
+    void drawAudioOutputPanel();
+    Tonton::Utils::ListView m_audioOutputListView;
+    int m_selectedAudioOutIndex = 0;
+    void confirmAudioOutSelection();
+    //
+    
+    bool m_drawSampleRateTooltip = false;
         
     bool m_testVersion = false;
     

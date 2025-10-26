@@ -7,7 +7,7 @@ void VolumesDb::getStoredSongVolumes(string songName, vector<pair<string, float>
 {
 	vector<pair<string, float>> result;
 	ofxXmlSettings settings;
-	if (settings.loadFile("volumesDb.xml")) {
+	if (settings.load("volumesDb.xml")) {
 		settings.pushTag("settings");
 		bool success = settings.pushTag(songName);
 		if (!success)
@@ -32,7 +32,7 @@ void VolumesDb::getStoredSongVolumes(string songName, vector<pair<string, float>
 void VolumesDb::setStoredSongVolumes(string songName, vector<pair<std::string, float>>& volumes)
 {
 	ofxXmlSettings settings;
-	settings.loadFile("volumesDb.xml");
+	settings.load("volumesDb.xml");
 
 	for (int i = 0; i < volumes.size(); i++)
 	{
@@ -41,5 +41,5 @@ void VolumesDb::setStoredSongVolumes(string songName, vector<pair<std::string, f
 		settings.setValue(tag, volume);
 	}
 
-	settings.saveFile("volumesDb.xml");
+	settings.save("volumesDb.xml");
 }

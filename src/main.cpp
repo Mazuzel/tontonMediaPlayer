@@ -43,6 +43,9 @@ int main() {
 		ofAddListener(mappingWindow->events().draw, mainApp.get(), &ofApp::drawMapping);
 		mainApp->mappingWindow = mappingWindow;
 	}
+    
+    // disable App quit by pressing ESC
+    ofSetEscapeQuitsApp(false);
 
 	ofRunApp(dawWindow, mainApp);
 	ofRunMainLoop();

@@ -99,6 +99,10 @@ void ofApp::initializeLayout()
     
     m_areaMuteBackings = {698, 37, 38, 15};
     
+    m_areaAudioOutPanelOpener = {5, 0, 200, 18};
+    
+    m_areaSampleRate = {580, 0, 140, 18};
+    
     // add space for free license panel
     if (m_testVersion)
     {
@@ -117,6 +121,10 @@ void ofApp::initializeLayout()
         
         m_areaSetlist.y += m_areaFreeVersionPanel.height;
         m_areaSetlist.height -= m_areaFreeVersionPanel.height;
+        
+        m_areaAudioOutPanelOpener.y += m_areaFreeVersionPanel.height;
+        
+        m_areaSampleRate.y += m_areaFreeVersionPanel.height;
     }
     
     // setlist
@@ -155,12 +163,97 @@ void ofApp::setMixerPageOffset()
     }
 }
 
+void ofApp::loadAudioOutConfig() {
+    ofxXmlSettings settings;
+    string filePath = "audio_settings.xml";
+    if (settings.load(filePath)) {
+        settings.pushTag("settings");
+        int configBufferSize = settings.getValue("buffer_size", 128);
+        
+        // correct buffer size value
+        int distance = 512;
+        auto allowedBufferSizes = {64, 128, 256, 512};
+        for (auto allowedSize : allowedBufferSizes)
+        {
+            int d = abs(allowedSize - configBufferSize);
+            if (d <= distance)
+            {
+                m_bufferSize = allowedSize;
+                distance = d;
+            }
+        }
+        
+        if (settings.tagExists("sample_rate"))
+        {
+            int configRate = settings.getValue("sample_rate", 22050);
+            
+            // correct buffer size value
+            int distance = 48000;
+            auto allowedSampleRates = {22050, 44100, 48000};
+            for (auto allowedRate : allowedSampleRates)
+            {
+                int d = abs(allowedRate - configRate);
+                if (d <= distance)
+                {
+                    m_sampleRate = allowedRate;
+                    distance = d;
+                }
+            }
+        }
+
+        if (settings.tagExists("requested_audio_out_device"))
+        {
+            m_requestedAudioOutDevice = settings.getValue("requested_audio_out_device", "");
+            ofLog() << "Requested audio out device value from settings: " << m_requestedAudioOutDevice;
+        }
+        if (settings.tagExists("requested_audio_out_api"))
+        {
+            string value = settings.getValue("requested_audio_out_api", "");
+            for (int i = ofSoundDevice::ALSA; i < ofSoundDevice::NUM_APIS; i++)
+            {
+                transform(value.begin(), value.end(), value.begin(), ::tolower);
+                string apiStr = toString((ofSoundDevice::Api)i);
+                transform(apiStr.begin(), apiStr.end(), apiStr.begin(), ::tolower);
+                if (apiStr.find(value) != std::string::npos)
+                {
+                    m_requestedAudioOutApi = (ofSoundDevice::Api)i;
+                    ofLog() << "Requested audio out api: " << m_requestedAudioOutApi;
+                }
+            }
+        }
+    }
+}
+
+void ofApp::saveAudioOutConfig() {
+    ofxXmlSettings settings;
+    settings.setValue("settings:buffer_size", static_cast<int>(m_bufferSize));
+    settings.setValue("settings:sample_rate", static_cast<int>(m_sampleRate));
+    settings.setValue("settings:requested_audio_out_api", toString(m_requestedAudioOutApi));
+    settings.setValue("settings:requested_audio_out_device", m_requestedAudioOutDevice);
+    settings.save("audio_settings.xml");
+}
+
+void ofApp::confirmAudioOutSelection() {
+    if (m_selectedAudioOutIndex >= m_audioDeviceList.size()) {
+        return;
+    }
+
+    m_requestedAudioOutDevice = m_audioDeviceList[m_selectedAudioOutIndex].name;
+    ofLog() << "Requested audio out device value from user selection: " << m_requestedAudioOutDevice;
+    
+    m_requestedAudioOutApi = m_audioDeviceList[m_selectedAudioOutIndex].api;
+    ofLog() << "Requested audio out api from user selection: " << m_requestedAudioOutApi;
+    
+    saveAudioOutConfig();
+}
+
 void ofApp::loadHwConfig() {
+    loadAudioOutConfig();
+
 	ofxXmlSettings settings;
 	string filePath = "settings.xml";
 	if (settings.load(filePath)) {
 		settings.pushTag("settings");
-		m_bufferSize = settings.getValue("buffer_size", 128);
 		if (settings.tagExists("songs_root_dir"))
 		{
 			m_songsRootDir = settings.getValue("songs_root_dir", "songs/");
@@ -174,30 +267,6 @@ void ofApp::loadHwConfig() {
 		{
 			metronome.setNbIgnoredStartupsTicks(settings.getValue("nb_ignored_startup_ticks", 4));
 		}
-		if (settings.tagExists("sample_rate"))
-		{
-			m_sampleRate = settings.getValue("sample_rate", 22050);
-		}
-        if (settings.tagExists("requested_audio_out_device"))
-        {
-            m_requestedAudioOutDevice = settings.getValue("requested_audio_out_device", "");
-			ofLog() << "Requested audio out device value from settings: " << m_requestedAudioOutDevice;
-        }
-        if (settings.tagExists("requested_audio_out_api"))
-        {
-            string value = settings.getValue("requested_audio_out_api", "");
-			for (int i = ofSoundDevice::ALSA; i < ofSoundDevice::NUM_APIS; i++)
-			{
-                transform(value.begin(), value.end(), value.begin(), ::tolower);
-                string apiStr = toString((ofSoundDevice::Api)i);
-                transform(apiStr.begin(), apiStr.end(), apiStr.begin(), ::tolower);
-				if (apiStr.find(value) != std::string::npos)
-				{
-					m_requestedAudioOutApi = (ofSoundDevice::Api)i;
-                    ofLog() << "Requested audio out api: " << m_requestedAudioOutApi;
-				}
-			}
-        }
         
         if (settings.tagExists("auto_play_delay_seconds"))
         {
@@ -370,6 +439,46 @@ int ofApp::openMidiOut() {
     ofLog() << "--------------------------------------------------------------------------";
 
 	return 0;
+}
+
+void ofApp::openAudioOutPanel()
+{
+    m_audioOutPanelOpened = true;
+
+    ofSoundStreamSettings settings;
+    settings.setOutListener(this);
+    settings.sampleRate = m_sampleRate;
+    settings.numOutputChannels = 2;
+    settings.numInputChannels = 0;
+    settings.bufferSize = m_bufferSize;
+    settings.numBuffers = 1;
+    
+    m_audioDeviceList = soundStream.getDeviceList();
+    
+    std::vector<std::string> audioOutputNames;
+    for (unsigned int i = 0; i < m_audioDeviceList.size(); i++)
+    {
+        std::stringstream strmAudioOut;
+        strmAudioOut << m_audioDeviceList[i].name << " (" << toString(m_audioDeviceList[i].api) << ")";
+        audioOutputNames.push_back(strmAudioOut.str());
+    }
+    
+    m_audioOutputListView.setup("Audio output selection", audioOutputNames, 0, 0, false, m_colorSetting, m_colorNotFocused, true);
+    m_audioOutputListView.setFocus(true);
+    int yCoord = 17;
+    int height = 15 * 10;
+    if (m_testVersion)
+    {
+        yCoord += m_areaFreeVersionPanel.height;
+        height -= m_areaFreeVersionPanel.height;
+    }
+    m_audioOutputListView.setCoordinates(12, yCoord, 450, height);
+    m_selectedAudioOutIndex = 0;
+}
+
+void ofApp::closeAudioOutPanel()
+{
+    m_audioOutPanelOpened = false;
 }
 
 int ofApp::openAudioOut()
@@ -600,6 +709,11 @@ void ofApp::drawAnimatedLogo()
 	ofSetColor(255);
 }
 
+void ofApp::drawAudioOutputPanel() {
+    
+    m_audioOutputListView.draw();
+}
+
 //--------------------------------------------------------------
 void ofApp::draw() {
 	ofShowCursor();
@@ -627,20 +741,41 @@ void ofApp::draw() {
     
     ofSetColor(255);
     
-    std::stringstream strmAudioOut;
-    strmAudioOut << "Audio out: " << m_openedAudioDeviceName << " (" << toString(m_openedAudioDeviceApi) << ")";
     int textAudioOutY = 15;
     if (m_testVersion)
     {
         textAudioOutY += m_areaFreeVersionPanel.height;
     }
-    unsigned int audioOutStrXOffset = 0;
-    if (m_isWarningStateAudioOut)
+    
     {
-        drawWarningSign(20, textAudioOutY);
-        audioOutStrXOffset = 15;
+        std::stringstream strmAudioOut;
+        strmAudioOut << "Audio out: " << m_openedAudioDeviceName << " (" << toString(m_openedAudioDeviceApi) << ")";
+        unsigned int audioOutStrXOffset = 0;
+        if (m_isWarningStateAudioOut)
+        {
+            drawWarningSign(20, textAudioOutY);
+            audioOutStrXOffset = 15;
+        }
+        ofDrawBitmapString(strmAudioOut.str(), 20 + audioOutStrXOffset, textAudioOutY);
     }
-    ofDrawBitmapString(strmAudioOut.str(), 20 + audioOutStrXOffset, textAudioOutY);
+    unsigned int bufferSizeSampleRateDisplayX = 580;
+    {
+        std::stringstream strmBufferSize;
+        strmBufferSize << "Buffer size: " << m_bufferSize;
+        ofSetColor(0);
+        ofDrawRectangle(bufferSizeSampleRateDisplayX, 0, 200, 18);
+        ofSetColor(128);
+        ofDrawBitmapString(strmBufferSize.str(), bufferSizeSampleRateDisplayX, textAudioOutY);
+    }
+    {
+        std::stringstream strmSampleRate;
+        strmSampleRate << "Sample rate: " << m_sampleRate;
+        // ofSetColor(0);
+        // ofDrawRectangle(bufferSizeSampleRateDisplayX, 0, 200, 18);
+        ofSetColor(128);
+        ofDrawBitmapString(strmSampleRate.str(), bufferSizeSampleRateDisplayX, textAudioOutY + 11);
+    }
+    
     
 //    std::stringstream strmFps;
 //    strmFps << round(ofGetFrameRate()) << " fps";
@@ -658,6 +793,24 @@ void ofApp::draw() {
         drawLicenseInfo();
 	}
 	drawHelp();
+    
+    if (m_audioOutPanelOpened)
+    {
+        ofSetColor(0, 0, 0, 150);
+        ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+        ofSetColor(255);
+        drawAudioOutputPanel();
+    }
+    
+    if (m_drawSampleRateTooltip)
+    {
+        ofSetColor(m_colorSetting);
+        ofDrawRectangle(390, 36, 320, 70);
+        ofSetColor(0);
+        ofDrawRectangle(393, 39, 314, 64);
+        ofSetColor(255);
+        ofDrawBitmapString("Configure in ./data/audio_settings.xml\nBuffer size: 64, 128, 256 or 512\nSample rate: 22050, 44100 or 48000", 400, 56);
+    }
 }
 
 void ofApp::drawLicenseInfo()
@@ -1740,6 +1893,35 @@ void ofApp::saveAudioMixerVolumes()
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
+    
+    if (m_audioOutPanelOpened)
+    {
+        switch(key) {
+            case 'Q':
+                OF_EXIT_APP(0);
+                break;
+            case OF_KEY_RETURN:
+                m_audioOutPanelOpened = false;
+                confirmAudioOutSelection();
+                openAudioOut();
+                break;
+            case OF_KEY_ESC:
+                m_audioOutPanelOpened = false;
+                break;
+            case OF_KEY_UP:
+                m_selectedAudioOutIndex = max<int>(0, m_selectedAudioOutIndex - 1);
+                m_audioOutputListView.setActiveElement(m_selectedAudioOutIndex);
+                break;
+            case OF_KEY_DOWN:
+                if (m_selectedAudioOutIndex < m_audioDeviceList.size() - 1) {
+                    m_selectedAudioOutIndex += 1;
+                    m_audioOutputListView.setActiveElement(m_selectedAudioOutIndex);
+                }
+                break;
+        }
+        return;
+    }
+    
 	switch (key) {
         case 'Q':
             OF_EXIT_APP(0);
@@ -2001,7 +2183,7 @@ void ofApp::keyReleased(int key){
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
-
+    m_drawSampleRateTooltip = isMouseInRect(m_areaSampleRate, x, y);
 }
 
 //--------------------------------------------------------------
@@ -2082,6 +2264,17 @@ void ofApp::mousePressed(int x, int y, int button){
         else if (isMouseInRect(m_areaPatches, x, y))
         {
             changeSelectedUiElement(MAIN_UI_ELEMENT::MIDI_OUTPUTS);
+        }
+        else if (isMouseInRect(m_areaAudioOutPanelOpener, x, y))
+        {
+            if (!m_isPlaying && !m_audioOutPanelOpened)
+            {
+                openAudioOutPanel();
+            }
+            else if (m_audioOutPanelOpened)
+            {
+                closeAudioOutPanel();
+            }
         }
     }
 }
