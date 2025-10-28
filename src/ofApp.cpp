@@ -9,6 +9,14 @@
 #include "volumesDb.h"
 #include "stringUtils.h"
 
+#ifdef __unix__
+# include <unistd.h>
+#elif defined _WIN32
+# include <windows.h>
+#define sleep(x) Sleep(1000 * (x))
+#endif
+
+
 namespace fs = std::filesystem;
 
 namespace {
