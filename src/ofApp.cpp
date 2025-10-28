@@ -647,11 +647,16 @@ void ofApp::changeSelectedUiElement(MAIN_UI_ELEMENT uiElement)
     }
     else if (uiElement == MAIN_UI_ELEMENT::MIXER)
     {
-        m_helper = "</>: Change volume";
+        m_helper = "<- / ->: Change volume";
     }
     else if (uiElement == MAIN_UI_ELEMENT::MIDI_OUTPUTS)
     {
-        m_helper = "</>: Change patch manually";
+        m_helper = "<- / ->: Change patch manually";
+    }
+    
+    if (m_setupMappingMode)
+    {
+        m_helper = "Press v to quit video setup";
     }
 }
 
@@ -2125,13 +2130,16 @@ void ofApp::keyPressed(int key){
             m_lastSongChangeTime = ofGetElapsedTimef();
             break;
         case 'v':
+        case 'V':
             if (m_setupMappingMode)
             {
                 saveMappingNodes();
             }
             m_setupMappingMode = !m_setupMappingMode;
+            changeSelectedUiElement(m_mainUiElementSelected);
             break;
         case 'f':
+        case 'F':
             if (mappingWindow != nullptr)
             {
                 mappingWindow->toggleFullscreen();
@@ -2161,14 +2169,14 @@ void ofApp::keyPressed(int key){
             metronome.setLoopMode(m_loop);
             break;
         case 'h':
-            m_helper = "f:fullscreen (video), v:video mapping, Q:quit, l:loop (experimental)";
+            m_helper = "f:fullscreen video, v:video setup, Q:quit, l:loop (experimental)";
             break;
-        case 't':
-        {
-            m_testVersion = !m_testVersion;
-            initializeLayout();
-            break;
-        }
+//        case 't':
+//        {
+//            m_testVersion = !m_testVersion;
+//            initializeLayout();
+//            break;
+//        }
         case OF_KEY_SHIFT:  // needs to be checked after every upper case letter check
             m_keyShiftPressed = true;
             break;
