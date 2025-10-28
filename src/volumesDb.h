@@ -7,6 +7,6 @@
 
 class VolumesDb {
 public:
-	static void getStoredSongVolumes(std::string songName, std::vector<std::pair<std::string, float>>& volumes);
-	static void setStoredSongVolumes(std::string songName, std::vector<std::pair<std::string, float>>& volumes);
+	static void getStoredSongVolumes(std::string songsRootDir, std::string songName, std::vector<std::pair<std::string, float>>& volumes);
+	static void setStoredSongVolumes(std::string songsRootDir, std::string songName, std::vector<std::pair<std::string, float>>& volumes);
 };

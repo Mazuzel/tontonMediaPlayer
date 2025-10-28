@@ -1609,7 +1609,7 @@ void ofApp::loadSong()
 		{
 			storedVolumes.push_back(make_pair(playersNames[i].first, 1.0));
 		}
-		VolumesDb::getStoredSongVolumes(songName, storedVolumes);
+		VolumesDb::getStoredSongVolumes(m_songsRootDir, songName, storedVolumes);
 
 		for (int i = 0; i < storedVolumes.size(); i++)
 		{
@@ -1888,7 +1888,7 @@ void ofApp::saveAudioMixerVolumes()
         string stem = playersNames[i].first;
         volumes.push_back(make_pair(stem, volume));
     }
-    VolumesDb::setStoredSongVolumes(m_setlist[m_currentSongIndex], volumes);
+    VolumesDb::setStoredSongVolumes(m_songsRootDir, m_setlist[m_currentSongIndex], volumes);
 }
 
 //--------------------------------------------------------------

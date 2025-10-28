@@ -3,43 +3,51 @@
 
 using namespace std;
 
-void VolumesDb::getStoredSongVolumes(string songName, vector<pair<string, float>>& volumes)
+void VolumesDb::getStoredSongVolumes(string songsRootDir, string songName, vector<pair<string, float>>& volumes)
 {
 	vector<pair<string, float>> result;
 	ofxXmlSettings settings;
-	if (settings.load("volumesDb.xml")) {
-		settings.pushTag("settings");
-		bool success = settings.pushTag(songName);
+	if (settings.load(songsRootDir + songName + "/tracks.xml")) {
+		bool success = settings.pushTag("tracks");
 		if (!success)
 		{
-			ofLog() << "could not load song from volumes db file: " << songName;
+			ofLog() << "could not load song from song tracks file: bad xml structure";
 		}
-	
-		for (int i = 0; i < volumes.size(); i++) {
-			if (settings.tagExists(volumes[i].first))
-			{
-				int volume = settings.getValue(volumes[i].first, 100);
-				volumes[i].second = volume / 100.0;
-			}
-		}
+        
+        int tracksCount = settings.getNumTags("track");
+        
+        for (int i = 0; i < tracksCount; i++) {
+            string trackFile = settings.getAttribute("track", "file", "", i);
+            
+            // find matching loaded file
+            for (int i = 0; i < volumes.size(); i++) {
+                if (volumes[i].first == trackFile)
+                {
+                    int volume = stoi(settings.getAttribute("track", "volume", "100", i));
+                    volumes[i].second = volume / 100.0;
+                }
+            }
+        }
 	}
 	else
 	{
-		ofLog() << "could not load volumes db file: volumesDb.xml";
+		ofLog() << "could not load sont tracks file: tracks.xml";
 	}
 }
 
-void VolumesDb::setStoredSongVolumes(string songName, vector<pair<std::string, float>>& volumes)
+void VolumesDb::setStoredSongVolumes(string songsRootDir, string songName, vector<pair<std::string, float>>& volumes)
 {
 	ofxXmlSettings settings;
-	settings.load("volumesDb.xml");
+    settings.addTag("tracks");
+    settings.pushTag("tracks");
 
 	for (int i = 0; i < volumes.size(); i++)
 	{
-		string tag = "settings:" + songName + ":" + volumes[i].first;
-		int volume = int(volumes[i].second * 100);
-		settings.setValue(tag, volume);
-	}
+        settings.addTag("track");
+        settings.addAttribute("track", "file", volumes[i].first, i);
+        settings.addAttribute("track", "volume", to_string(int(100.0 * volumes[i].second)), i);
+    }
+    settings.popTag();
 
-	settings.save("volumesDb.xml");
+	settings.save(songsRootDir + songName + "/tracks.xml");
 }
