@@ -456,14 +456,23 @@ void ofApp::openAudioOutPanel()
     m_audioDeviceList = soundStream.getDeviceList();
     
     std::vector<std::string> audioOutputNames;
+    int currentAudioOutIndex = 0;
     for (unsigned int i = 0; i < m_audioDeviceList.size(); i++)
     {
         std::stringstream strmAudioOut;
         strmAudioOut << m_audioDeviceList[i].name << " (" << toString(m_audioDeviceList[i].api) << ")";
         audioOutputNames.push_back(strmAudioOut.str());
+        
+        if (m_audioDeviceList[i].name == m_requestedAudioOutDevice && m_audioDeviceList[i].api == m_requestedAudioOutApi)
+        {
+            // requested device will be highligted
+            currentAudioOutIndex = i;
+        }
     }
     
-    m_audioOutputListView.setup("Audio output selection", audioOutputNames, 0, 0, false, m_colorSetting, m_colorNotFocused, true);
+    m_selectedAudioOutIndex = currentAudioOutIndex;
+    
+    m_audioOutputListView.setup("Audio output selection", audioOutputNames, m_selectedAudioOutIndex, currentAudioOutIndex, false, m_colorSetting, m_colorNotFocused, true);
     m_audioOutputListView.setFocus(true);
     int yCoord = 17;
     int height = 15 * 10;
@@ -473,7 +482,6 @@ void ofApp::openAudioOutPanel()
         height -= m_areaFreeVersionPanel.height;
     }
     m_audioOutputListView.setCoordinates(12, yCoord, 450, height);
-    m_selectedAudioOutIndex = 0;
 }
 
 void ofApp::closeAudioOutPanel()
