@@ -44,6 +44,10 @@ const bool Metronome::loopEndReached() const
 
 void Metronome::setCurrentSongPartIdx(unsigned int newSongPartIdx)
 {
+    if (newSongPartIdx >= m_songEvents.size())
+    {
+        return;
+    }
 	m_currentSongPartIndex = newSongPartIdx;
 	m_totalTickCount = m_songEvents[m_currentSongPartIndex].tick;
     m_currentTickCountStartThreshold = m_totalTickCount + m_tickCountStartThreshold;
@@ -53,7 +57,7 @@ void Metronome::setCurrentSongPartIdx(unsigned int newSongPartIdx)
 double Metronome::getPlaybackPositionMs() const
 {
 	double msTime = 0.0;
-	for (int i = 0; i < m_songEvents.size() - 1; i++)
+	for (int i = 0; i < static_cast<int>(m_songEvents.size()) - 1; i++)
 	{
 		if (m_totalTickCount >= m_songEvents[i + 1].tick)
 		{
@@ -163,7 +167,7 @@ bool Metronome::isSongEnded()
 	{
 		return false;
 	}
-	return m_currentSongPartIndex == (m_songEvents.size() - 1);
+	return m_currentSongPartIndex == (static_cast<int>(m_songEvents.size()) - 1);
 }
 
 void Metronome::correctTicksToPlaybackPosition(double realPlaybackPositionMs)
@@ -199,7 +203,7 @@ void Metronome::process(ofSoundBuffer& input, ofSoundBuffer& output) {
             
 			m_samples = 0;
 
-			if ((m_currentSongPartIndex < m_songEvents.size() - 1) && (m_totalTickCount >= m_songEvents[m_currentSongPartIndex + 1].tick - 20))
+			if ((m_currentSongPartIndex + 1 < m_songEvents.size()) && (m_totalTickCount >= m_songEvents[m_currentSongPartIndex + 1].tick - 20))
 			{
 				m_currentSongPartIndex += 1;
 				sendNextProgramChange();

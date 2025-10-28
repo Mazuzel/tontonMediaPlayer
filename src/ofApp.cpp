@@ -720,7 +720,11 @@ void ofApp::drawAnimatedLogo()
 	else if (m_isPlaying)
 	{
 		ofSetColor(80, 90, 250);
-		int songTicks = m_songEvents[m_songEvents.size() - 1].tick;
+        int songTicks = 0;
+        if (m_songEvents.size() > 0)
+        {
+            m_songEvents[m_songEvents.size() - 1].tick;
+        }
 		float progressOffset = (metronome.getTickCount() - 0.5 * songTicks) / songTicks;
 		xOffset = static_cast<int>(progressOffset * 5.2 * baseWidth / 220.0);
         yOffset = static_cast<int>(5 * baseHeight / 250.0);
@@ -981,18 +985,21 @@ void ofApp::drawPatches()
         }
         else
         {
-            for (auto patch : m_songEvents[metronome.getCurrentSongPartIdx()].patches)
+            if (m_songEvents.size() > 0)
             {
-                if (midiOut->_deviceIndex == patch.midiOutputIndex)
+                for (auto patch : m_songEvents[metronome.getCurrentSongPartIdx()].patches)
                 {
-                    ofSetColor(m_colorNotFocused);
-                    if (isWarning)
+                    if (midiOut->_deviceIndex == patch.midiOutputIndex)
                     {
-                        ofSetColor(128);
+                        ofSetColor(m_colorNotFocused);
+                        if (isWarning)
+                        {
+                            ofSetColor(128);
+                        }
+                        ofDrawRectRounded(baseX + 100, baseY + offsetY + (row + 1) * 15 - 10, 80, 13, 3.0);
+                        ofSetColor(0);
+                        ofDrawBitmapString(patch.name, baseX + 104, baseY + offsetY + (row + 1) * 15);
                     }
-                    ofDrawRectRounded(baseX + 100, baseY + offsetY + (row + 1) * 15 - 10, 80, 13, 3.0);
-                    ofSetColor(0);
-                    ofDrawBitmapString(patch.name, baseX + 104, baseY + offsetY + (row + 1) * 15);
                 }
             }
         }
@@ -1270,8 +1277,11 @@ void ofApp::drawPlayer()
     // if (m_isPlaying) ofSetColor(m_colorFocused);
     ofDrawRectangle(timelinePosX, baseY + timelinePosY, timelineWidth, timelineHeight);
 
-    float songTicks = static_cast<float>(m_songEvents[m_songEvents.size() - 1].tick);
-    for (int i = 0; i < m_songEvents.size()-1; i++)
+    float songTicks = 0.0f;
+    if (m_songEvents.size() > 0) {
+        songTicks = static_cast<float>(m_songEvents[m_songEvents.size() - 1].tick);
+    }
+    for (int i = 0; i < static_cast<int>(m_songEvents.size())-1; i++)
     {
         int x = timelinePosX + static_cast<int>((timelineWidth - 4) * m_songEvents[i].tick / songTicks);
         int nbTicks = m_songEvents[i + 1].tick - m_songEvents[i].tick;
@@ -1667,6 +1677,11 @@ double ofApp::getCurrentSongTimeMs()
 
 void ofApp::startPlayback()
 {
+    if (m_songEvents.size() == 0)
+    {
+        return;
+    }
+
 	// force midi device to go to the first pattern
 	ofSleepMillis(2);
 	for (auto midiOut: _midiOuts)
@@ -1738,7 +1753,7 @@ void ofApp::jumpToNextPart()
 	}
 
 	unsigned int currentSongPartIdx = metronome.getCurrentSongPartIdx();
-	if (currentSongPartIdx < m_songEvents.size() - 1)
+	if (currentSongPartIdx + 1 < m_songEvents.size())
 	{
 		metronome.setCurrentSongPartIdx(currentSongPartIdx + 1);
 		metronome.sendNextProgramChange();
