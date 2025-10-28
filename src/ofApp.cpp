@@ -107,9 +107,9 @@ void ofApp::initializeLayout()
     
     m_areaMuteBackings = {698, 37, 38, 15};
     
-    m_areaAudioOutPanelOpener = {5, 0, 200, 18};
+    m_areaAudioOutPanelOpener = {5, 0, 450, 22};
     
-    m_areaSampleRate = {580, 0, 140, 18};
+    m_areaSampleRate = {580, 0, 170, 30};
     
     // add space for free license panel
     if (m_testVersion)
@@ -1471,6 +1471,7 @@ void ofApp::loadSong()
 
 	m_songEvents.clear();
 
+    bool unknownStructure = true;
 	ofxXmlSettings settings;
 	string filePath = m_songsRootDir + songName + "/structure.xml";
 	if (settings.load(filePath)) {
@@ -1591,8 +1592,12 @@ void ofApp::loadSong()
 	}
 	else {
 		ofLogError() << "Impossible de charger " + filePath;
-		return;
 	}
+    
+    if (m_songEvents.size() > 0)
+    {
+        unknownStructure = false;
+    }
 
 	// find suitable audio files
 	vector<string> trackFilesToLoad;
@@ -1627,6 +1632,35 @@ void ofApp::loadSong()
 		players[i]->setLoop(false);
 		players[i]->load(ofToDataPath(trackFilesToLoad[i]));
 	}
+    
+    if (unknownStructure)
+    {
+        m_songEvents.clear();
+        // infer structure from players duration
+        unsigned long duration = 0;
+        for (auto& player : players)
+        {
+            duration = std::max(duration, player->getDurationMS());
+        }
+        
+        if (duration > 0)
+        {
+            // assuming 120 bmp
+            unsigned int beats = floor(120.0f / 60.0f * duration / 1000.0f);
+            songEvent start;
+            start.name = songName;
+            start.bpm = 120;
+            start.tick = 0;
+            start.color = m_colorNotFocused;
+            m_songEvents.push_back(start);
+            songEvent end;
+            end.name = "end";
+            end.bpm = 120;
+            end.tick = beats;
+            end.color = m_colorNotFocused;
+            m_songEvents.push_back(end);
+        }
+    }
 
 	for (int i = 0; i < players.size(); i++) {
 		players[i]->connectTo(mixer);

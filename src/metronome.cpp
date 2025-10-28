@@ -120,23 +120,29 @@ void Metronome::sendNextProgramChange() {
         int programNumber = -1;
         if (midiOut->_automaticMode)
         {
-            for (auto patch : m_songEvents[m_currentSongPartIndex].patches)
+            if (m_songEvents.size() > 0)
             {
-                if (patch.midiOutputIndex == midiOut->_deviceIndex)
+                for (auto patch : m_songEvents[m_currentSongPartIndex].patches)
                 {
-                    programNumber = patch.programNumber;
+                    if (patch.midiOutputIndex == midiOut->_deviceIndex)
+                    {
+                        programNumber = patch.programNumber;
+                    }
                 }
             }
             
             if (m_currentSongPartIndex > 0)
             {
-                for (auto patch : m_songEvents[m_currentSongPartIndex - 1].patches)
+                if (m_songEvents.size() > 1)
                 {
-                    if (patch.midiOutputIndex == midiOut->_deviceIndex)
+                    for (auto patch : m_songEvents[m_currentSongPartIndex - 1].patches)
                     {
-                        if (programNumber == patch.programNumber)
+                        if (patch.midiOutputIndex == midiOut->_deviceIndex)
                         {
-                            programNumber = -1;  // don't re-send the same program, it will cause an unwanted VST interruption
+                            if (programNumber == patch.programNumber)
+                            {
+                                programNumber = -1;  // don't re-send the same program, it will cause an unwanted VST interruption
+                            }
                         }
                     }
                 }
@@ -158,7 +164,10 @@ void Metronome::sendNextProgramChange() {
 
     }
 
-	m_samplesPerTick = round((m_sampleRate * 60.0) / m_songEvents[m_currentSongPartIndex].bpm / m_ticksPerBeat);
+    if (m_songEvents.size() > 0)
+    {
+        m_samplesPerTick = round((m_sampleRate * 60.0) / m_songEvents[m_currentSongPartIndex].bpm / m_ticksPerBeat);
+    }
 }
 
 bool Metronome::isSongEnded()
