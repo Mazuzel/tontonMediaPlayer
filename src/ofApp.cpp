@@ -480,7 +480,7 @@ void ofApp::openAudioOutPanel()
     
     m_selectedAudioOutIndex = currentAudioOutIndex;
     
-    m_audioOutputListView.setup("Audio output selection", audioOutputNames, m_selectedAudioOutIndex, currentAudioOutIndex, false, m_colorSetting, m_colorNotFocused, true);
+    m_audioOutputListView.setup("Audio output selection", audioOutputNames, currentAudioOutIndex, m_selectedAudioOutIndex, false, m_colorSetting, m_colorNotFocused, true);
     m_audioOutputListView.setFocus(true);
     int yCoord = 17;
     int height = 15 * 10;
@@ -1931,12 +1931,12 @@ void ofApp::keyPressed(int key){
                 break;
             case OF_KEY_UP:
                 m_selectedAudioOutIndex = max<int>(0, m_selectedAudioOutIndex - 1);
-                m_audioOutputListView.setActiveElement(m_selectedAudioOutIndex);
+                m_audioOutputListView.setSelectedElement(m_selectedAudioOutIndex);
                 break;
             case OF_KEY_DOWN:
                 if (m_selectedAudioOutIndex < m_audioDeviceList.size() - 1) {
                     m_selectedAudioOutIndex += 1;
-                    m_audioOutputListView.setActiveElement(m_selectedAudioOutIndex);
+                    m_audioOutputListView.setSelectedElement(m_selectedAudioOutIndex);
                 }
                 break;
         }
