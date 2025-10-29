@@ -176,7 +176,7 @@ void ofApp::loadAudioOutConfig() {
     string filePath = "audio_settings.xml";
     if (settings.load(filePath)) {
         settings.pushTag("settings");
-        int configBufferSize = settings.getValue("buffer_size", 128);
+        int configBufferSize = settings.getValue("buffer_size", 256);
         
         // correct buffer size value
         int distance = 512;
@@ -193,7 +193,7 @@ void ofApp::loadAudioOutConfig() {
         
         if (settings.tagExists("sample_rate"))
         {
-            int configRate = settings.getValue("sample_rate", 22050);
+            int configRate = settings.getValue("sample_rate", 44100);
             
             // correct buffer size value
             int distance = 48000;

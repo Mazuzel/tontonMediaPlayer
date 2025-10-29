@@ -109,7 +109,7 @@ private:
 	Metronome metronome;
 	ofxMidiIn midiIn;
     std::vector<std::shared_ptr<MidiOutput>> _midiOuts;
-	unsigned int m_sampleRate = 22050;
+	unsigned int m_sampleRate = 44100;
     int m_lastAudioMidiSyncPositionMs = 0;
 
 	// internal video handlers
@@ -124,7 +124,7 @@ private:
 	ShadersSource m_shadersSource;
 
 	// settings.xml
-	unsigned int m_bufferSize = 128;
+	unsigned int m_bufferSize = 256;
 	std::vector<unsigned int> m_midiOutPorts;
 	std::string m_songsRootDir = "songs/";  // path to directory containing songs
     std::string m_requestedAudioOutDevice = "";
