@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tonton Media Player - Live audio synchronization</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=JetBrains+Mono:wght@400;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="hero">
+            <h1 class="title">
+                <span class="bullshit">TONTON MEDIA PLAYER</span>
+            </h1>
+            <div class="tagline">
+                Synchronize your backing tracks, video and machines live.
+            </div>
+            <div class="language-switch" style="position: absolute; top: 20px; right: 20px;">
+                <a href="index.html" style="color: #666; text-decoration: none; margin-right: 10px;">🇫🇷 FR</a>
+                <span style="color: #1A1A1A; font-weight: bold;">🇺🇸 EN</span>
+            </div>
+        </header>
+
+        <main>
+            <!-- Hero visual section -->
+            <section class="visual">
+                <div class="visual-box">
+                    <img src="main.png" alt="Tonton Media Player Preview" class="main-visual" style="max-width:100%;height:auto;display:block;margin:0 auto;">
+                </div>
+            </section>
+
+            <!-- What is it -->
+            <section class="intro-compact">
+                <div class="intro-box">
+                    <p class="intro-text">
+                        DAWs are powerful for composition but <span class="emphasis">too complex for live</span>. 
+                        Tonton Media Player goes straight to the point: setlist structure, audio/video/MIDI sync, 
+                        simple interface that limits mistakes.
+                        Coded by and for the band <span class="emphasis">Maman ! J'ai Peur</span> since 2023, we're now making it available to all live musicians who want it.
+                    </p>
+                    <p>
+                        Want to suggest improvements or follow the development? Contact us at maaamanjaipeuuur@gmail.com.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Features grid -->
+            <section class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎵</div>
+                    <h3>Backing Tracks</h3>
+                    <p>Synchronized multitrack playback</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎬</div>
+                    <h3>Video Mapping</h3>
+                    <p>Project clips live</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎹</div>
+                    <h3>MIDI Sync</h3>
+                    <p>Control your machines</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📋</div>
+                    <h3>Setlist + Sections</h3>
+                    <p>Complete live structure</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Your Data</h3>
+                    <p>No cloud, no AI</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Stable</h3>
+                    <p>Built for the stage</p>
+                </div>
+            </section>
+
+            <!-- CTA / Download Section -->
+            <section class="download-section">
+                <div class="download-box">
+                    <h2>Free download</h2>
+                    
+                    <div class="download-grid">
+                        <div class="download-option">
+                            <div class="os-name">Windows</div>
+                            <button class="btn-download" onclick="downloadWindows()">Download</button>
+                        </div>
+                        <div class="download-option">
+                            <div class="os-name">macOS</div>
+                            <button class="btn-download" onclick="downloadMac()">Download</button>
+                        </div>
+                    </div>
+
+                    <div class="download-note">
+                        Portable .zip archive • No installation • Launch executable directly
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick start guide CTA -->
+            <section class="quickstart-cta">
+                <div class="quickstart-box">
+                    <div class="quickstart-icon">📚</div>
+                    <h3>Quick start guide</h3>
+                    <p>Audio setup, setlist creation, MIDI sync in 5 minutes</p>
+                    <a href="docs.html" class="btn-docs">Read documentation</a>
+                </div>
+            </section>
+        </main>
+
+        <script>
+            function downloadWindows() {
+                window.location.href = '#download-windows-link';
+            }
+            function downloadMac() {
+                window.location.href = '#download-mac-link';
+            }
+        </script>
+
+        <footer>
+            <div class="footer-content">
+                <p>&copy; 2025 Tonton Media Player</p>
+                <div class="links">
+                    <p>Support: maaamanjaipeuuur@gmail.com</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

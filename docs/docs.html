@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation - Tonton Media Player</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=JetBrains+Mono:wght@400;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="hero">
+            <h1>DOCUMENTATION</h1>
+            <p style="margin-top: 15px; color: #666;">
+                <a href="documentation.html" style="color: #666; text-decoration: none;">FR</a>
+                <span style="margin: 0 5px;">|</span>
+                <a href="docs.html" style="color: #1A1A1A; font-weight: bold; text-decoration: none;">EN</a>
+                <span style="margin: 0 15px;">|</span>
+                <a href="index-en.html" style="color: #666; text-decoration: none;">Home</a>
+            </p>
+        </header>
+
+        <main>
+            <section class="doc-section">
+                <h2>BASIC PRINCIPLE</h2>
+                <p>You will organize your set in the <b>./data/songs</b> folder.</p>
+                <ul>
+                    <li>One directory per song</li>
+                    <li>Your backing tracks in the <b>./audio</b> folder</li>
+                    <li>Your video clip in mp4 format in <b>./clip/clip.mp4</b></li>
+                    <li>Optional: an XML file describing the song structure and MIDI commands (useful to visualize playback position, or start playback on a given verse/chorus).</li>
+                </ul>
+
+                <p>This “handmade” approach, although it may seem tedious at first, ensures a clear and lasting organization of your set, making it easy to maintain and share.</p>
+
+                <p>Example:</p>
+                <pre>songs/
+├── 01_Bohemian_Rhapsody/
+│   ├── structure.xml
+│   └── audio/
+│   │   ├── backing.wav
+│   │   └── click.wav
+│   ├── clip/
+│   │   └── clip.mp4
+└── 02_Sweet_Child_O_Mine/
+    ├── structure.xml
+    └── audio/
+        ├── backing_stereo.wav
+        ├── organs.wav
+        └── metronome.wav</pre>
+
+            <p>To get started, Tonton Media Player comes with two example songs.</p>
+            </section>
+
+            <section class="doc-section">
+                <h2>SONG STRUCTURE (optional)</h2>
+                <p>Describes the duration, bpm, name and MIDI controls for each section. Tonton Media Player only reads the file, so it remains safe from accidental manipulation and easily recoverable.</p>
+                <pre>
+&lt;structure&gt;
+    &lt;songparts&gt;
+        &lt;songpart&gt;
+            &lt;desc&gt;<b>Intro</b>&lt;/desc&gt;      // description/name to display
+            &lt;bpm&gt;<b>120</b>&lt;/bpm&gt;          // beats per minute
+            &lt;length&gt;<b>32</b>&lt;/length&gt;     // duration, in beats
+            &lt;program&gt;<b>A01</b>&lt;/program&gt;  // Elektron format name (Model:Cycles, Digitakt, etc.)
+        &lt;/songpart&gt;
+        &lt;songpart&gt;
+            &lt;desc&gt;<b>Verse</b>&lt;/desc&gt;
+            &lt;bpm&gt;<b>120</b>&lt;/bpm&gt;
+            &lt;length&gt;<b>64</b>&lt;/length&gt;
+            &lt;program&gt;<b>A02</b>&lt;/program&gt;
+        &lt;/songpart&gt;
+        &lt;songpart&gt;
+            &lt;desc&gt;<b>Chorus</b>&lt;/desc&gt;
+            &lt;bpm&gt;<b>32</b>&lt;/bpm&gt;
+            &lt;length&gt;<b>32</b>&lt;/length&gt;
+            &lt;program&gt;<b>A03</b>&lt;/program&gt;
+        &lt;/songpart&gt;
+        &lt;songpart&gt;
+            &lt;desc&gt;<b>End</b>&lt;/desc&gt;
+            &lt;bpm&gt;<b>120</b>&lt;/bpm&gt;
+            &lt;length&gt;<b>4</b>&lt;/length&gt;
+            &lt;program&gt;<b>A04</b>&lt;/program&gt;
+        &lt;/songpart&gt;
+    &lt;/songparts&gt;
+&lt;/structure&gt;</pre>
+                <p style="margin-top: 15px;"><strong>Elektron sequencers:</strong> You can use real pattern names (A01, F15, etc.) instead of numeric MIDI values.</p>
+            </section>
+
+            <section class="doc-section">
+                <h2>MAIN CONFIGURATION FILE</h2>
+                <p>The ./data/settings.xml file allows you to configure Tonton Media Player:</p>
+                <ul>
+                    <li><strong>Songs path</strong> - Default: data/songs/</li>
+                    <li><strong>MIDI ports</strong> - Configuration of MIDI devices you want to control</li>
+                </ul>
+                <pre>
+
+&lt;settings&gt;
+    &lt;songs_root_dir&gt;<b style="color: rgb(32, 62, 197);">./songs/</b>&lt;/songs_root_dir&gt;             <b style="color: green;">&lt;-- Absolute path, or relative path from ./data</b>
+
+    &lt;midi_outputs&gt;
+        &lt;output&gt;
+            <b style="color: green;">Elektron Model:Cycles sequencer</b>
+            &lt;name&gt;<b style="color: rgb(32, 62, 197);">MC</b>&lt;/name&gt;
+            &lt;device_id&gt;<b style="color: rgb(32, 62, 197);">Elektron Model:Cycles</b>&lt;/device_id&gt;  <b style="color: green;">&lt;--Name as it appears in Windows/macOS</b>
+            &lt;channel&gt;<b style="color: rgb(32, 62, 197);">10</b>&lt;/channel&gt;                         <b style="color: green;">&lt;--Channel to send Program Change</b>
+            &lt;input_format&gt;<b style="color: rgb(32, 62, 197);">elektron_pattern</b>&lt;/input_format&gt;
+            &lt;send_ticks&gt;<b style="color: rgb(32, 62, 197);">1</b>&lt;/send_ticks&gt;                    <b style="color: green;">&lt;--Drives the device metronome</b>
+        &lt;/output&gt;
+        &lt;output&gt;
+            <b style="color: green;">Elektron Digitakt sequencer --&gt;</b>
+            &lt;name&gt;<b style="color: rgb(32, 62, 197);">Digitakt</b>&lt;/name&gt;
+            &lt;device_id&gt;<b style="color: rgb(32, 62, 197);">Elektron Digitakt</b>&lt;/device_id&gt;
+            &lt;channel&gt;<b style="color: rgb(32, 62, 197);">10</b>&lt;/channel&gt;
+            &lt;input_format&gt;<b style="color: rgb(32, 62, 197);">elektron_pattern</b>&lt;/input_format&gt;
+            &lt;send_ticks&gt;<b style="color: rgb(32, 62, 197);">1</b>&lt;/send_ticks&gt;
+        &lt;/output&gt;
+        &lt;output&gt;
+            <b style="color: green;">Controlling a VST in Reaper (sending MIDI via macOS IAC Driver)</b>
+            &lt;name&gt;<b style="color: rgb(32, 62, 197);">ChantLead</b>&lt;/name&gt;
+            &lt;device_id&gt;<b style="color: rgb(32, 62, 197);">IAC Driver Bus 2</b>&lt;/device_id&gt;
+            &lt;channel&gt;<b style="color: rgb(32, 62, 197);">10</b>&lt;/channel&gt;
+            &lt;input_format&gt;<b style="color: rgb(32, 62, 197);">patch_name</b>&lt;/input_format&gt;
+            &lt;patches&gt;
+                &lt;patch&gt;
+                    &lt;name&gt;<b style="color: rgb(32, 62, 197);">clean</b>&lt;/name&gt;                     <b style="color: green;">&lt;-- Patch name</b>
+                    &lt;program&gt;<b style="color: rgb(32, 62, 197);">0</b>&lt;/program&gt;                   <b style="color: green;">&lt;-- Program number (0-127)</b>
+                &lt;/patch&gt;
+                &lt;patch&gt;
+                    &lt;name&gt;<b style="color: rgb(32, 62, 197);">autotune</b>&lt;/name&gt;
+                    &lt;program&gt;<b style="color: rgb(32, 62, 197);">1</b>&lt;/program&gt;
+                &lt;/patch&gt;
+                &lt;patch&gt;
+                    &lt;name&gt;<b style="color: rgb(32, 62, 197);">reverb</b>&lt;/name&gt;
+                    &lt;program&gt;<b style="color: rgb(32, 62, 197);">2</b>&lt;/program&gt;
+                &lt;/patch&gt;
+            &lt;/patches&gt;
+        &lt;/output&gt;
+    &lt;/midi_outputs&gt;
+
+&lt;/settings&gt;
+    
+    </pre>
+        <p>Need help with your configuration? Contact us, we'll be happy to guide you or provide a pre-configured version for your needs!</p>
+            </section>
+
+            <section class="doc-section">
+                <h2>WORKFLOW</h2>
+                <p>Once your folders are structured:</p>
+                <ol>
+                    <li>Open Tonton Media Player</li>
+                    <li>Check your audio outputs</li>
+                    <li>Launch your first song</li>
+                </ol>
+            </section>
+
+            <section class="doc-section">
+                <h2>TIPS</h2>
+                <ul>
+                    <li><strong>ALWAYS TEST</strong> your setlists before the gig</li>
+                    <li><strong>BACKUP</strong> your files</li>
+                    <li><strong>KEEP IT SIMPLE</strong> - The clearer, the better</li>
+                    <li><strong>AUDIO FORMAT</strong> - FLAC preferred (lossless, faster loading), WAV (slower loading), or MP3.</li>
+                </ul>
+            </section>
+
+            <section class="doc-section">
+                <h2>TROUBLESHOOTING</h2>
+                <ul>
+                    <li><strong>No sound</strong> → Check your audio outputs</li>
+                    <li><strong>Latency</strong> → Reduce buffer size</li>
+                    <li><strong>Missing files / Song not loaded</strong> → Check your file structure</li>
+                    <li><strong>MIDI acting up</strong> → Check port and channel</li>
+                    <li><strong>Lagging</strong> → Close other apps</li>
+                </ul>
+            </section>
+        </main>
+
+        <footer>
+            <div class="footer-content">
+                <p>&copy; 2025 Tonton Media Player</p>
+                <div class="links">
+                    <p>Support: maaamanjaipeuuur@gmail.com</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

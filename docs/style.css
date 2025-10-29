@@ -1,0 +1,989 @@
+/* Reset et base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'JetBrains Mono', 'Space Mono', 'Courier Prime', monospace;
+    background-color: #FFFFFF;
+    color: #1A1A1A;
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 30px;
+}
+
+/* Header simple et élégant */
+.hero {
+    text-align: center;
+    padding: 50px 0 30px 0;
+    border-bottom: 1px solid #E5E5E5;
+    position: relative;
+    background-color: #FFFFFF;
+}
+
+.title {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    margin-bottom: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    color: #1A1A1A;
+}
+
+.title span {
+    display: inline;
+    background: none;
+    color: #1A1A1A;
+    padding: 0;
+    margin: 0;
+    text-shadow: none;
+    border: none;
+    animation: none;
+}
+
+.tagline {
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: #666666;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.language-switch {
+    position: absolute;
+    top: 15px;
+    right: 30px;
+    font-size: 0.85rem;
+}
+
+.language-switch span {
+    color: #1A1A1A;
+    font-weight: 600;
+}
+
+.language-switch a {
+    color: #999;
+    text-decoration: none;
+}
+
+.language-switch a:hover {
+    color: #1A1A1A;
+}
+
+/* Sections avec style minimaliste */
+main {
+    padding: 30px 0;
+}
+
+section {
+    margin-bottom: 30px;
+}
+
+h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #1A1A1A;
+    margin-bottom: 15px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: -0.3px;
+}
+
+/* Section Pitch */
+.pitch-box {
+    background-color: #FFFFFF;
+    border: 2px solid #1A1A1A;
+    padding: 40px;
+    margin: 40px 0;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    animation: fadeInScale 0.8s ease-out;
+}
+
+.pitch-box::before {
+    content: "💥";
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 2rem;
+    animation: rotate360 3s infinite linear;
+}
+
+.pitch-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(242, 182, 17, 0.2);
+    border-color: #F2B611;
+}
+
+@keyframes fadeInScale {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes rotate360 {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.big-text {
+    font-size: 1.3rem;
+    font-weight: 400;
+    margin-bottom: 25px;
+    color: #1A1A1A;
+    line-height: 1.4;
+}
+
+.emphasis {
+    background: #F0F0F0;
+    color: #1A1A1A;
+    padding: 2px 4px;
+    font-weight: 500;
+    border-radius: 2px;
+}
+
+.features {
+    display: flex;
+    gap: 15px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+}
+
+.feature {
+    background-color: #FF6B35;
+    color: #FFFFFF;
+    padding: 12px 18px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.2s ease;
+    font-family: 'Space Mono', monospace;
+}
+
+.feature:hover {
+    background-color: #FFFFFF;
+    color: #F2B611;
+    border: 2px solid #F2B611;
+}
+
+/* Section Produit */
+.product-box {
+    background: linear-gradient(135deg, #1A1A1A, #2A2A2A);
+    color: #FFFFFF;
+    padding: 40px;
+    border: none;
+    position: relative;
+    overflow: hidden;
+    animation: slideInFromLeft 1s ease-out;
+}
+
+.product-box::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(26, 97, 138, 0.1), transparent);
+    animation: shimmer 4s infinite;
+}
+
+@keyframes slideInFromLeft {
+    0% {
+        opacity: 0;
+        transform: translateX(-100px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes shimmer {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.product-box .big-text {
+    color: #FFFFFF;
+}
+
+.product-box h2 {
+    color: #FFFFFF;
+    border-bottom: 2px solid #1A618A;
+    display: inline-block;
+    padding-bottom: 10px;
+}
+
+.description {
+    font-size: 1.2rem;
+    margin-bottom: 40px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+.anti-features, .real-features {
+    margin: 30px 0;
+    padding: 30px;
+    border: 2px solid #FFFFFF;
+    background-color: transparent;
+}
+
+.anti-features {
+    border-color: #F2B611;
+}
+
+.real-features {
+    border-color: #1A618A;
+}
+
+.anti-features h3, .real-features h3 {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    color: #FFFFFF;
+    font-family: 'Space Mono', monospace;
+}
+
+.anti-features ul, .real-features ul {
+    list-style: none;
+}
+
+.anti-features li, .real-features li {
+    padding: 8px 0;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+/* Section Visual */
+.visual-box {
+    text-align: center;
+    padding: 15px 0 25px 0;
+}
+
+/* Intro compact section */
+.intro-compact {
+    margin: 30px 0;
+}
+
+.intro-box {
+    background-color: #FAFAFA;
+    border-left: 3px solid #1A618A;
+    padding: 20px 30px;
+    margin: 0 auto;
+}
+
+.intro-text {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #1A1A1A;
+    margin: 0;
+}
+
+/* Features grid */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+    margin: 30px 0;
+}
+
+.feature-card {
+    background: #FFFFFF;
+    border: 1px solid #E5E5E5;
+    padding: 20px 15px;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.feature-card:hover {
+    border-color: #1A618A;
+    box-shadow: 0 2px 10px rgba(26, 97, 138, 0.08);
+}
+
+.feature-icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.feature-card h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1A1A1A;
+    margin-bottom: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: -0.3px;
+}
+
+.feature-card p {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Social proof compact */
+.social-proof-compact {
+    background: #FAFAFA;
+    border-top: 1px solid #E5E5E5;
+    border-bottom: 1px solid #E5E5E5;
+    color: #1A1A1A;
+    padding: 25px 30px;
+    margin: 30px 0;
+    text-align: center;
+}
+
+.testimonial-compact {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.artist-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1A1A1A;
+    margin-bottom: 8px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.artist-quote {
+    font-size: 0.95rem;
+    font-style: italic;
+    color: #444444;
+    margin-bottom: 6px;
+}
+
+.artist-info {
+    font-size: 0.8rem;
+    color: #999999;
+}
+
+/* Download Section */
+.download-section {
+    margin: 40px 0 30px 0;
+}
+
+.download-box {
+    background: #FAFAFA;
+    border: 1px solid #E5E5E5;
+    padding: 35px 30px;
+    text-align: center;
+}
+
+.download-box h2 {
+    font-size: 1.5rem;
+    color: #1A1A1A;
+    margin-bottom: 8px;
+}
+
+.download-desc {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.download-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.download-option {
+    background: #FFFFFF;
+    border: 1px solid #E5E5E5;
+    padding: 25px 20px;
+    transition: all 0.2s ease;
+}
+
+.download-option:hover {
+    border-color: #1A1A1A;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.os-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1A1A1A;
+    margin-bottom: 8px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.os-info {
+    font-size: 0.8rem;
+    color: #999;
+    margin-bottom: 15px;
+}
+
+.btn-download {
+    background: #1A1A1A;
+    color: #FFFFFF;
+    border: none;
+    padding: 10px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.btn-download:hover {
+    background: #333333;
+}
+
+.download-note {
+    font-size: 0.8rem;
+    color: #999;
+    margin-bottom: 25px;
+    padding-top: 10px;
+    border-top: 1px solid #E5E5E5;
+}
+
+.license-info {
+    padding: 20px;
+    background: #FFFFFF;
+    border: 1px solid #E5E5E5;
+    margin-top: 20px;
+}
+
+.license-info p {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 12px;
+}
+
+/* Quick info section */
+.quick-info {
+    margin: 30px 0;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.info-card {
+    background: #FFFFFF;
+    border: 1px solid #E5E5E5;
+    padding: 20px;
+}
+
+.info-card h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1A1A1A;
+    margin-bottom: 12px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.info-card p {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.info-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.info-card li {
+    font-size: 0.85rem;
+    color: #1A1A1A;
+    padding: 4px 0;
+    line-height: 1.5;
+}
+
+.info-card a {
+    color: #1A1A1A;
+    text-decoration: none;
+    border-bottom: 1px solid #E5E5E5;
+}
+
+.info-card a:hover {
+    border-bottom-color: #1A1A1A;
+}
+
+.btn-secondary {
+    background: transparent;
+    color: #1A1A1A;
+    border: 1px solid #1A1A1A;
+    padding: 10px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-secondary:hover {
+    background: #F5F5F5;
+}
+
+/* Quick start guide CTA */
+.quickstart-cta {
+    margin: 30px 0;
+}
+
+.quickstart-box {
+    background: #FFFFFF;
+    border-top: 1px solid #E5E5E5;
+    border-bottom: 1px solid #E5E5E5;
+    padding: 30px 40px;
+    text-align: center;
+}
+
+.quickstart-icon {
+    display: none;
+}
+
+.quickstart-box h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1A1A1A;
+    margin-bottom: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: -0.3px;
+}
+
+.quickstart-box p {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 18px;
+    line-height: 1.6;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.btn-docs {
+    display: inline-block;
+    background: transparent;
+    color: #1A1A1A;
+    border: 1px solid #1A1A1A;
+    padding: 8px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    letter-spacing: -0.2px;
+}
+
+.btn-docs:hover {
+    background: #1A1A1A;
+    color: #FFFFFF;
+}
+
+/* Section Pricing */
+.pricing-box {
+    background: linear-gradient(135deg, #F8F8F8, #FFFFFF);
+    padding: 40px;
+    border: 2px solid #1A1A1A;
+    position: relative;
+    animation: fadeInUp 1.2s ease-out;
+}
+
+.price-option {
+    padding: 30px;
+    border: 2px solid #1A1A1A;
+    text-align: center;
+    font-weight: 400;
+    background-color: #FFFFFF;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.price-option::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(26, 97, 138, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.price-option:hover::before {
+    left: 100%;
+}
+
+.price-option:hover {
+    background: linear-gradient(135deg, #1A618A, #2E7BB5);
+    color: #FFFFFF;
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 10px 25px rgba(26, 97, 138, 0.3);
+}
+
+.price-option h3 {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+}
+
+.price-option p {
+    font-size: 1rem;
+    margin-bottom: 25px;
+    line-height: 1.4;
+}
+
+/* Boutons */
+.btn {
+    padding: 15px 25px;
+    border: 2px solid #1A1A1A;
+    background-color: transparent;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+.btn:hover {
+    background: linear-gradient(45deg, #F2B611, #FFD633);
+    color: #FFFFFF;
+    border-color: #F2B611;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(242, 182, 17, 0.3);
+}
+
+.price-option:hover .btn {
+    background-color: #FFFFFF;
+    color: #1A618A;
+    border-color: #FFFFFF;
+}
+
+.price-option:hover .btn:hover {
+    background-color: transparent;
+    color: #FFFFFF;
+    border-color: #FFFFFF;
+}
+
+/* Section Manifesto */
+.manifesto-box {
+    background-color: #FFFFFF;
+    color: #1A1A1A;
+    padding: 40px;
+    border: 2px solid #1A1A1A;
+}
+
+.manifesto-text p {
+    font-size: 1.2rem;
+    font-weight: 400;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.strong {
+    background: linear-gradient(45deg, #F2B611, #FFD633);
+    color: #FFFFFF;
+    padding: 3px 8px;
+    font-weight: 700;
+    border-radius: 4px;
+    position: relative;
+    display: inline-block;
+    animation: highlight 3s infinite;
+}
+
+@keyframes highlight {
+    0%, 100% {
+        background: linear-gradient(45deg, #F2B611, #FFD633);
+    }
+    50% {
+        background: linear-gradient(45deg, #1A618A, #2E7BB5);
+    }
+}
+
+/* Documentation sections */
+.doc-section {
+    padding: 30px 0;
+    border-bottom: 1px solid #E5E5E5;
+}
+
+.doc-section:last-of-type {
+    border-bottom: none;
+}
+
+.doc-section h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #1A1A1A;
+}
+
+.doc-section p {
+    margin-bottom: 15px;
+    line-height: 1.7;
+    color: #1A1A1A;
+}
+
+.doc-section ul,
+.doc-section ol {
+    margin: 15px 0 15px 25px;
+    line-height: 1.8;
+}
+
+.doc-section li {
+    margin-bottom: 8px;
+}
+
+.doc-section pre {
+    background-color: #FAFAFA;
+    border: 1px solid #E5E5E5;
+    padding: 20px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 15px 0;
+}
+
+.doc-section code {
+    font-family: 'JetBrains Mono', monospace;
+    background-color: #FAFAFA;
+    padding: 2px 6px;
+    font-size: 0.9em;
+    border: 1px solid #E5E5E5;
+}
+
+.doc-section pre code {
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+/* Footer */
+footer {
+    background-color: #FAFAFA;
+    color: #1A1A1A;
+    padding: 30px 0 25px 0;
+    border-top: 1px solid #E5E5E5;
+    margin-top: 40px;
+}
+
+.footer-content {
+    text-align: center;
+    font-size: 0.85rem;
+}
+
+.footer-tagline {
+    color: #666666;
+    font-weight: 400;
+    margin: 8px 0;
+}
+
+.links {
+    margin-top: 15px;
+}
+
+.link {
+    color: #1A1A1A;
+    text-decoration: none;
+    font-weight: 400;
+    margin: 0 15px;
+    padding: 3px 0;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid transparent;
+}
+
+.link:hover {
+    border-bottom-color: #1A1A1A;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    body {
+        font-size: 13px;
+    }
+
+    .container {
+        padding: 0 20px;
+    }
+    
+    .hero {
+        padding: 35px 0 25px 0;
+    }
+    
+    .title {
+        font-size: 1.5rem;
+        line-height: 1.3;
+    }
+    
+    .tagline {
+        font-size: 0.85rem;
+    }
+    
+    h2 {
+        font-size: 1.15rem;
+    }
+    
+    .intro-box {
+        padding: 15px 20px;
+    }
+
+    .intro-text {
+        font-size: 0.9rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .feature-card {
+        padding: 18px 15px;
+    }
+    
+    .social-proof-compact {
+        padding: 20px 20px;
+    }
+
+    .cta-box {
+        padding: 25px 20px;
+    }
+
+    .download-box {
+        padding: 25px 20px;
+    }
+
+    .download-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .btn-primary, .btn-secondary {
+        width: 100%;
+    }
+    
+    .links {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .link {
+        margin: 0;
+    }
+}
+
+/* Variations de couleurs pour les sections */
+.pricing-box h2 {
+    color: #1A618A;
+}
+
+.price-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.manifesto-box h2 {
+    color: #F2B611;
+}
+.pitch-box::before {
+    content: "█";
+    color: #1A618A;
+    position: absolute;
+    margin-left: -20px;
+    margin-top: -10px;
+}
+
+/* Animation subtile sur le titre */
+.title span:nth-child(2) {
+    animation: blink 4s infinite;
+}
+
+@keyframes blink {
+    0%, 85%, 100% { 
+        color: #FFFFFF;
+        background: linear-gradient(45deg, #1A618A, #2E7BB5);
+        text-shadow: 2px 2px 0px #144A6B;
+    }
+    90%, 95% { 
+        color: #FFFFFF;
+        background: linear-gradient(45deg, #F2B611, #FFD633);
+        text-shadow: 2px 2px 0px #CC9900;
+    }
+}
+
+/* Effet de secousse pour les éléments importants */
+.big-text:nth-child(3) {
+    animation: shake 0.5s ease-in-out;
+    animation-delay: 2s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Effet sur le testimonial */
+.artist-item {
+    transition: all 0.3s ease;
+    animation: slideInFromRight 1s ease-out;
+}
+
+.artist-item:hover {
+    transform: scale(1.05) rotate(1deg);
+    box-shadow: 0 10px 30px rgba(26, 97, 138, 0.3);
+}
+
+@keyframes slideInFromRight {
+    0% {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}

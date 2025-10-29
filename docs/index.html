@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tonton Media Player - Synchronisation audio en live</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=JetBrains+Mono:wght@400;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="hero">
+            <h1 class="title">
+                <span class="bullshit">TONTON MEDIA PLAYER</span>
+            </h1>
+            <div class="tagline">
+                Synchronise tes backing tracks, ta vidéo et tes machines en live.
+            </div>
+            <div class="language-switch" style="position: absolute; top: 20px; right: 20px;">
+                <span style="color: #1A1A1A; font-weight: bold;">🇫🇷 FR</span>
+                <a href="index-en.html" style="color: #666; text-decoration: none; margin-left: 10px;">🇺🇸 EN</a>
+            </div>
+        </header>
+
+        <main>
+            <!-- Hero visual section -->
+            <section class="visual">
+                <div class="visual-box">
+                    <img src="main.png" alt="Aperçu de Tonton Media Player" class="main-visual" style="max-width:100%;height:auto;display:block;margin:0 auto;">
+                </div>
+            </section>
+
+            <!-- What is it -->
+            <section class="intro-compact">
+                <div class="intro-box">
+                    <p class="intro-text">
+                        Les DAW sont puissantes pour composer mais <span class="emphasis">trop complexes pour le live</span>. 
+                        Tonton Media Player va à l'essentiel : structure de setlist, synchronisation audio/vidéo/MIDI, 
+                        interface simple qui limite les erreurs.
+                        Codé par et pour le groupe <span class="emphasis">Maman ! J'ai Peur</span> depuis 2023, on le met aujourd'hui à dispo de tous les musiciens live qui le souhaitent.
+                    </p>
+                    <p>
+                        Envie de suggérer des améliorations ou de suivre le développement ? Contacte-nous à maaamanjaipeuuur@gmail.com.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Features grid -->
+            <section class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎵</div>
+                    <h3>Backing Tracks</h3>
+                    <p>Lecture multipiste synchronisée</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎬</div>
+                    <h3>Vidéo Mapping</h3>
+                    <p>Projection de clips en live</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎹</div>
+                    <h3>MIDI Sync</h3>
+                    <p>Contrôle de vos machines</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📋</div>
+                    <h3>Setlist + Sections</h3>
+                    <p>Structure complète du live</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Vos Données</h3>
+                    <p>Pas de cloud, pas d'IA</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Stable</h3>
+                    <p>Conçu pour la scène</p>
+                </div>
+            </section>
+
+            <!-- Social proof compact -->
+            <!-- <section class="social-proof-compact">
+                <div class="testimonial-compact">
+                    <div class="artist-name">MAMAN ! J'AI PEUR</div>
+                    <div class="artist-quote">"C'est le troisième membre du groupe"</div>
+                    <div class="artist-info">En tournée depuis 2023</div>
+                </div>
+            </section> -->
+
+            <!-- CTA / Download Section -->
+            <section class="download-section">
+                <div class="download-box">
+                    <h2>Téléchargement gratuit</h2>
+                    
+                    <div class="download-grid">
+                        <div class="download-option">
+                            <div class="os-name">Windows</div>
+                            <!-- <div class="os-info">v1.2.0 • 45 MB • Win 10/11</div> -->
+                            <button class="btn-download" onclick="downloadWindows()">Télécharger</button>
+                        </div>
+                        <div class="download-option">
+                            <div class="os-name">macOS</div>
+                            <!-- <div class="os-info">v1.2.0 • 52 MB • 10.15+</div> -->
+                            <button class="btn-download" onclick="downloadMac()">Télécharger</button>
+                        </div>
+                    </div>
+
+                    <div class="download-note">
+                        Archive .zip portable • Sans installation • Lancez directement l'exécutable
+                    </div>
+
+                    <!-- <div class="license-info">
+                        <p>Et pour nous soutenir :</p>
+                        <a href="licence.html" class="btn-secondary">Acheter une licence à vie</a>
+                    </div> -->
+                </div>
+            </section>
+
+            <!-- Quick start guide CTA -->
+            <section class="quickstart-cta">
+                <div class="quickstart-box">
+                    <div class="quickstart-icon">📚</div>
+                    <h3>Guide de mise en route rapide</h3>
+                    <p>Configuration, création de setlist, synchronisation MIDI en 5 minutes</p>
+                    <a href="documentation.html" class="btn-docs">Consulter la documentation</a>
+                </div>
+            </section>
+
+            
+
+            <!-- Quick info -->
+            <!-- <section class="quick-info">
+                <div class="info-grid"> -->
+                    <!-- <div class="info-card">
+                        <h3>Configuration minimale</h3>
+                        <ul>
+                            <li>Windows 10+ ou macOS 11+</li>
+                            <li>4 GB RAM (8 GB recommandé)</li>
+                            <li>Interface audio USB</li>
+                            <li>Contrôleur MIDI (optionnel)</li>
+                        </ul>
+                    </div> -->
+                    <!-- <div class="info-card">
+                        <h3>Dernière mise à jour</h3>
+                        <p><strong>v1.2.0</strong> — 10 août 2025</p>
+                        <ul>
+                            <li>Stabilité MIDI améliorée</li>
+                            <li>Support Elektron patterns</li>
+                            <li>Interface plus responsive</li>
+                        </ul>
+                    </div> -->
+                    <!-- <div class="info-card">
+                        <h3>Besoin d'aide ?</h3>
+                        <ul>
+                            <li><a href="documentation.html">Documentation</a></li>
+                            <li>Support : maaamanjaipeuuur@gmail.com</li>
+                            <!-- <li>Forum communautaire</li> -->
+                        <!-- </ul>
+                    </div>
+                </div>
+            </section> -->
+        </main>
+
+        <script>
+            function downloadWindows() {
+                window.location.href = '#download-windows-link';
+            }
+            function downloadMac() {
+                window.location.href = '#download-mac-link';
+            }
+        </script>
+
+        <footer>
+            <div class="footer-content">
+                <p>&copy; 2025 Tonton Media Player</p>
+                <div class="links">
+                    <p>Support : maaamanjaipeuuur@gmail.com</p>
+                    <!-- <a href="#" class="link">Mentions légales</a> -->
+                    <!-- <a href="documentation.html" class="link">Documentation</a> -->
+                    <!-- <a href="licence.html" class="link">Licence</a> -->
+                    <!-- <a href="#" class="link">Contact</a> -->
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
