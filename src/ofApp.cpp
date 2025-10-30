@@ -461,7 +461,29 @@ void ofApp::openAudioOutPanel()
     settings.bufferSize = m_bufferSize;
     settings.numBuffers = 1;
     
-    m_audioDeviceList = soundStream.getDeviceList();
+    auto deviceList = soundStream.getDeviceList(ofSoundDevice::MS_ASIO);
+    for (auto device : deviceList)
+    {
+        m_audioDeviceList.push_back(device);
+    }
+
+    deviceList = soundStream.getDeviceList(ofSoundDevice::MS_WASAPI);
+    for (auto device : deviceList)
+    {
+        m_audioDeviceList.push_back(device);
+    }
+
+    deviceList = soundStream.getDeviceList(ofSoundDevice::OSX_CORE);
+    for (auto device : deviceList)
+    {
+        m_audioDeviceList.push_back(device);
+    }
+
+    deviceList = soundStream.getDeviceList(ofSoundDevice::DEFAULT);
+    for (auto device : deviceList)
+    {
+        m_audioDeviceList.push_back(device);
+    }
     
     std::vector<std::string> audioOutputNames;
     int currentAudioOutIndex = 0;
@@ -489,7 +511,7 @@ void ofApp::openAudioOutPanel()
         yCoord += m_areaFreeVersionPanel.height;
         height -= m_areaFreeVersionPanel.height;
     }
-    m_audioOutputListView.setCoordinates(12, yCoord, 450, height);
+    m_audioOutputListView.setCoordinates(12, yCoord, 550, height);
 }
 
 void ofApp::closeAudioOutPanel()
