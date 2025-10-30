@@ -1,7 +1,7 @@
 # Tonton Media Player
 
 Audio - midi - video control for live music
-![](demo/main.png)
+![](docs/main.png)
 
 ## Features
 ### Groove machines control
