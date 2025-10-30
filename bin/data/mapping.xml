@@ -1,20 +1,20 @@
 <surfaces>
     <surface>
         <vertex>
-            <x>100</x>
-            <y>100</y>
+            <x>176</x>
+            <y>120</y>
         </vertex>
         <vertex>
-            <x>1720</x>
-            <y>100</y>
+            <x>1748</x>
+            <y>118</y>
         </vertex>
         <vertex>
-            <x>1720</x>
-            <y>880</y>
+            <x>1743</x>
+            <y>909</y>
         </vertex>
         <vertex>
-            <x>100</x>
-            <y>880</y>
+            <x>179</x>
+            <y>911</y>
         </vertex>
     </surface>
 </surfaces>
