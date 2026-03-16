@@ -7,6 +7,8 @@
 int main() {
 
 	ofGLFWWindowSettings settings;
+    settings.glVersionMajor = 3;
+    settings.glVersionMinor = 2;
 
 	ofxXmlSettings xmlSettings;
 	xmlSettings.load("settings.xml");

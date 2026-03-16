@@ -77,9 +77,9 @@ void ofApp::setup(){
 		fbo.allocate(960, 540, GL_RGBA);
 		m_fboSources.push_back(fbo);
 	}
-	m_fboMapping.allocate(1920, 1080, GL_RGBA);
+    m_fboMapping.allocate(1920, 1080, GL_RGBA);
 
-	m_isDefaultShaderLoaded = m_defaultShader.load("shaders/default.vert", "shaders/bad_tv.frag");
+    m_isDefaultShaderLoaded = m_defaultShader.load("shaders/default_150.vert", "shaders/bad_tv.frag");
     
     ofSetFrameRate(m_audioRefreshRate);
 

@@ -21,7 +21,7 @@ void ShadersSource::setup(std::vector<songEvent> songEvents)
             try
             {
                 ofShader shader;
-                bool success = shader.load("shaders/default.vert", "shaders/" + event.shader + ".frag");
+				bool success = shader.load("shaders/default_150.vert", "shaders/" + event.shader + ".frag");
                 if (success)
                 {
                     m_shaders.insert({ event.shader, shader });
