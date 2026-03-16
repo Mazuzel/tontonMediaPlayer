@@ -92,7 +92,9 @@ void QuadSurface::draw(ofTexture& texture){
 			bool normalizedTexCoords = ofGetUsingNormalizedTexCoords();
 			ofEnableNormalizedTexCoords();
 			
-			glMultMatrixf(_matrix);
+			ofMatrix4x4 homographyMatrix;
+			homographyMatrix.set(_matrix);
+			ofMultMatrix(homographyMatrix);
 			//fbo.getTexture().bind();
 			texture.bind();
 			m.draw();
